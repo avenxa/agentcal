@@ -33,3 +33,17 @@ If/when persistence is added: any "must not" validation (e.g. required fields, v
 This file is the single source. If a tool you use defaults to reading a different filename (e.g. some tools read `CLAUDE.md`, `.cursor/rules`), create a one-line redirect file for that tool in the repo root — do not copy the content:
 
 See AGENTS.md for development rules.
+
+---
+
+## Tech Stack
+
+- Framework: Next.js (TypeScript)
+- Styling: Tailwind CSS
+- Package manager: pnpm
+- Backend / database: Supabase
+- Hosting / deployment: Vercel
+- Version control: GitHub (avenxa/agentcal)
+
+Confirmed 2026-08-09 — see Decision Log for rationale. Do not duplicate decision
+narrative here; this file only states the current stack for AI coding agents.
