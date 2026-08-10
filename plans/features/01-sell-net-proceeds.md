@@ -1,4 +1,4 @@
-# Feature 01 — SELL: Seller Net Proceeds Calculator Specification v1.0
+git# Feature 01 — SELL: Seller Net Proceeds Calculator Specification v1.0
 
 **Status:** Approved by WT (2026-08-09)
 **Approved design:** v3.3 with approved Optional planning costs refinement
