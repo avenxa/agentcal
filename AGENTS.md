@@ -1,49 +1,77 @@
-# AGENTS.md — AgentCal Development Rules
+# AGENTS.md — AgentCal
 
-## Status Authority
-This repository does not track progress status. Current milestone, status, and next action are maintained on the Notion project page:
-https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
+## Mission
+AgentCal is a mobile-first financial consultation calculator suite for BC real-estate agents. The product is staged as SELL → BUY → MOVE; current implementation work is limited to M1 — SELL. Financial amounts are produced only by deterministic application code.
 
-## Development Process Authority
-All development process rules follow Avenxa Dev SOP as the sole authority. This file does not copy or restate them:
-https://app.notion.com/p/3a4eca0675e380219c60d69b3352ab97
+## Authority
+- Product Truth: AgentCal Hub — https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
+- Development process authority: Avenxa Agentic Development System — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+- Execution Truth: this repository — code, configuration, technical decisions, active Technical Plan, tests, verification commands, Git history, and technical handoff.
+- Runtime Evidence: preview/deployed behaviour when a runtime exists for the bounded task.
 
-## Architecture at a Glance
-- Mobile-first Next.js app (App Router, TypeScript, Tailwind), pnpm package manager.
-- Core data model: a pure, side-effect-free calculation engine, independent of the UI. A "scenario" (SELL / BUY / MOVE) is a named, versioned assumption set that can be serialized and consumed as input by another scenario (MOVE consumes SELL's and BUY's structured output). Every result is stamped with the rate/rule version used.
-- External dependencies: Supabase (if/when persistence is needed — not required for M1), Vercel (deploy), GitHub (avenxa/agentcal).
-- Known hard constraints: BUY must never recommend a specific mortgage product, rate, term, or lender (BC Mortgage Services Act, in force 2026-10-13 — see Charter §4.2/§12/§15 on the Notion page). No AI-performed financial calculation — calculations are deterministic code only.
-- Model usage policy: default model for routine build/scaffolding tasks; escalate to a stronger model for calculation-engine logic, financial rule accuracy, and anything touching the regulatory boundary in §15 — don't trial-run unverified frontier models on untested code paths without a reason.
+If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict before changing product behaviour.
 
-## Decision Record
-No dedicated Decision Log exists yet for this project. Decisions are currently tracked in the "Recent Decisions" section of the Notion project page (link above). Promote to a dedicated Decision Log only if that list grows past ~5 entries and older history needs to be archived out (per Avenxa Project Template usage rule 2) — don't build it speculatively before that's true.
+## Current Execution
+- Active Technical Plan: `plans/features/01-sell-net-proceeds.md`
+- Technical handoff: `docs/HANDOFF.md`
+- Architecture: current code plus the active Technical Plan; no separate architecture document is required yet.
+- Technical decisions: code/config/Git history unless a durable repository decision record is added for a real need.
 
-## Product Definition
-The full Charter (product scope, milestones, success criteria, regulatory notes) lives on the Notion project page above, §1–§16. This file does not duplicate it — read the Notion page for "what are we building and why."
+Do not record product milestone/status, product priorities, or product decision history here. Those belong in the AgentCal Hub and linked Product Truth.
 
-## UI/UX Quality Floor (Avenxa Dev SOP Rule 7)
-Every shipped feature meets: button hierarchy, spacing/control consistency, focus/hover states, correct at mobile width (this product is mobile-first), designed empty/error states. Checked on every feature, not re-litigated each time.
+## Non-Negotiable Constraints
+- AI must not calculate or alter financial amounts; calculation logic is deterministic application code.
+- Scenario, Jurisdiction, and Locale remain separable. Current configured values are `CA-BC` and `en-CA`; locale must never change calculation cents.
+- Feature 01 calculation inputs are session-only and must not be persisted or transmitted.
+- BUY must not recommend or steer toward a particular mortgage product, rate, term, or lender.
+- Do not resume Feature 01 UI implementation until the current Product Truth interaction-direction gate is satisfied and the affected Feature 01 UI/interaction definition is re-frozen.
 
-## Database Constraint Mirroring (Avenxa Dev SOP Rule 8)
-If/when persistence is added: any "must not" validation (e.g. required fields, value ranges) must be mirrored at the database level, not just the app/form layer.
+## Repository Map
+- `app/` — current Next.js application shell.
+- `plans/features/01-sell-net-proceeds.md` — active bounded Technical Plan for Feature 01.
+- `docs/HANDOFF.md` — current technical continuity checkpoint.
+- `package.json` — installed dependencies and executable scripts.
+- `CLAUDE.md` — redirect to this file.
 
----
+## Canonical Commands
+Install:   `pnpm install`
+Dev:       `pnpm dev`
+Lint:      `pnpm lint`
+Typecheck: `pnpm exec tsc --noEmit`
+Test:      N/A — no automated test runner is currently configured; adding the required verification harness is planned work and must be made executable before Feature 01 implementation can be considered complete.
+Build:     `pnpm build`
+E2E/UI:    N/A — not currently configured.
+Schema:    N/A — M1 has no persistence/schema work.
 
-## Multi-Tool Support (LLM-agnostic)
-This file is the single source. If a tool you use defaults to reading a different filename (e.g. some tools read `CLAUDE.md`, `.cursor/rules`), create a one-line redirect file for that tool in the repo root — do not copy the content:
+Run additional checks required by the active Technical Plan. Do not claim a missing check passed.
 
-See AGENTS.md for development rules.
+## Execution Rules
+1. Work on one bounded objective at a time and keep unrelated edits out.
+2. Inspect actual repository state before assuming a dependency, component, test harness, schema, or prior feature exists.
+3. Confirm Product Truth acceptance and applicable human gates before meaningful implementation.
+4. Build → verify → diagnose → fix → re-verify before reporting completion.
+5. A required failing or unavailable check remains unresolved until fixed or explicitly escalated.
+6. Update tests and durable technical documentation when implementation changes their truth.
+7. Consequential work requires independent review of the actual diff and evidence; the builder is not the sole reviewer.
+8. Never store secrets or credentials in committed files or documentation.
+9. Stop the affected action if instructions conflict, scope materially expands, another coding agent is editing the same working tree, required verification cannot run, or a consequential human gate is reached.
 
----
+## Human Gates
+Human approval is required for:
+- product scope or acceptance changes;
+- consequential architecture, security, privacy, compliance, or data-model decisions;
+- new material external services or paid commitments;
+- production data mutation, destructive operations, or production schema migration;
+- final product acceptance and any merge/release gate required by ADS/project policy;
+- resuming Feature 01 UI implementation before WT has approved the revised interaction direction and the affected Product Truth is re-frozen.
 
-## Tech Stack
+Routine reversible implementation mechanics inside an approved bounded task do not require repeated approval.
 
-- Framework: Next.js (TypeScript)
-- Styling: Tailwind CSS
-- Package manager: pnpm
-- Backend / database: Supabase
-- Hosting / deployment: Vercel
-- Version control: GitHub (avenxa/agentcal)
+## Definition of Done
+A bounded task is complete only when intended scope is implemented, required verification passes, self-correction is complete, independent review/runtime evidence exists where required, applicable human gates are satisfied, and `docs/HANDOFF.md` is current.
 
-Confirmed 2026-08-09 — see Decision Log for rationale. Do not duplicate decision
-narrative here; this file only states the current stack for AI coding agents.
+## Handoff
+Before stopping after meaningful work, update `docs/HANDOFF.md` with current Completed / Changed / Verified / Open / Next state. Keep it current rather than appending chat transcripts or competing status documents.
+
+## Tool-Specific Instructions
+`AGENTS.md` is the common cross-agent repository authority. Tool-specific files should only redirect here or contain genuinely tool-specific scoped instructions; do not maintain duplicate full rule sets.
