@@ -21,7 +21,11 @@ Repository inspection before remediation established:
 - no Feature 01 SELL implementation was found on `main`;
 - no open PR existed at inspection time.
 
-For the remediation branch, verify before merge that the four documentation/routing files above are present and that no application code, dependency, lockfile, or package script changed.
+Step 4 remediation branch verification:
+- comparison against `main` shows only `AGENTS.md`, `PROJECT_BRIEFING.md`, `plans/features/01-sell-net-proceeds.md`, and `docs/HANDOFF.md` changed;
+- no application code, dependency, lockfile, package script, schema, or production state changed;
+- `AGENTS.md`, the active Technical Plan, and this handoff were re-read from the remediation branch after writing and match the intended ADS routing/gate boundary;
+- no product calculation, field, formula, rounding, UX acceptance, or Product Truth content was changed in the repository.
 
 ## Open
 - **Product blocker:** Feature 01 UI implementation remains paused until WT approves the revised consultation-first responsive interaction direction and the affected Feature 01 UI/interaction Product Truth is re-frozen.
