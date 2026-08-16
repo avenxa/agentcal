@@ -24,7 +24,8 @@ Do not record product milestone/status, product priorities, or product decision 
 - Scenario, Jurisdiction, and Locale remain separable. Current configured values are `CA-BC` and `en-CA`; locale must never change calculation cents.
 - Feature 01 calculation inputs are session-only and must not be persisted or transmitted.
 - BUY must not recommend or steer toward a particular mortgage product, rate, term, or lender.
-- Do not resume Feature 01 UI implementation until the current Product Truth interaction-direction gate is satisfied and the affected Feature 01 UI/interaction definition is re-frozen.
+- Feature 01 UI/interaction Product Truth was re-frozen on 2026-08-16. Implement the approved **Guided Topic Rail with Living Statement elements** and AgentCal Brand Kit v1.0; do not revive superseded v3.3 Geist/navy/gold presentation rules.
+- Preserve the approved responsive breathing-room intent, especially on tablet and laptop/desktop. Runtime evidence must confirm the relevant Product Spec acceptance widths before product acceptance.
 
 ## Repository Map
 - `app/` — current Next.js application shell.
@@ -38,9 +39,9 @@ Install:   `pnpm install`
 Dev:       `pnpm dev`
 Lint:      `pnpm lint`
 Typecheck: `pnpm exec tsc --noEmit`
-Test:      N/A — no automated test runner is currently configured; adding the required verification harness is planned work and must be made executable before Feature 01 implementation can be considered complete.
+Test:      N/A — no automated test runner is currently configured; the next Feature 01 implementation cycle must configure the required executable harness before implementation can be considered complete.
 Build:     `pnpm build`
-E2E/UI:    N/A — not currently configured.
+E2E/UI:    N/A — not currently configured; add the minimum browser/UI verification capability required to prove the Product Spec acceptance contract.
 Schema:    N/A — M1 has no persistence/schema work.
 
 Run additional checks required by the active Technical Plan. Do not claim a missing check passed.
@@ -59,13 +60,13 @@ Run additional checks required by the active Technical Plan. Do not claim a miss
 ## Human Gates
 Human approval is required for:
 - product scope or acceptance changes;
+- changes to the re-frozen Feature 01 formulas, rounding, disclosures, interaction direction, visual hierarchy, privacy/data handling, or jurisdiction/locale boundary;
 - consequential architecture, security, privacy, compliance, or data-model decisions;
 - new material external services or paid commitments;
 - production data mutation, destructive operations, or production schema migration;
-- final product acceptance and any merge/release gate required by ADS/project policy;
-- resuming Feature 01 UI implementation before WT has approved the revised interaction direction and the affected Product Truth is re-frozen.
+- final product acceptance and any merge/release gate required by ADS/project policy.
 
-Routine reversible implementation mechanics inside an approved bounded task do not require repeated approval.
+Routine reversible implementation mechanics inside the approved boundary — including compatible test-runner selection and ordinary UI implementation details — do not require repeated approval.
 
 ## Definition of Done
 A bounded task is complete only when intended scope is implemented, required verification passes, self-correction is complete, independent review/runtime evidence exists where required, applicable human gates are satisfied, and `docs/HANDOFF.md` is current.
