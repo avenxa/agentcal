@@ -56,6 +56,7 @@ Run additional checks required by the active Technical Plan. Do not claim a miss
 7. Consequential work requires independent review of the actual diff and evidence; the builder is not the sole reviewer.
 8. Never store secrets or credentials in committed files or documentation.
 9. Stop the affected action if instructions conflict, scope materially expands, another coding agent is editing the same working tree, required verification cannot run, or a consequential human gate is reached.
+10. When one AI/tool is acting as orchestrator or independent reviewer and another is the active coding agent, the coding agent is the sole editor of that working tree for the bounded cycle. The orchestrator/reviewer may issue bounded instructions and inspect repository evidence, but must not edit the same working tree concurrently. Editing authority transfers only through an explicit handoff after the active coding agent stops editing.
 
 ## Human Gates
 Human approval is required for:
