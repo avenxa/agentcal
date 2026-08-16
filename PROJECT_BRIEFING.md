@@ -1,9 +1,12 @@
 # PROJECT_BRIEFING.md — AgentCal
 
-Full project definition, milestones, success criteria, and regulatory notes live on the Notion project page — not duplicated here:
+Product Truth lives in the AgentCal Hub and linked product-definition documents; do not duplicate it here:
 
-https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
+- AgentCal Hub: https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
+- AgentCal Charter v1.0: https://app.notion.com/p/3b7eca0675e381cb9322f7bf71867a77
+- Current Feature 01 Product Spec: https://app.notion.com/p/3b8eca0675e3815db467c68673ebeb05
 
-Full Charter (product spec): https://app.notion.com/p/3b7eca0675e381cb9322f7bf71867a77
+Development process authority is the Avenxa Agentic Development System:
+https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 
-Development process follows Avenxa Dev SOP as the sole authority: https://app.notion.com/p/3a4eca0675e380219c60d69b3352ab97
+For repository execution, start with `AGENTS.md`, then the active Technical Plan and `docs/HANDOFF.md`. Repository code, configuration, tests, verification commands, Git history, and technical handoff are Execution Truth.
