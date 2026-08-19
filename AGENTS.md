@@ -14,7 +14,7 @@ If Product Truth and repository reality materially conflict, stop the affected a
 ## Current Execution
 - Active Technical Plan: `plans/features/01-sell-net-proceeds.md`
 - Technical handoff: `docs/HANDOFF.md`
-- Architecture: current code plus the active Technical Plan; no separate architecture document is required yet.
+- Architecture: current code plus the active Technical Plan; no separate architecture document is required yet. Pure calculation logic lives under `lib/engine/`; `app/` owns presentation and must import from `lib/engine/`, never the reverse.
 - Technical decisions: code/config/Git history unless a durable repository decision record is added for a real need.
 
 Do not record product milestone/status, product priorities, or product decision history here. Those belong in the AgentCal Hub and linked Product Truth.
@@ -28,20 +28,42 @@ Do not record product milestone/status, product priorities, or product decision 
 - Preserve the approved responsive breathing-room intent, especially on tablet and laptop/desktop. Runtime evidence must confirm the relevant Product Spec acceptance widths before product acceptance.
 
 ## Repository Map
-- `app/` — current Next.js application shell.
+- `app/` — Next.js App Router presentation and interaction.
+- `lib/engine/` — pure calculation logic for every scenario (SELL now; BUY/MOVE later). Nothing here may import React, DOM, browser storage, or Supabase.
+- `lib/` — non-engine shared modules that stay outside `app/`: consultation UI-state helpers and presentation copy.
+- `e2e/` — Playwright browser checks for the Feature 01 consultation UI.
 - `plans/features/01-sell-net-proceeds.md` — active bounded Technical Plan for Feature 01.
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
 - `package.json` — installed dependencies and executable scripts.
 - `CLAUDE.md` — redirect to this file.
 
+## Calculation Engine Module Convention
+Pure calculation logic for every scenario (SELL / BUY / MOVE) lives under
+`lib/engine/`, never directly under `lib/` and never inside `app/`:
+- `lib/engine/sell.ts` — SELL functions (e.g. `calculateSellerNetProceeds()`) plus
+  its input/result types.
+- Shared money-as-cents helpers currently live in `lib/engine/currency.ts`.
+  A dedicated `lib/engine/types.ts` is deferred until a second scenario needs
+  shared cross-scenario types (rule-version stamp, assumption-set shape).
+- BUY and MOVE add `lib/engine/buy.ts` and `lib/engine/move.ts` on the same
+  pattern when their milestones start. MOVE imports SELL's and BUY's
+  exported result types as its own input rather than recomputing their
+  logic.
+- Nothing under `lib/engine/` may import React, DOM, browser-storage, or
+  Supabase APIs. UI components import from `lib/engine/`, never the
+  reverse.
+This makes the Charter §6/§7 engine-separation principle concrete for
+Feature 01 and every scenario after it, without changing Feature 01's
+approved scope, fields, or calculation formulas.
+
 ## Canonical Commands
-Install:   `pnpm install`
+Install:   `pnpm install --frozen-lockfile`
 Dev:       `pnpm dev`
 Lint:      `pnpm lint`
-Typecheck: `pnpm exec tsc --noEmit`
-Test:      N/A — no automated test runner is currently configured; the next Feature 01 implementation cycle must configure the required executable harness before implementation can be considered complete.
+Typecheck: `pnpm type-check`
+Test:      `pnpm test`
+E2E/UI:    `pnpm test:e2e`
 Build:     `pnpm build`
-E2E/UI:    N/A — not currently configured; add the minimum browser/UI verification capability required to prove the Product Spec acceptance contract.
 Schema:    N/A — M1 has no persistence/schema work.
 
 Run additional checks required by the active Technical Plan. Do not claim a missing check passed.
@@ -77,3 +99,13 @@ Before stopping after meaningful work, update `docs/HANDOFF.md` with current Com
 
 ## Tool-Specific Instructions
 `AGENTS.md` is the common cross-agent repository authority. Tool-specific files should only redirect here or contain genuinely tool-specific scoped instructions; do not maintain duplicate full rule sets.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
