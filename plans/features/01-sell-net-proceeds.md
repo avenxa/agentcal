@@ -1,6 +1,6 @@
 # Technical Plan — Feature 01: SELL Seller Net Proceeds
 
-**Plan status:** Active repository plan; Product Truth UI/interaction contract was re-frozen on 2026-08-16. Implementation may resume after the required executable verification harness is configured and current repository reality is re-checked by the coding agent.
+**Plan status:** Active repository plan. Feature 01 calculation engine, Guided Topic Rail UI, and executable verification harness are implemented on `feature/01-sell-net-proceeds-v2` pending independent review. Product Truth UI/interaction contract remains the 2026-08-16 re-freeze.
 **Product Spec:** https://app.notion.com/p/3b8eca0675e3815db467c68673ebeb05
 **AgentCal Hub:** https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
 **Process authority:** https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
@@ -12,15 +12,16 @@ Implement and verify Feature 01 against the re-frozen Product Truth: determinist
 This file is Technical Plan / Execution Truth. Exact product behaviour, formulas, disclosures, interaction rules, visual acceptance, and human gates remain in Notion Product Truth.
 
 ## Current Repository Reality
-Re-checked on `main` after Product Truth re-freeze on 2026-08-16:
+Re-checked on 2026-08-17 during the `feature/01-sell-net-proceeds-v2` implementation cycle:
 
-- Next.js App Router + React + TypeScript + Tailwind scaffold exists.
-- `app/page.tsx` is still the default create-next-app screen; no SELL calculator UI is implemented on `main`.
-- `package.json` currently provides `dev`, `build`, `start`, and `lint` scripts.
-- TypeScript is configured with `strict: true`; typecheck can run with `pnpm exec tsc --noEmit`.
-- No automated test runner or browser/E2E harness is currently configured.
-- `lucide-react` is not currently installed.
+- Next.js App Router + React + TypeScript + Tailwind remain the stack.
+- Feature 01 SELL UI is implemented on `feature/01-sell-net-proceeds-v2` (not yet on `main`).
+- The Estimated Net Proceeds region is a single `ResultBlock` instance. Below 1280px the editing region precedes it in DOM order and the result is a collapsible sticky bottom summary; at 1280px+ CSS Grid `grid-template-areas` still places the same node in the sticky right column.
+- Canonical scripts: `dev`, `build`, `start`, `lint`, `type-check`, `test`, `test:e2e`.
+- Calculation tests use Node's built-in test runner; browser checks use Playwright.
+- `lucide-react` is not installed; inline SVG is used for Back/disclosure only.
 - M1 has no persistence/schema implementation and does not require Supabase.
+- Local `feature/01-sell-net-proceeds` is left untouched as a salvage/reference branch.
 
 ## Product Contract Now Active
 The former UI gate is closed. The active Product Truth now requires:
@@ -127,8 +128,8 @@ Runtime evidence must specifically confirm:
 The accepted Figma spacing refinement was written successfully, but a final laptop screenshot re-check was not available in the design session because the Figma Starter MCP limit was reached. Treat runtime/browser verification at 1366px as the required final evidence, not as a reason to alter Product Truth silently.
 
 ## Risks and Dependencies
-- **Verification gap:** no automated test runner or browser verification harness exists yet; this is the first implementation prerequisite.
-- **Runtime evidence gap:** the accepted wide-layout spacing must be proven in browser/runtime evidence before product acceptance.
+- **Verification gap:** calculation and Playwright responsive checks now exist on `feature/01-sell-net-proceeds-v2`; independent review and WT product acceptance remain.
+- **Runtime evidence gap:** Playwright recorded 320/390/768/834/1280/1366 behaviour; a human visual pass of the live UI is still useful before product acceptance.
 - **M1 dependency:** Tier-2 export/share artifact remains separately required before M1 can close and is not part of this Technical Plan.
 - **Compliance gate:** required managing-broker / BC counsel review remains a Product Truth gate before real-client use.
 
@@ -145,4 +146,4 @@ Escalate to WT before:
 Routine reversible implementation mechanics within the approved boundary may be decided and verified by the coding agent.
 
 ## Next Bounded Technical Action
-Configure the minimum executable verification harness first, then implement Feature 01 within the re-frozen Product Truth. Do not broaden into Tier-2 export/share, BUY, MOVE, persistence, or other jurisdictions.
+Independent review of `feature/01-sell-net-proceeds-v2` (diff + verification evidence), then WT product acceptance. Do not merge, and do not broaden into Tier-2 export/share, BUY, MOVE, persistence, or other jurisdictions.
