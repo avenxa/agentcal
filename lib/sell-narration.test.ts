@@ -24,6 +24,7 @@ import {
   NEGATIVE_RESULT_NOTE,
   TAX_EXCLUSION_NOTE,
   TIER1_DISCLAIMER,
+  TIER2_ASSUMPTIONS_SUMMARY,
   TIER2_REFERRAL,
 } from "./sell-copy.ts";
 
@@ -255,6 +256,33 @@ test("zero optional planning does not insert the planning sentence", () => {
   assert.doesNotMatch(narration, /After optional planning costs/);
 });
 
+test("composeTier2Disclosure omits prepared-by/date when includePreparedByLine is false", () => {
+  const result = calculateSellerNetProceeds(makeInputs());
+  const withoutLine = composeTier2Disclosure({
+    result,
+    preparedBy: "Jordan Lee, Example Realty",
+    generatedAt,
+    includePreparedByLine: false,
+  });
+  const withLine = composeTier2Disclosure({
+    result,
+    preparedBy: "Jordan Lee, Example Realty",
+    generatedAt,
+  });
+
+  assert.equal(countOccurrences(withoutLine, "Prepared by"), 0);
+  assert.doesNotMatch(withoutLine, /^Date:/m);
+  assert.doesNotMatch(withoutLine, /\nDate:/);
+  assert.ok(withoutLine.includes(TIER2_ASSUMPTIONS_SUMMARY));
+  assert.ok(withoutLine.includes(TIER2_REFERRAL));
+  assert.equal(withoutLine, `${TIER2_ASSUMPTIONS_SUMMARY} ${TIER2_REFERRAL}`);
+
+  assert.match(withLine, /Prepared by: Jordan Lee, Example Realty/);
+  assert.match(withLine, /^Date: /m);
+  assert.ok(withLine.includes(TIER2_ASSUMPTIONS_SUMMARY));
+  assert.ok(withLine.includes(TIER2_REFERRAL));
+});
+
 test("clipboard handoff is narration, Tier 2, then a single closing disclaimer pair", () => {
   const result = calculateSellerNetProceeds(makeInputs());
   const handoff = composeClipboardHandoff({
@@ -275,6 +303,8 @@ test("clipboard handoff is narration, Tier 2, then a single closing disclaimer p
   );
   assert.equal(countOccurrences(tier2, TIER1_DISCLAIMER), 0);
   assert.equal(countOccurrences(tier2, TAX_EXCLUSION_NOTE), 0);
+  assert.match(tier2, /Prepared by: Jordan Lee, Example Realty/);
+  assert.match(tier2, /^Date: /m);
   assertDisclaimerPairOnceAtEnd(handoff);
   assert.match(handoff, /Prepared by: Jordan Lee, Example Realty/);
   assert.match(handoff, new RegExp(TIER2_REFERRAL));

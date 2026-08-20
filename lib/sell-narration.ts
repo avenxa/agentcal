@@ -98,16 +98,21 @@ export function composeTier2Disclosure(input: {
   result: SellerNetProceedsResult;
   preparedBy: string;
   generatedAt: Date;
+  includePreparedByLine?: boolean;
 }): string {
   const planningNote =
     input.result.optionalPlanningTotalCents > 0
       ? " Optional planning costs are shown as a separate after-planning estimate."
       : "";
-  return [
-    composePreparedByLine(input.preparedBy),
-    `Date: ${formatEstimateTimestamp(input.generatedAt)}`,
-    `${TIER2_ASSUMPTIONS_SUMMARY}${planningNote} ${TIER2_REFERRAL}`,
-  ].join("\n");
+  const lines: string[] = [];
+  if (input.includePreparedByLine ?? true) {
+    lines.push(
+      composePreparedByLine(input.preparedBy),
+      `Date: ${formatEstimateTimestamp(input.generatedAt)}`,
+    );
+  }
+  lines.push(`${TIER2_ASSUMPTIONS_SUMMARY}${planningNote} ${TIER2_REFERRAL}`);
+  return lines.join("\n");
 }
 
 export function composeClipboardHandoff(input: {

@@ -40,6 +40,33 @@ type AssumptionRow = {
   text?: string;
 };
 
+function IconChevron({
+  open,
+  className = "",
+}: {
+  open: boolean;
+  className?: string;
+}) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      aria-hidden="true"
+      className={`chevron ${open ? "chevron-open" : ""} ${className}`.trim()}
+    >
+      <path
+        d="M5 7.5 10 12.5 15 7.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function AssumptionValue({
   cents,
   text,
@@ -70,7 +97,9 @@ export function EstimateSummary({ result, onClose }: EstimateSummaryProps) {
   const headingId = useId();
   const preparedById = useId();
   const emailContentId = useId();
+  const emailPanelId = useId();
   const [generatedAt] = useState(() => new Date());
+  const [emailEditorExpanded, setEmailEditorExpanded] = useState(false);
   const preparedBy = useSyncExternalStore(
     subscribePreparedBy,
     getPreparedBySnapshot,
@@ -251,7 +280,26 @@ export function EstimateSummary({ result, onClose }: EstimateSummaryProps) {
           </p>
         ) : null}
 
-        <div className="estimate-email-editor">
+        <button
+          type="button"
+          className="accordion-trigger"
+          aria-expanded={emailEditorExpanded}
+          aria-controls={emailPanelId}
+          data-testid="estimate-email-toggle"
+          onClick={() => setEmailEditorExpanded((open) => !open)}
+        >
+          <span>
+            {emailEditorExpanded
+              ? "Hide email text"
+              : "Edit email text before copying"}
+          </span>
+          <IconChevron open={emailEditorExpanded} />
+        </button>
+        <div
+          id={emailPanelId}
+          className="estimate-email-editor"
+          hidden={!emailEditorExpanded}
+        >
           <label className="amount-label" htmlFor={emailContentId}>
             Email content
           </label>
@@ -346,7 +394,12 @@ export function EstimateSummary({ result, onClose }: EstimateSummaryProps) {
           <p className="caption">{TIER1_DISCLAIMER}</p>
           <p className="caption">{TAX_EXCLUSION_NOTE}</p>
           <pre className="estimate-tier2-block">
-            {composeTier2Disclosure({ result, preparedBy, generatedAt })}
+            {composeTier2Disclosure({
+              result,
+              preparedBy,
+              generatedAt,
+              includePreparedByLine: false,
+            })}
           </pre>
         </section>
       </article>

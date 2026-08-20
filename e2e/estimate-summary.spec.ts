@@ -48,6 +48,16 @@ async function expandStickySummary(page: Page) {
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
 }
 
+async function expandEmailEditor(page: Page) {
+  const toggle = page.getByTestId("estimate-email-toggle");
+  await expect(toggle).toBeVisible();
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") {
+    await toggle.click();
+  }
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByTestId("estimate-email-content")).toBeVisible();
+}
+
 async function openEstimateSummary(page: Page) {
   await expandStickySummary(page);
   const trigger = page.getByTestId("estimate-summary-open");
@@ -170,14 +180,22 @@ test.describe("Estimate summary export", () => {
     );
     const artifactText = await page.getByTestId("estimate-artifact").innerText();
     expectOnceEach(artifactText);
-    const emailText = await page.getByTestId("estimate-email-content").inputValue();
-    expectDisclaimerPairOnceAtEnd(emailText);
+    expect(countOccurrences(artifactText, "Prepared by")).toBe(1);
+    await expect(page.getByTestId("estimate-email-toggle")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await expect(page.getByTestId("estimate-email-content")).toBeHidden();
     await expect(page.locator(".estimate-email-prompt")).toHaveText(
       "Paste the copied text into a new email in your own mail client.",
     );
     await expect(page.locator(".estimate-email-prompt")).not.toContainText(
       "client email",
     );
+    await expandEmailEditor(page);
+    const emailText = await page.getByTestId("estimate-email-content").inputValue();
+    expectDisclaimerPairOnceAtEnd(emailText);
+    expect(emailText).toContain("Prepared by:");
     await expect(page.getByRole("heading", { name: "View calculation" })).toHaveCount(
       0,
     );
@@ -216,6 +234,7 @@ test.describe("Estimate summary export", () => {
       page.getByTestId("estimate-mailto"),
       page.getByTestId("estimate-prepared-by"),
       page.getByTestId("estimate-prepared-by-clear"),
+      page.getByTestId("estimate-email-toggle"),
       page.getByTestId("estimate-email-content"),
     ];
     for (const control of chrome) {
@@ -245,6 +264,7 @@ test.describe("Estimate summary export", () => {
         copy: hiddenInPrint("estimate-copy"),
         mailto: hiddenInPrint("estimate-mailto"),
         preparedBy: hiddenInPrint("estimate-prepared-by"),
+        emailToggle: hiddenInPrint("estimate-email-toggle"),
         email: hiddenInPrint("estimate-email-content"),
         artifactDisplay: getComputedStyle(artifact).display,
         artifactWidth: artifact.getBoundingClientRect().width,
@@ -262,6 +282,7 @@ test.describe("Estimate summary export", () => {
     expect(printVisibility.copy.clientRects).toBe(0);
     expect(printVisibility.mailto.clientRects).toBe(0);
     expect(printVisibility.preparedBy.clientRects).toBe(0);
+    expect(printVisibility.emailToggle.clientRects).toBe(0);
     expect(printVisibility.email.clientRects).toBe(0);
     expect(printVisibility.artifactDisplay).not.toBe("none");
     expect(printVisibility.artifactWidth).toBeGreaterThan(0);
@@ -271,6 +292,7 @@ test.describe("Estimate summary export", () => {
     await expect(page.getByTestId("topic-rail")).toBeHidden();
     const printedArtifact = await page.getByTestId("estimate-artifact").innerText();
     expectOnceEach(printedArtifact);
+    expect(countOccurrences(printedArtifact, "Prepared by")).toBe(1);
     await expect(page.getByTestId("estimate-narration")).not.toContainText(TIER1);
 
     await page.screenshot({
@@ -302,7 +324,18 @@ test.describe("Estimate summary export", () => {
       };
     });
 
+    await page.getByTestId("estimate-copy").click();
+    await expect(page.getByTestId("estimate-copy-status")).toHaveText(
+      "Copied. Paste this into a new email in your own mail client.",
+    );
+    const copiedWhileCollapsed = await page.evaluate(
+      () => (window as unknown as { __copiedText?: string }).__copiedText,
+    );
+    expectDisclaimerPairOnceAtEnd(copiedWhileCollapsed ?? "");
+    expect(copiedWhileCollapsed).toContain("Prepared by:");
+
     const editor = page.getByTestId("estimate-email-content");
+    await expandEmailEditor(page);
     await editor.focus();
     await editor.fill("Edited email body for the client.");
     await page.getByTestId("estimate-copy").click();
@@ -406,6 +439,17 @@ test.describe("Estimate summary export", () => {
     await page.keyboard.press("Tab");
     await expect(page.getByTestId("estimate-mailto")).toBeFocused();
     await page.keyboard.press("Tab");
+    await expect(page.getByTestId("estimate-email-toggle")).toBeFocused();
+    await expect(page.getByTestId("estimate-email-toggle")).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("estimate-email-toggle")).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
+    await page.keyboard.press("Tab");
     await expect(page.getByRole("textbox", { name: "Email content" })).toBeFocused();
 
     const sizes = await page.evaluate(() => {
@@ -415,6 +459,7 @@ test.describe("Estimate summary export", () => {
         "estimate-mailto",
         "estimate-prepared-by",
         "estimate-prepared-by-clear",
+        "estimate-email-toggle",
       ];
       return ids.map((id) => {
         const rect = (
