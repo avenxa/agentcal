@@ -1,6 +1,6 @@
 # Technical Plan — Feature 02: Tier-2 Estimate Export & Share Artifact
 
-**Plan status:** New. Not yet implemented. Opened following build approval on 2026-08-19.
+**Plan status:** Implemented on `feature/02-tier2-export-share` (from `main` at `eaf0cb7`). Pending independent review. Opened following build approval on 2026-08-19.
 **Product Spec:** https://app.notion.com/p/3c1eca0675e3819ab595d10748eb25e4
 **AgentCal Hub:** https://app.notion.com/p/3b6eca0675e38046b68ee8f1675ad0b9
 **Process authority:** https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
@@ -135,4 +135,4 @@ Escalate to WT before:
 Routine reversible implementation mechanics within the approved boundary — component naming, internal module structure, clipboard-vs-mailto UX balance within the spec's stated boundaries — may be decided and verified by the coding agent without repeated approval.
 
 ## Next Bounded Technical Action
-Create branch `feature/02-tier2-export-share` from `main` in `C:\dev\agentcal`, assign Cursor as sole coding agent, and proceed directly with: result-narration module → Estimate Summary artifact view → print stylesheet → clipboard/`mailto:` handoff → Prepared-by local storage → verification harness extension → `docs/HANDOFF.md` refresh → hand control back to Claude for independent review. Do not broaden into BUY, MOVE, hosted sharing, app-side email sending, or branded delivery.
+Hand control to Claude for independent review of the Feature 02 implementation on `feature/02-tier2-export-share` at `C:\dev\agentcal`. Do not broaden into BUY, MOVE, hosted sharing, app-side email sending, or branded delivery.

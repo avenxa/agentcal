@@ -30,6 +30,7 @@ import {
 } from "../lib/sell-copy";
 import { CurrencyField } from "./currency-field";
 import { ViewCalculationDialog } from "./view-calculation";
+import { EstimateSummary } from "./estimate-summary";
 
 const OPTIONAL_LABELS: Record<(typeof OPTIONAL_FIELD_NAMES)[number], string> = {
   staging: "Staging/preparation",
@@ -118,6 +119,7 @@ export function SellerNetProceeds() {
   );
   const [helpOpen, setHelpOpen] = useState(false);
   const [calculationOpen, setCalculationOpen] = useState(false);
+  const [summaryOpen, setSummaryOpen] = useState(false);
   const [summaryExpanded, setSummaryExpanded] = useState(false);
   const [editingFieldFocused, setEditingFieldFocused] = useState(false);
   const editingRegionRef = useRef<HTMLDivElement>(null);
@@ -238,7 +240,8 @@ export function SellerNetProceeds() {
   ];
 
   return (
-    <div className="page-shell" data-testid="sell-page">
+    <>
+    <div className="page-shell" data-testid="sell-page" hidden={summaryOpen && calc.result !== null}>
       <header className="app-header">
         <button
           type="button"
@@ -520,6 +523,7 @@ export function SellerNetProceeds() {
             calc={calc}
             viewDisabled={viewDisabled}
             onView={() => setCalculationOpen(true)}
+            onEstimate={() => setSummaryOpen(true)}
             assumptions={livingAssumptions}
             detailsId={resultDetailsId}
             expanded={summaryExpanded}
@@ -535,6 +539,22 @@ export function SellerNetProceeds() {
         calc={calc}
       />
     </div>
+    {summaryOpen && calc.result ? (
+      <EstimateSummary
+        result={calc.result}
+        onClose={() => {
+          setSummaryOpen(false);
+          window.requestAnimationFrame(() => {
+            document
+              .querySelector<HTMLButtonElement>(
+                '[data-testid="estimate-summary-open"]',
+              )
+              ?.focus();
+          });
+        }}
+      />
+    ) : null}
+    </>
   );
 }
 
@@ -564,6 +584,7 @@ function ResultBlock({
   calc,
   viewDisabled,
   onView,
+  onEstimate,
   assumptions,
   detailsId,
   expanded,
@@ -576,6 +597,7 @@ function ResultBlock({
   calc: ReturnType<typeof deriveSellerCalculatorState>;
   viewDisabled: boolean;
   onView: () => void;
+  onEstimate: () => void;
   assumptions: Array<{ label: string; value: string }>;
   detailsId: string;
   expanded: boolean;
@@ -649,6 +671,15 @@ function ResultBlock({
           onClick={onView}
         >
           View calculation
+        </button>
+        <button
+          type="button"
+          className="secondary-button"
+          data-testid="estimate-summary-open"
+          disabled={viewDisabled}
+          onClick={onEstimate}
+        >
+          Estimate summary
         </button>
         <p className="caption" data-testid="result-disclaimer">
           {TIER1_DISCLAIMER}

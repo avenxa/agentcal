@@ -16,3 +16,14 @@ export const NEGATIVE_RESULT_NOTE =
   "Estimated costs and mortgage exceed the selling price.";
 export const EMPTY_RESULT_LABEL = "Enter selling price";
 export const UNAVAILABLE_AMOUNT = "—";
+
+export const TIER2_ASSUMPTIONS_SUMMARY =
+  "This estimate is based on the assumptions listed with this result, including selling price, mortgage payout, commission and GST, legal/notary, mortgage discharge fee, prepayment penalty, property-tax adjustment, and other closing adjustments.";
+
+export const TIER2_REFERRAL =
+  "Confirm mortgage figures with a mortgage broker or lender, legal and closing amounts with a lawyer or notary, and tax treatment with an accountant.";
+
+export const PREPARED_BY_STORAGE_KEY = "agentcal.preparedBy";
+export const PREPARED_BY_PLACEHOLDER = "Agent or brokerage name";
+export const EMAIL_PASTE_PROMPT =
+  "Copied. Paste this into a new email in your own mail client. AgentCal does not collect a client email address.";

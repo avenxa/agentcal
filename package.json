@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "type-check": "tsc --noEmit",
-    "test": "node --test lib/engine/sell.test.ts",
+    "test": "node --test lib/engine/sell.test.ts lib/sell-narration.test.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

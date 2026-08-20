@@ -12,7 +12,7 @@ AgentCal is a mobile-first financial consultation calculator suite for BC real-e
 If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict before changing product behaviour.
 
 ## Current Execution
-- Active Technical Plan: `plans/features/01-sell-net-proceeds.md`
+- Active Technical Plan: `plans/features/02-tier2-export-share.md`
 - Technical handoff: `docs/HANDOFF.md`
 - Architecture: current code plus the active Technical Plan; no separate architecture document is required yet. Pure calculation logic lives under `lib/engine/`; `app/` owns presentation and must import from `lib/engine/`, never the reverse.
 - Technical decisions: code/config/Git history unless a durable repository decision record is added for a real need.
@@ -22,7 +22,7 @@ Do not record product milestone/status, product priorities, or product decision 
 ## Non-Negotiable Constraints
 - AI must not calculate or alter financial amounts; calculation logic is deterministic application code.
 - Scenario, Jurisdiction, and Locale remain separable. Current configured values are `CA-BC` and `en-CA`; locale must never change calculation cents.
-- Feature 01 calculation inputs are session-only and must not be persisted or transmitted.
+- Feature 01 calculation inputs are session-only and must not be persisted or transmitted. Feature 02 may persist only the device-local "Prepared by" string; it must not persist or transmit calculation inputs or client contact information.
 - BUY must not recommend or steer toward a particular mortgage product, rate, term, or lender.
 - Feature 01 UI/interaction Product Truth was re-frozen on 2026-08-16. Implement the approved **Guided Topic Rail with Living Statement elements** and AgentCal Brand Kit v1.0; do not revive superseded v3.3 Geist/navy/gold presentation rules.
 - Preserve the approved responsive breathing-room intent, especially on tablet and laptop/desktop. Runtime evidence must confirm the relevant Product Spec acceptance widths before product acceptance.
@@ -30,9 +30,10 @@ Do not record product milestone/status, product priorities, or product decision 
 ## Repository Map
 - `app/` — Next.js App Router presentation and interaction.
 - `lib/engine/` — pure calculation logic for every scenario (SELL now; BUY/MOVE later). Nothing here may import React, DOM, browser storage, or Supabase.
-- `lib/` — non-engine shared modules that stay outside `app/`: consultation UI-state helpers and presentation copy.
-- `e2e/` — Playwright browser checks for the Feature 01 consultation UI.
-- `plans/features/01-sell-net-proceeds.md` — active bounded Technical Plan for Feature 01.
+- `lib/` — non-engine shared modules that stay outside `app/`: consultation UI-state helpers, presentation copy, and Feature 02 result-narration / device-local "Prepared by" helpers.
+- `e2e/` — Playwright browser checks for the Feature 01 consultation UI and Feature 02 Estimate Summary artifact.
+- `plans/features/01-sell-net-proceeds.md` — Feature 01 Technical Plan.
+- `plans/features/02-tier2-export-share.md` — active bounded Technical Plan for Feature 02.
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
 - `package.json` — installed dependencies and executable scripts.
 - `CLAUDE.md` — redirect to this file.
