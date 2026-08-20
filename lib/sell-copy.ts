@@ -26,4 +26,4 @@ export const TIER2_REFERRAL =
 export const PREPARED_BY_STORAGE_KEY = "agentcal.preparedBy";
 export const PREPARED_BY_PLACEHOLDER = "Agent or brokerage name";
 export const EMAIL_PASTE_PROMPT =
-  "Copied. Paste this into a new email in your own mail client. AgentCal does not collect a client email address.";
+  "Copied. Paste this into a new email in your own mail client.";

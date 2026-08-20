@@ -127,7 +127,13 @@ export function ViewCalculationDialog({
   );
 }
 
-export function BreakdownBody({ result }: { result: SellerNetProceedsResult }) {
+export function BreakdownBody({
+  result,
+  hideDisclosure = false,
+}: {
+  result: SellerNetProceedsResult;
+  hideDisclosure?: boolean;
+}) {
   const commissionDetail =
     result.commissionMode === "bc-preset"
       ? `${COMMISSION_PRESET_LABEL} · ${COMMISSION_PRESET_FORMULA}`
@@ -196,8 +202,12 @@ export function BreakdownBody({ result }: { result: SellerNetProceedsResult }) {
         difference from these exact cents is display rounding only.
       </p>
       <p className="caption">Rule version {result.ruleVersion}</p>
-      <p className="caption">{TIER1_DISCLAIMER}</p>
-      <p className="caption">{TAX_EXCLUSION_NOTE}</p>
+      {hideDisclosure ? null : (
+        <>
+          <p className="caption">{TIER1_DISCLAIMER}</p>
+          <p className="caption">{TAX_EXCLUSION_NOTE}</p>
+        </>
+      )}
     </div>
   );
 }

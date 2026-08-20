@@ -54,8 +54,8 @@ function optionalPlanningSentence(result: SellerNetProceedsResult): string {
   return ` After optional planning costs of ${formatWholeCad(result.optionalPlanningTotalCents)}, the estimate is ${formatWholeCad(result.estimatedAfterPlanningCents)}.`;
 }
 
-function disclosureSentences(): string {
-  return `${TIER1_DISCLAIMER} ${TAX_EXCLUSION_NOTE}`;
+function closingDisclosurePair(): string {
+  return `${TIER1_DISCLAIMER}\n${TAX_EXCLUSION_NOTE}`;
 }
 
 function standardBaseSentence(result: SellerNetProceedsResult): string {
@@ -73,13 +73,13 @@ export function composeResultNarration(
   result: SellerNetProceedsResult,
 ): string {
   if (result.estimatedNetProceedsCents < 0) {
-    return `${negativeBaseSentence(result)} ${disclosureSentences()}`;
+    return negativeBaseSentence(result);
   }
 
   const warningPrefix = hasMortgagePayoutWarning(result)
     ? `${MORTGAGE_WARNING} `
     : "";
-  return `${warningPrefix}${standardBaseSentence(result)}${optionalPlanningSentence(result)} ${disclosureSentences()}`;
+  return `${warningPrefix}${standardBaseSentence(result)}${optionalPlanningSentence(result)}`;
 }
 
 export function formatEstimateTimestamp(date: Date): string {
@@ -107,7 +107,6 @@ export function composeTier2Disclosure(input: {
     composePreparedByLine(input.preparedBy),
     `Date: ${formatEstimateTimestamp(input.generatedAt)}`,
     `${TIER2_ASSUMPTIONS_SUMMARY}${planningNote} ${TIER2_REFERRAL}`,
-    TIER1_DISCLAIMER,
   ].join("\n");
 }
 
@@ -116,7 +115,7 @@ export function composeClipboardHandoff(input: {
   preparedBy: string;
   generatedAt: Date;
 }): string {
-  return `${composeResultNarration(input.result)}\n\n${composeTier2Disclosure(input)}`;
+  return `${composeResultNarration(input.result)}\n\n${composeTier2Disclosure(input)}\n\n${closingDisclosurePair()}`;
 }
 
 export function composeMailtoSummary(input: {
@@ -139,13 +138,13 @@ export function composeMailtoSummary(input: {
   }
   lines.push(
     "",
-    TIER1_DISCLAIMER,
-    TAX_EXCLUSION_NOTE,
-    "",
     composePreparedByLine(input.preparedBy),
     `Generated: ${formatEstimateTimestamp(input.generatedAt)}`,
     `Rule version ${input.result.ruleVersion} · ${input.result.jurisdiction}`,
     TIER2_REFERRAL,
+    "",
+    TIER1_DISCLAIMER,
+    TAX_EXCLUSION_NOTE,
   );
   return lines.join("\n");
 }

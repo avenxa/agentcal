@@ -244,7 +244,6 @@ export function EstimateSummary({ result, onClose }: EstimateSummaryProps) {
         </div>
         <p className="caption estimate-email-prompt">
           Paste the copied text into a new email in your own mail client.
-          AgentCal never asks for a client email address.
         </p>
         {copyStatus ? (
           <p className="body-text" role="status" data-testid="estimate-copy-status">
@@ -337,7 +336,7 @@ export function EstimateSummary({ result, onClose }: EstimateSummaryProps) {
         </dl>
 
         <h3 className="estimate-subsection-title">Exact-cent breakdown</h3>
-        <BreakdownBody result={result} />
+        <BreakdownBody result={result} hideDisclosure />
 
         <section
           className="estimate-disclosure"

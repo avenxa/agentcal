@@ -55,6 +55,31 @@ function makeInputs(
 
 const generatedAt = new Date("2026-08-19T15:30:00-07:00");
 
+function countOccurrences(haystack: string, needle: string): number {
+  if (needle.length === 0) {
+    return 0;
+  }
+  let count = 0;
+  let from = 0;
+  while (true) {
+    const index = haystack.indexOf(needle, from);
+    if (index === -1) {
+      return count;
+    }
+    count += 1;
+    from = index + needle.length;
+  }
+}
+
+function assertDisclaimerPairOnceAtEnd(text: string) {
+  assert.equal(countOccurrences(text, TIER1_DISCLAIMER), 1);
+  assert.equal(countOccurrences(text, TAX_EXCLUSION_NOTE), 1);
+  assert.ok(
+    text.endsWith(`${TIER1_DISCLAIMER}\n${TAX_EXCLUSION_NOTE}`),
+    "disclaimer pair must sit at the very end",
+  );
+}
+
 test("standard variant matches the §4a template with reference-scenario substitution", () => {
   const result = calculateSellerNetProceeds(makeInputs());
   const narration = composeResultNarration(result);
@@ -62,7 +87,7 @@ test("standard variant matches the §4a template with reference-scenario substit
   assert.equal(selectNarrationVariant(result), "standard");
   assert.equal(
     narration,
-    `Based on an estimated selling price of $850,000, after a $420,000 mortgage payout and estimated selling costs of $30,238 — including a $25,750 commission using the ${COMMISSION_PRESET_LABEL} (${COMMISSION_PRESET_FORMULA}, plus GST; ${COMMISSION_NEGOTIABLE_NOTICE}) — the estimated net proceeds are $399,763. ${TIER1_DISCLAIMER} ${TAX_EXCLUSION_NOTE}`,
+    `Based on an estimated selling price of $850,000, after a $420,000 mortgage payout and estimated selling costs of $30,238 — including a $25,750 commission using the ${COMMISSION_PRESET_LABEL} (${COMMISSION_PRESET_FORMULA}, plus GST; ${COMMISSION_NEGOTIABLE_NOTICE}) — the estimated net proceeds are $399,763.`,
   );
   assert.equal(
     formatWholeCad(result.estimatedNetProceedsCents),
@@ -74,9 +99,11 @@ test("standard variant matches the §4a template with reference-scenario substit
   );
   assert.doesNotMatch(narration, /Legal\/notary/);
   assert.doesNotMatch(narration, /discharge fee/);
+  assert.equal(countOccurrences(narration, TIER1_DISCLAIMER), 0);
+  assert.equal(countOccurrences(narration, TAX_EXCLUSION_NOTE), 0);
 });
 
-test("optional-planning variant inserts the planning sentence before the two disclosure sentences", () => {
+test("optional-planning variant inserts the planning sentence after the net-proceeds sentence", () => {
   const result = calculateSellerNetProceeds(
     makeInputs({
       optionalPlanningCosts: {
@@ -100,14 +127,11 @@ test("optional-planning variant inserts the planning sentence before the two dis
   );
   assert.equal(
     narration,
-    `Based on an estimated selling price of $850,000, after a $420,000 mortgage payout and estimated selling costs of $30,238 — including a $25,750 commission using the ${COMMISSION_PRESET_LABEL} (${COMMISSION_PRESET_FORMULA}, plus GST; ${COMMISSION_NEGOTIABLE_NOTICE}) — the estimated net proceeds are $399,763. After optional planning costs of $5,000, the estimate is $394,763. ${TIER1_DISCLAIMER} ${TAX_EXCLUSION_NOTE}`,
+    `Based on an estimated selling price of $850,000, after a $420,000 mortgage payout and estimated selling costs of $30,238 — including a $25,750 commission using the ${COMMISSION_PRESET_LABEL} (${COMMISSION_PRESET_FORMULA}, plus GST; ${COMMISSION_NEGOTIABLE_NOTICE}) — the estimated net proceeds are $399,763. After optional planning costs of $5,000, the estimate is $394,763.`,
   );
-  assert.match(
-    narration,
-    new RegExp(
-      `\\$394,763\\. ${TIER1_DISCLAIMER.replaceAll(".", "\\.")}`,
-    ),
-  );
+  assert.match(narration, /the estimate is \$394,763\.$/);
+  assert.equal(countOccurrences(narration, TIER1_DISCLAIMER), 0);
+  assert.equal(countOccurrences(narration, TAX_EXCLUSION_NOTE), 0);
 });
 
 test("mortgage-payout warning prepends the locked warning to the standard template", () => {
@@ -231,7 +255,7 @@ test("zero optional planning does not insert the planning sentence", () => {
   assert.doesNotMatch(narration, /After optional planning costs/);
 });
 
-test("clipboard handoff is narration followed by the Tier 2 block", () => {
+test("clipboard handoff is narration, Tier 2, then a single closing disclaimer pair", () => {
   const result = calculateSellerNetProceeds(makeInputs());
   const handoff = composeClipboardHandoff({
     result,
@@ -245,7 +269,13 @@ test("clipboard handoff is narration followed by the Tier 2 block", () => {
     generatedAt,
   });
 
-  assert.equal(handoff, `${narration}\n\n${tier2}`);
+  assert.equal(
+    handoff,
+    `${narration}\n\n${tier2}\n\n${TIER1_DISCLAIMER}\n${TAX_EXCLUSION_NOTE}`,
+  );
+  assert.equal(countOccurrences(tier2, TIER1_DISCLAIMER), 0);
+  assert.equal(countOccurrences(tier2, TAX_EXCLUSION_NOTE), 0);
+  assertDisclaimerPairOnceAtEnd(handoff);
   assert.match(handoff, /Prepared by: Jordan Lee, Example Realty/);
   assert.match(handoff, new RegExp(TIER2_REFERRAL));
   assert.match(handoff, /mortgage broker or lender/);
@@ -254,6 +284,21 @@ test("clipboard handoff is narration followed by the Tier 2 block", () => {
   assert.doesNotMatch(handoff, /third-party data/);
   assert.doesNotMatch(handoff, /referral fee/i);
   assert.doesNotMatch(handoff, /finder's fee/i);
+});
+
+test("mailto summary carries the disclaimer pair once at the end", () => {
+  const result = calculateSellerNetProceeds(makeInputs());
+  const summary = composeMailtoSummary({
+    result,
+    preparedBy: "Jordan Lee, Example Realty",
+    generatedAt,
+  });
+  const referralIndex = summary.indexOf(TIER2_REFERRAL);
+  const disclaimerIndex = summary.indexOf(TIER1_DISCLAIMER);
+
+  assertDisclaimerPairOnceAtEnd(summary);
+  assert.ok(referralIndex >= 0);
+  assert.ok(disclaimerIndex > referralIndex);
 });
 
 test("mailto href has no recipient and a shorter summary body", () => {
@@ -275,6 +320,7 @@ test("mailto href has no recipient and a shorter summary body", () => {
   assert.match(href, /body=/);
   assert.match(summary, /Estimated net proceeds: \$399,763 \(\$399,762\.50 exact\)/);
   assert.match(summary, new RegExp(TIER2_REFERRAL));
+  assertDisclaimerPairOnceAtEnd(summary);
   assert.ok(summary.length < composeClipboardHandoff({
     result,
     preparedBy: "Jordan Lee, Example Realty",

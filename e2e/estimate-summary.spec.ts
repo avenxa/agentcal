@@ -8,6 +8,21 @@ const TAX_NOTE =
 const REFERRAL =
   "Confirm mortgage figures with a mortgage broker or lender, legal and closing amounts with a lawyer or notary, and tax treatment with an accountant.";
 
+function countOccurrences(haystack: string, needle: string): number {
+  return needle.length === 0 ? 0 : haystack.split(needle).length - 1;
+}
+
+function expectOnceEach(text: string) {
+  expect(countOccurrences(text, TIER1)).toBe(1);
+  expect(countOccurrences(text, TAX_NOTE)).toBe(1);
+}
+
+function expectDisclaimerPairOnceAtEnd(text: string) {
+  const normalized = text.replaceAll("\r\n", "\n").trimEnd();
+  expectOnceEach(normalized);
+  expect(normalized.endsWith(`${TIER1}\n${TAX_NOTE}`)).toBe(true);
+}
+
 async function fillSellingPrice(page: Page, amount: string) {
   const sellingPrice = page.locator("#sellingPrice");
   await sellingPrice.focus();
@@ -97,8 +112,10 @@ test.describe("Estimate summary export", () => {
     await expect(page.getByTestId("estimate-narration")).toContainText(
       "After optional planning costs of $5,000, the estimate is $394,763",
     );
-    await expect(page.getByTestId("estimate-narration")).toContainText(TIER1);
-    await expect(page.getByTestId("estimate-narration")).toContainText(TAX_NOTE);
+    await expect(page.getByTestId("estimate-narration")).not.toContainText(TIER1);
+    await expect(page.getByTestId("estimate-narration")).not.toContainText(
+      TAX_NOTE,
+    );
     await expect(page.getByTestId("estimate-net-whole")).toHaveText("$399,763");
     await expect(page.getByTestId("estimate-net-exact")).toHaveText(
       "$399,762.50 exact",
@@ -147,8 +164,19 @@ test.describe("Estimate summary export", () => {
     );
     await expect(page.getByTestId("estimate-tier2")).toContainText(REFERRAL);
     await expect(page.getByTestId("estimate-tier2")).toContainText(TIER1);
+    await expect(page.getByTestId("estimate-tier2")).toContainText(TAX_NOTE);
     await expect(page.getByTestId("estimate-tier2")).toContainText(
       "lawyer or notary",
+    );
+    const artifactText = await page.getByTestId("estimate-artifact").innerText();
+    expectOnceEach(artifactText);
+    const emailText = await page.getByTestId("estimate-email-content").inputValue();
+    expectDisclaimerPairOnceAtEnd(emailText);
+    await expect(page.locator(".estimate-email-prompt")).toHaveText(
+      "Paste the copied text into a new email in your own mail client.",
+    );
+    await expect(page.locator(".estimate-email-prompt")).not.toContainText(
+      "client email",
     );
     await expect(page.getByRole("heading", { name: "View calculation" })).toHaveCount(
       0,
@@ -241,6 +269,9 @@ test.describe("Estimate summary export", () => {
     await expect(page.getByTestId("estimate-artifact")).toBeVisible();
     await expect(page.getByTestId("estimate-narration")).toBeVisible();
     await expect(page.getByTestId("topic-rail")).toBeHidden();
+    const printedArtifact = await page.getByTestId("estimate-artifact").innerText();
+    expectOnceEach(printedArtifact);
+    await expect(page.getByTestId("estimate-narration")).not.toContainText(TIER1);
 
     await page.screenshot({
       path: "test-results/estimate-summary-print-preview-1280.png",
@@ -276,8 +307,8 @@ test.describe("Estimate summary export", () => {
     await editor.fill("Edited email body for the client.");
     await page.getByTestId("estimate-copy").click();
 
-    await expect(page.getByTestId("estimate-copy-status")).toContainText(
-      "Paste this into a new email",
+    await expect(page.getByTestId("estimate-copy-status")).toHaveText(
+      "Copied. Paste this into a new email in your own mail client.",
     );
     const copied = await page.evaluate(
       () => (window as unknown as { __copiedText?: string }).__copiedText,
@@ -290,9 +321,10 @@ test.describe("Estimate summary export", () => {
     expect(href).not.toMatch(/mailto:[^?]+@/);
     expect(href).toContain("subject=");
     expect(href).toContain("body=");
-    expect(decodeURIComponent(href ?? "")).toContain(
-      "Estimated net proceeds:",
-    );
+    const decodedMailto = decodeURIComponent(href ?? "");
+    expect(decodedMailto).toContain("Estimated net proceeds:");
+    const mailtoBody = decodedMailto.split("body=")[1] ?? "";
+    expectDisclaimerPairOnceAtEnd(mailtoBody);
     await expect(page.locator('input[type="email"]')).toHaveCount(0);
   });
 
