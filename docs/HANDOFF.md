@@ -10,6 +10,15 @@
 
 This file is the current durable repository handoff. Older text describing Feature 01 as uncommitted/unpushed is superseded by actual Git history.
 
+## Product Truth ↔ Repo Sync
+
+- Product Truth was re-confirmed on **2026-09-11** in the current AgentCal Hub.
+- Matching repository documentation is carried by PR #4 on branch `docs/product-split-2026-09-11`.
+- The synchronized boundary is: **AgentCal = Calculate; AgentConsult = Clarify & Decide.**
+- AgentCal keeps authoritative deterministic SELL / BUY / MOVE calculation ownership; no AgentCal engine migration into AgentConsult is required.
+- Product Truth remains authoritative for scope and product responsibility. GitHub remains authoritative for implemented repository state.
+- Until PR #4 is approved and merged, `main` remains the prior execution baseline; this branch is the pending documentation alignment.
+
 ## Completed
 
 - Feature 01 SELL implementation was merged to `main` through PR #3 on 2026-08-19.
