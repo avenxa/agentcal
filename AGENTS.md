@@ -1,5 +1,31 @@
 # AGENTS.md — AgentCal
 
+## Start Here — ADS Takeover Route
+
+A fresh human or AI taking over AgentCal must orient in this order before implementation:
+
+1. Read this file first.
+2. Read the **Avenxa Agentic Development System (ADS)**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+3. Read the sole canonical **Avenxa Command Protocol v1**: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
+4. Use the **Command Protocol Quick Reference** only as a fast operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
+5. Read the current **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
+6. Read the active **AgentCal / AgentConsult product-split decision**: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
+7. Read the current durable technical handoff: `docs/HANDOFF.md`.
+8. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
+
+## Shared Command Protocol
+
+Avenxa Command Protocol v1 is the canonical WT → ChatGPT → Builder control language for AgentCal development work. The sole semantic authority is https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490. Learning Centre explanations, Quick References, copied text, and repo-local wording are subordinate for command meaning. Each canonical Command is an Operating Contract, not casual wording.
+
+- Apply known canonical Commands without requiring WT to restate their meaning.
+- Commands never override approved Scope, Acceptance Criteria, Verification requirements, financial-methodology controls, Security / Privacy, Production protection, or Human Gates.
+- Builder execution must remain inside the approved bounded task.
+- Read `docs/HANDOFF.md` and use its `Protocol State / Command` as the active lifecycle state when present.
+- If canonical Command meaning conflicts with repo-local wording, the sole canonical Notion Command Protocol governs Command meaning; repository reality governs technical execution context. Surface material conflicts rather than guessing.
+- Repository shell/package commands are execution mechanics, not Avenxa Command Protocol commands.
+
+The canonical command set includes: `Define Scope`, `Prepare Handoff`, `Execute Task`, `Code Complete`, `Review Work`, `Check Diff`, `Verify Work`, `Fix Handoff`, `Recheck Work`, `Check Blocker`, `Commit Ready`, `Push Ready`, `Preview Ready`, `Review Preview`, `Release Ready`, `Human Gate`, `Update Truth`, `Resume Work`, `Next Action`, and `Hold Work`.
+
 ## Mission
 
 AgentCal is the dedicated **Calculate** platform for BC real-estate advisors. It owns deterministic financial calculation for **SELL → BUY → MOVE** scenarios and presents transparent assumptions, results, breakdowns, and calculation-focused comparison. AI may explain trusted results; it must not create or alter authoritative financial amounts.
@@ -11,6 +37,7 @@ AgentCal is the dedicated **Calculate** platform for BC real-estate advisors. It
 - Product Truth: AgentCal Hub — https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 - Cross-product product-split decision — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
 - Development process authority: Avenxa Agentic Development System — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+- Command semantics authority: Avenxa Command Protocol v1 — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository — code, configuration, technical decisions, plans, tests, verification commands, Git history, and `docs/HANDOFF.md`.
 - Runtime Evidence: preview/deployed behavior when a runtime exists for the bounded task.
 
@@ -85,7 +112,7 @@ Pure calculation logic for every scenario lives under `lib/engine/`, never direc
 - Nothing under `lib/engine/` may import React, DOM, browser storage, Supabase, or AgentConsult code.
 - UI imports from `lib/engine/`; never reverse that dependency.
 
-## Canonical Commands
+## Repository Commands
 
 Install:   `pnpm install --frozen-lockfile`
 Dev:       `pnpm dev`
@@ -132,7 +159,7 @@ A bounded task is complete only when intended scope and acceptance criteria are 
 
 ## Handoff
 
-Before stopping after meaningful work, update `docs/HANDOFF.md` with **Completed / Changed / Verified / Open / Next**. Keep it current rather than appending chat transcripts or maintaining competing status documents.
+Before stopping after meaningful work, update `docs/HANDOFF.md` with **Protocol State / Command** near the top plus **Completed / Changed / Verified / Open / Next**. Keep it current rather than appending chat transcripts or maintaining competing status documents.
 
 ## Current Next Action
 
