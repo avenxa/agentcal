@@ -5,7 +5,7 @@
 A fresh human or AI taking over AgentCal must orient in this order before implementation:
 
 1. Read this file first.
-2. Read the **Avenxa Agentic Development System (ADS)**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+2. Read the **Avenxa Agentic Development System (ADS) v1.1**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 3. Read the sole canonical **Avenxa Command Protocol v1**: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 4. Use the **Command Protocol Quick Reference** only as a fast operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
 5. Read the current **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
@@ -15,9 +15,9 @@ A fresh human or AI taking over AgentCal must orient in this order before implem
 
 ## Shared Command Protocol
 
-Avenxa Command Protocol v1 is the canonical WT → ChatGPT → Builder control language for AgentCal development work. The sole semantic authority is https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490. Learning Centre explanations, Quick References, copied text, and repo-local wording are subordinate for command meaning. Each canonical Command is an Operating Contract, not casual wording.
+Avenxa Command Protocol v1 is the canonical Product Owner → ChatGPT / reasoning AI → Builder control language for AgentCal development work. The sole semantic authority is https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490. Learning Centre explanations, Quick References, copied text, and repo-local wording are subordinate for command meaning. Each canonical Command is an Operating Contract, not casual wording.
 
-- Apply known canonical Commands without requiring WT to restate their meaning.
+- Apply known canonical Commands without requiring the Product Owner to restate their meaning.
 - Commands never override approved Scope, Acceptance Criteria, Verification requirements, financial-methodology controls, Security / Privacy, Production protection, or Human Gates.
 - Builder execution must remain inside the approved bounded task.
 - Read `docs/HANDOFF.md` and use its `Protocol State / Command` as the active lifecycle state when present.
@@ -42,6 +42,27 @@ AgentCal is the dedicated **Calculate** platform for BC real-estate advisors. It
 - Runtime Evidence: preview/deployed behavior when a runtime exists for the bounded task.
 
 If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict before changing product behavior. Repository history may prove what is implemented; it does not silently redefine Product Truth.
+
+## ADS v1.1 Role Model — Mandatory Default
+
+The default operating model is role-separated:
+
+- **Product Owner / Human:** owns intent, priorities, consequential product decisions, approval boundaries, explicit role-combination exceptions, sequencing gates, and final product acceptance.
+- **ChatGPT / reasoning AI:** acts as **AI Product Manager + Planner + Architect + Reviewer**. It proactively defines bounded work, prepares Builder handoffs, sequences the development chain, identifies conflicts/risks, and reviews the actual implementation evidence.
+- **Claude Code / capable coding agent:** acts as **Builder / Coding Agent**. It implements the bounded task, runs verification, diagnoses failures, self-corrects, and maintains durable repository continuity.
+- **Independent Reviewer:** inspects objective, actual diff/change set, verification evidence, and runtime evidence before consequential acceptance.
+
+### Hard boundary
+
+The AI Product Manager / Planner / Architect / Reviewer does **not** perform the same task's implementation build by default.
+
+A same-AI Planner/Reviewer + Builder combination is permitted only when the **Product Owner explicitly authorizes that exception for the specific task**. Provider capability or repository access alone is not authorization.
+
+If such an exception is authorized, preserve the durable Technical Plan, verification evidence, and use a fresh independent reviewer where practical.
+
+### Proactive leadership rule
+
+The AI Product Manager must not wait passively for the Product Owner to project-manage routine work. Within approved Product Truth and Human Gates it should identify the next bounded action, prepare the Builder-ready handoff, route/retrieve the execution result, inspect evidence, and recommend the next action. Escalate only genuine consequential decisions, unresolved material uncertainty, or capability/authority dependencies.
 
 ## Current Execution — 2026-09-11
 
@@ -87,6 +108,7 @@ Do not move AgentCal's engine into AgentConsult and do not pull AgentConsult's c
 - Do not add consultation-question orchestration, Advisor-private notes, recommendation capture, CRM, or transaction-management scope merely to make AgentCal resemble AgentConsult.
 - Preserve the approved responsive interaction intent for implemented calculator experiences.
 - Existing Feature 01 privacy/data-handling constraints remain binding unless current Product Truth explicitly changes them.
+- Preserve ADS v1.1 Planner/Reviewer ↔ Builder separation unless the Product Owner explicitly authorizes a task-specific exception.
 
 ## Repository Map
 
@@ -127,23 +149,28 @@ Run additional checks required by the active Technical Plan. Do not claim an una
 
 ## Execution Rules
 
-1. Work on one bounded objective at a time and keep unrelated edits out.
-2. Inspect actual repository state before assuming dependencies, components, tests, schema, prior features, or runtime behavior exist.
-3. Confirm current Product Truth, active sequencing, acceptance, and applicable Human gates before meaningful feature implementation.
-4. Do not start BUY/MOVE implementation without a current bounded Technical Plan.
-5. Build → Verify → Diagnose → Fix → Re-Verify before reporting implementation completion.
-6. A failing or unavailable required check remains unresolved until fixed or explicitly recorded/escalated.
-7. Update tests and durable technical documentation when implementation changes their truth.
-8. Consequential work requires independent review of actual diff and evidence; the Builder is not the sole reviewer.
-9. Never store secrets or credentials in committed files or documentation.
-10. Keep AgentCal calculation responsibilities separate from AgentConsult consultation responsibilities.
-11. When one AI/tool is the active coding agent, other orchestrator/reviewer tools must not concurrently edit the same working tree.
+1. **Invoke ADS automatically.** The Product Owner should not need to say “use ADS.”
+2. **Apply ADS v1.1 role separation.** ChatGPT/reasoning AI owns product management, planning, architecture, sequencing, Builder handoff, and review; the Builder/Coding Agent owns implementation, debugging, verification, and self-correction for the same task.
+3. Work on one bounded objective at a time and keep unrelated edits out.
+4. Inspect actual repository state before assuming dependencies, components, tests, schema, prior features, or runtime behavior exist.
+5. The AI Product Manager confirms current Product Truth, active sequencing, acceptance, expected evidence, and applicable Human Gates before meaningful feature implementation.
+6. Do not start BUY/MOVE implementation without a current bounded Technical Plan and a Builder-ready handoff.
+7. The Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before reporting `Code Complete`.
+8. A failing or unavailable required check remains unresolved until fixed or explicitly recorded/escalated.
+9. Update tests and durable technical documentation when implementation changes their truth.
+10. After `Code Complete`, the Reviewer inspects the actual diff/change set and evidence; the Builder is not the sole reviewer of consequential work.
+11. If the Product Owner explicitly authorized a same-AI Planner + Builder exception, use a fresh independent reviewer where practical.
+12. Never store secrets or credentials in committed files or documentation.
+13. Keep AgentCal calculation responsibilities separate from AgentConsult consultation responsibilities.
+14. When one coding agent is the active Builder, no other actor should concurrently edit the same working tree for that bounded cycle.
+15. After each bounded action, the AI Product Manager identifies and prepares or executes the next authorized workflow action. Do not start unrelated backlog work.
 
 ## Human Gates
 
 Human/Product Owner approval is required for:
 
 - product scope, priority, acceptance, or milestone sequencing changes — including resolving Feature 02 versus BUY sequencing;
+- explicitly combining Planner/Reviewer and Builder roles for the same task;
 - changes to authoritative formulas, rounding, disclosures, privacy/data handling, or jurisdiction/locale boundaries;
 - changes to the AgentCal / AgentConsult responsibility boundary;
 - consequential architecture, security, privacy, compliance, or data-model decisions;
@@ -151,19 +178,53 @@ Human/Product Owner approval is required for:
 - production data mutation, destructive operations, or production schema migration;
 - final product acceptance and any merge/release gate required by ADS/project policy.
 
-Routine reversible implementation mechanics inside an approved bounded task do not require repeated approval.
+Routine reversible Builder mechanics inside an approved bounded task do not require repeated approval.
 
 ## Definition of Done
 
-A bounded task is complete only when intended scope and acceptance criteria are satisfied, required verification passes, failures are self-corrected, independent review/runtime evidence exists where required, applicable Human gates are satisfied, and `docs/HANDOFF.md` is current.
+A bounded task is complete only when:
+- intended scope and acceptance criteria are satisfied;
+- required verification passes;
+- Builder self-correction is complete;
+- actual diff/change set has been reviewed;
+- ADS v1.1 Planner/Reviewer ↔ Builder separation was preserved, or a same-AI exception was explicitly authorized by the Product Owner;
+- independent review/runtime evidence exists where required;
+- applicable Human Gates and Product Owner acceptance are satisfied;
+- `docs/HANDOFF.md` is current.
 
 ## Handoff
 
-Before stopping after meaningful work, update `docs/HANDOFF.md` with **Protocol State / Command** near the top plus **Completed / Changed / Verified / Open / Next**. Keep it current rather than appending chat transcripts or maintaining competing status documents.
+Before stopping after meaningful work, update `docs/HANDOFF.md` with:
+
+**Protocol State / Command**
+- current canonical Command
+
+**Objective**
+- current bounded outcome
+
+**Completed**
+- what is complete
+
+**Changed**
+- important implementation/configuration/behaviour changes
+
+**Verified**
+- exact commands/checks and actual results
+
+**Open**
+- known defect, blocker, verification gap, or deferred item
+
+**Next**
+- one bounded next technical action
+
+**Authority / Gate**
+- what the receiver may continue autonomously and what requires Product Owner approval
+
+Keep the handoff current rather than appending chat transcripts or maintaining competing status documents.
 
 ## Current Next Action
 
-After this documentation realignment is accepted, stop at the Product Truth sequencing gate: decide whether the outstanding Feature 02 export/share commitment is completed before BUY or explicitly reprioritized. Only then create the next bounded Technical Plan and hand it to the Builder.
+After this documentation realignment is accepted, stop at the Product Truth sequencing gate: decide whether the outstanding Feature 02 export/share commitment is completed before BUY or explicitly reprioritized. The AI Product Manager should prepare the decision package and recommendation; only after the Product Owner resolves the consequential sequencing gate should the AI Product Manager create the next bounded Technical Plan and hand it to the Builder.
 
 ## Tool-Specific Instructions
 
