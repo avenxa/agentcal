@@ -61,12 +61,15 @@ A future agent must reconstruct state in this order:
 
 ## Verified
 
-Repository inspection on 2026-09-12 (documentation-only closeout) confirmed:
+Repository inspection on 2026-09-12 (documentation-only closeout, including this correction pass) confirmed:
 
-- `main` and this branch both resolve to `1743207ad6705dc97d01b71affa342e2139d92d7`.
+- `main` resolves to `1743207ad6705dc97d01b71affa342e2139d92d7`.
+- The closeout branch `claude/agentcal-stage-closeout-docs-jjacnw` is based directly on that `main` commit (`git merge-base origin/main HEAD` = `1743207ad6705dc97d01b71affa342e2139d92d7`) and its tip is a distinct, later commit containing only the documentation closeout changes — its exact SHA is the current `git rev-parse HEAD` on that branch (see the branch's commit history on GitHub; it is intentionally not restated as a literal string here because a commit cannot correctly quote its own final hash).
 - No open PRs exist.
 - `feature/02-tier2-export-share` exists on the remote at tip `25ffeea2e52b652b1345dc6c5978a328349c9d32` and was neither merged nor deleted.
-- `git status` reported a clean working tree aside from this documentation edit; no `app/`, `lib/`, `e2e/`, test, or package files were changed.
+- `git status --porcelain` reported only `AGENTS.md` and `docs/HANDOFF.md` as modified; the working tree was otherwise clean.
+- `git diff --check` reported no whitespace errors (exit code 0).
+- `git diff --name-only origin/main HEAD` listed exactly two files: `AGENTS.md` and `docs/HANDOFF.md`. No `app/`, `lib/`, `e2e/`, test, or package files were changed.
 
 No application test rerun was performed for this documentation-only closeout; no product code changed, so no new runtime evidence is claimed.
 

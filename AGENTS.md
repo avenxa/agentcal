@@ -64,7 +64,7 @@ If such an exception is authorized, preserve the durable Technical Plan, verific
 
 The AI Product Manager must not wait passively for the Product Owner to project-manage routine work. Within approved Product Truth and Human Gates it should identify the next bounded action, prepare the Builder-ready handoff, route/retrieve the execution result, inspect evidence, and recommend the next action. Escalate only genuine consequential decisions, unresolved material uncertainty, or capability/authority dependencies.
 
-## Current Execution — 2026-09-12 (Paused / On Hold)
+## Current Execution — Paused / On Hold
 
 - **AgentCal is currently paused / on hold.** Lifecycle = Paused per current AgentCal Hub Product Truth. Do not resume feature implementation without a Product Owner Resume Work decision.
 - SELL Feature 01 is implemented and merged to `main`; merge commit `eaf0cb7503980e217f8078e6228cd57139be69e4` is current repository history.
