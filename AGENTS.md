@@ -64,17 +64,18 @@ If such an exception is authorized, preserve the durable Technical Plan, verific
 
 The AI Product Manager must not wait passively for the Product Owner to project-manage routine work. Within approved Product Truth and Human Gates it should identify the next bounded action, prepare the Builder-ready handoff, route/retrieve the execution result, inspect evidence, and recommend the next action. Escalate only genuine consequential decisions, unresolved material uncertainty, or capability/authority dependencies.
 
-## Current Execution — 2026-09-11
+## Current Execution — Paused / On Hold
 
+- **AgentCal is currently paused / on hold.** Lifecycle = Paused per current AgentCal Hub Product Truth. Do not resume feature implementation without a Product Owner Resume Work decision.
 - SELL Feature 01 is implemented and merged to `main`; merge commit `eaf0cb7503980e217f8078e6228cd57139be69e4` is current repository history.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
 - `plans/features/01-sell-net-proceeds.md` is a completed implementation reference, not the active feature plan.
-- The former AgentCal Product Truth included a still-open Feature 02 export/share artifact dependency. The 2026-09-11 product split does **not** silently cancel that commitment.
-- Before feature implementation resumes, Product Truth must explicitly resolve sequencing between that existing Feature 02 commitment and the next BUY calculation-engine milestone.
-- No BUY or MOVE engine module is currently present on `main`; do not claim those scenarios are implemented.
+- PR #4 (documentation alignment) is already merged; `main` is at `1743207ad6705dc97d01b71affa342e2139d92d7`. There are currently no open PRs.
+- A preserved Feature 02 implementation candidate exists on remote branch `feature/02-tier2-export-share` at tip `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It has not been reviewed, accepted, or merged, and must not be treated as such. Do not delete or merge that branch.
+- No BUY or MOVE engine module is currently present on `main`; do not claim those scenarios are implemented. No BUY/MOVE work is authorized while paused.
 - Technical handoff: `docs/HANDOFF.md`.
 
-There is currently **no authorized BUY feature implementation plan**. Do not start `lib/engine/buy.ts` merely because the architecture anticipates it; first resolve the Product Truth sequencing gate and create a bounded Technical Plan.
+**Current Next Action while paused = no implementation.** On Resume Work, follow the reconstruction sequence documented in current Product Truth and `docs/HANDOFF.md` before creating or refreshing any bounded Technical Plan. Do not start `lib/engine/buy.ts` merely because the architecture anticipates it; first resolve the Product Truth sequencing gate.
 
 ## Product Boundary
 
@@ -224,7 +225,7 @@ Keep the handoff current rather than appending chat transcripts or maintaining c
 
 ## Current Next Action
 
-After this documentation realignment is accepted, stop at the Product Truth sequencing gate: decide whether the outstanding Feature 02 export/share commitment is completed before BUY or explicitly reprioritized. The AI Product Manager should prepare the decision package and recommendation; only after the Product Owner resolves the consequential sequencing gate should the AI Product Manager create the next bounded Technical Plan and hand it to the Builder.
+AgentCal is paused. There is no active implementation next action. The first future action is **Resume Work**, per the reconstruction sequence in `docs/HANDOFF.md`, which reopens the Product Owner sequencing decision: finish/review the preserved Feature 02 candidate (`feature/02-tier2-export-share`) versus formally defer it and authorize BUY. Only after that decision should a bounded Technical Plan be created and handed to the Builder.
 
 ## Tool-Specific Instructions
 
