@@ -10,8 +10,9 @@ A fresh human or AI taking over AgentCal must orient in this order before implem
 4. Use the **Command Protocol Quick Reference** only as a fast operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
 5. Read the current **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 6. Read the active **AgentCal / AgentConsult product-split decision**: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-7. Read the current durable technical handoff: `docs/HANDOFF.md`.
-8. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
+7. Read the approved **AgentCal UX Rebaseline — 10 Priority Capabilities & Reactivation Plan**: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+8. Read the current durable technical handoff: `docs/HANDOFF.md`.
+9. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
 
 ## Shared Command Protocol
 
@@ -36,12 +37,15 @@ AgentCal is the dedicated **Calculate** platform for BC real-estate advisors. It
 
 - Product Truth: AgentCal Hub — https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 - Cross-product product-split decision — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
+- Approved UX/product planning reference while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
 - Development process authority: Avenxa Agentic Development System — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 - Command semantics authority: Avenxa Command Protocol v1 — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository — code, configuration, technical decisions, plans, tests, verification commands, Git history, and `docs/HANDOFF.md`.
 - Runtime Evidence: preview/deployed behavior when a runtime exists for the bounded task.
 
 If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict before changing product behavior. Repository history may prove what is implemented; it does not silently redefine Product Truth.
+
+The UX Rebaseline is a **planning authority only while AgentCal is On Hold**. It defines intended future UX priorities but does not authorize implementation or override the Resume Work reconstruction/sequencing gate.
 
 ## ADS v1.1 Role Model — Mandatory Default
 
@@ -66,16 +70,18 @@ The AI Product Manager must not wait passively for the Product Owner to project-
 
 ## Current Execution — Paused / On Hold
 
-- **AgentCal is currently paused / on hold.** Lifecycle = Paused per current AgentCal Hub Product Truth. Do not resume feature implementation without a Product Owner Resume Work decision.
-- SELL Feature 01 is implemented and merged to `main`; merge commit `eaf0cb7503980e217f8078e6228cd57139be69e4` is current repository history.
+- **AgentCal is currently paused / on hold.** Lifecycle = Paused per current AgentCal Hub Product Truth. Do not resume feature implementation without a Product Owner `Resume Work` decision.
+- The **AgentCal UX Rebaseline — 10 Priority Capabilities & Reactivation Plan** is approved as future product/UX planning only. Its priority sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**. None of these items is implementation-authorized while paused.
+- SELL Feature 01 is implemented and merged to `main`; its accepted implementation merge commit remains `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
 - `plans/features/01-sell-net-proceeds.md` is a completed implementation reference, not the active feature plan.
-- PR #4 (documentation alignment) is already merged; `main` is at `1743207ad6705dc97d01b71affa342e2139d92d7`. There are currently no open PRs.
+- PR #4 (product-boundary documentation alignment) is merged. PR #5 (stage closeout / hold-state documentation) is also merged. Current `main` is `6092b8d2cd38bc5818cdbab6d2bf1d6fcc93cca9` at the last verified checkpoint.
+- There were no open AgentCal pull requests at the final PR #5 closeout checkpoint. Always re-check live PR state before acting.
 - A preserved Feature 02 implementation candidate exists on remote branch `feature/02-tier2-export-share` at tip `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It has not been reviewed, accepted, or merged, and must not be treated as such. Do not delete or merge that branch.
 - No BUY or MOVE engine module is currently present on `main`; do not claim those scenarios are implemented. No BUY/MOVE work is authorized while paused.
 - Technical handoff: `docs/HANDOFF.md`.
 
-**Current Next Action while paused = no implementation.** On Resume Work, follow the reconstruction sequence documented in current Product Truth and `docs/HANDOFF.md` before creating or refreshing any bounded Technical Plan. Do not start `lib/engine/buy.ts` merely because the architecture anticipates it; first resolve the Product Truth sequencing gate.
+**Current Next Action while paused = no implementation.** Product/UX documentation may be refined when explicitly requested by the Product Owner, but repository feature work remains frozen. On `Resume Work`, follow the reconstruction sequence in Product Truth and `docs/HANDOFF.md`, reconcile the UX Rebaseline against current Product Truth and preserved Feature 02 work, then resolve the Product Owner sequencing gate before any bounded Technical Plan or Builder handoff is created.
 
 ## Product Boundary
 
@@ -99,6 +105,10 @@ The AI Product Manager must not wait passively for the Product Owner to project-
 
 Do not move AgentCal's engine into AgentConsult and do not pull AgentConsult's consultation workflow into AgentCal. A future cross-product integration is a separate bounded task and should prefer a small explicit versioned scenario/result contract after both sides have stable shapes.
 
+### UX rebaseline boundary
+
+The UX Rebaseline changes how future AgentCal work should be **structured and experienced**, not what product AgentCal is. It must not be used to introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
+
 ## Non-Negotiable Constraints
 
 - Financial amounts are produced only by deterministic application code.
@@ -110,6 +120,7 @@ Do not move AgentCal's engine into AgentConsult and do not pull AgentConsult's c
 - Preserve the approved responsive interaction intent for implemented calculator experiences.
 - Existing Feature 01 privacy/data-handling constraints remain binding unless current Product Truth explicitly changes them.
 - Preserve ADS v1.1 Planner/Reviewer ↔ Builder separation unless the Product Owner explicitly authorizes a task-specific exception.
+- UX improvements must preserve transparent assumptions and deterministic calculation authority; visual simplicity must never hide material assumptions or uncertainty.
 
 ## Repository Map
 
@@ -155,7 +166,7 @@ Run additional checks required by the active Technical Plan. Do not claim an una
 3. Work on one bounded objective at a time and keep unrelated edits out.
 4. Inspect actual repository state before assuming dependencies, components, tests, schema, prior features, or runtime behavior exist.
 5. The AI Product Manager confirms current Product Truth, active sequencing, acceptance, expected evidence, and applicable Human Gates before meaningful feature implementation.
-6. Do not start BUY/MOVE implementation without a current bounded Technical Plan and a Builder-ready handoff.
+6. Do not start Feature 02 continuation, BUY, MOVE, or UX Rebaseline implementation while AgentCal is paused. After `Resume Work`, do not start them without a current bounded Technical Plan and Builder-ready handoff.
 7. The Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before reporting `Code Complete`.
 8. A failing or unavailable required check remains unresolved until fixed or explicitly recorded/escalated.
 9. Update tests and durable technical documentation when implementation changes their truth.
@@ -170,7 +181,8 @@ Run additional checks required by the active Technical Plan. Do not claim an una
 
 Human/Product Owner approval is required for:
 
-- product scope, priority, acceptance, or milestone sequencing changes — including resolving Feature 02 versus BUY sequencing;
+- `Resume Work` and any move from On Hold / Paused into implementation;
+- product scope, priority, acceptance, or milestone sequencing changes — including resolving Feature 02 versus BUY sequencing and deciding which UX Rebaseline phase becomes the first implementation objective;
 - explicitly combining Planner/Reviewer and Builder roles for the same task;
 - changes to authoritative formulas, rounding, disclosures, privacy/data handling, or jurisdiction/locale boundaries;
 - changes to the AgentCal / AgentConsult responsibility boundary;
@@ -225,7 +237,7 @@ Keep the handoff current rather than appending chat transcripts or maintaining c
 
 ## Current Next Action
 
-AgentCal is paused. There is no active implementation next action. The first future action is **Resume Work**, per the reconstruction sequence in `docs/HANDOFF.md`, which reopens the Product Owner sequencing decision: finish/review the preserved Feature 02 candidate (`feature/02-tier2-export-share`) versus formally defer it and authorize BUY. Only after that decision should a bounded Technical Plan be created and handed to the Builder.
+AgentCal is paused. There is no active implementation next action. The approved UX Rebaseline is a future planning reference, not an execution trigger. The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing: reconcile the preserved Feature 02 candidate (`feature/02-tier2-export-share`) with current Product Truth and the UX Rebaseline, then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX foundation task that does not violate engine sequencing. Only after that Human Gate should a bounded Technical Plan be created and handed to the Builder.
 
 ## Tool-Specific Instructions
 
