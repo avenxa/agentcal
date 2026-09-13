@@ -10,20 +10,21 @@ Canonical Command Protocol: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a7
 
 - Product Truth / AgentCal Hub: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 - AgentCal / AgentConsult split: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-- UX/Product planning reference: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+- **APXS / cross-product product-experience authority:** https://app.notion.com/p/3daeca0675e381b6a3cef40b4c666402
+- AgentCal-specific UX/Product planning reference: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
 - ADS: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 - Command Protocol: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Repository entrypoint: `AGENTS.md`
 
-This file is the durable technical continuity checkpoint. Product/architecture documentation does not reactivate implementation.
+This file is the durable technical continuity checkpoint. Product/architecture/UX documentation does not reactivate implementation.
 
 ## Objective
 
-Preserve AgentCal in **On Hold / Paused** state while synchronizing the approved architecture principle:
+Preserve AgentCal in **On Hold / Paused** state while keeping the approved architecture and product-experience authority restart-ready:
 
 > **Universal calculation workflow, localized financial authority.**
 
-This sync establishes future boundaries only. It does not authorize Feature 02 continuation, BUY, MOVE, UX implementation, persistence/schema work, AgentCal ↔ AgentConsult integration, jurisdiction refactoring, or any second-jurisdiction implementation.
+APXS owns reusable cross-product experience principles. The AgentCal UX Rebaseline owns AgentCal-specific calculation-experience extensions and future sequencing. Neither authorizes Feature 02 continuation, BUY, MOVE, UX implementation, persistence/schema work, AgentCal ↔ AgentConsult integration, jurisdiction refactoring, or second-jurisdiction implementation while the product is on Hold.
 
 ## Current Product / Architecture Truth
 
@@ -35,7 +36,7 @@ Universal AgentCal flow:
 
 Future architecture should keep these concerns distinct:
 
-1. **Universal calculation platform** — Scenario/input/result contracts, validation/readiness, comparison, UX, sharing, and AI explanation framework.
+1. **Universal calculation platform** — Scenario/input/result contracts, calculation validity/readiness, comparison, deterministic recalculation, and grounded AI explanation framework.
 2. **Jurisdiction rule packs** — local formulas, taxes, fees, exemptions/rebates, thresholds, disclosures, and financial methodology.
 3. **Locale/presentation layer** — language, terminology, currency/date/number formatting; locale must not silently change calculation cents.
 
@@ -45,20 +46,20 @@ Prefer **stable contracts + explicit jurisdiction modules** over scattered juris
 
 Where practical, future rule packs should be traceable by jurisdiction, rule version/effective date, and validation/source metadata so scenarios remain explainable and reproducible.
 
-## Completed
+## Product Experience — APXS + AgentCal Extensions
 
-- SELL Feature 01 merged and accepted. Implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
-- AgentCal / AgentConsult responsibility split aligned.
-- PR #4 product-boundary alignment merged.
-- PR #5 stage-closeout / Hold documentation merged.
-- PR #6 UX Rebaseline / Hold synchronization merged.
-- `main` at the start of this architecture documentation sync: `e78c5e267f40e37075bbe91c0d2dd394d689f9db`.
-- Product Owner approved the architecture principle **Universal calculation workflow, localized financial authority** while keeping AgentCal On Hold.
-- Notion AgentCal Hub, UX Rebaseline, and Project Instructions were updated to reflect the new architecture boundary.
+APXS governs reusable principles such as Outcome First, Progressive Disclosure, contextual next actions, state/readiness, edit-in-context, immediate feedback, responsive/accessibility baseline, AI-in-context, trust through transparency, and natural end artifacts.
 
-## Approved Future UX/Product Planning — Not Implementation
+AgentCal-specific extensions remain:
+- Scenario as the persistent calculation object;
+- primary financial-result hierarchy with transparent assumptions/breakdown depth;
+- deterministic recalculation through authoritative code;
+- calculation readiness that distinguishes completeness, validity, and professional certainty;
+- explicit jurisdiction-rule authority and provenance;
+- AI explanation grounded in Scenario + jurisdiction + verified deterministic result + rule metadata;
+- client-ready financial output preserving assumptions, caveats, provenance, and advisor-safe presentation.
 
-Priority sequence remains:
+Approved future AgentCal sequence remains:
 
 1. Scenario-first Architecture
 2. Progressive Input Flow
@@ -71,9 +72,18 @@ Priority sequence remains:
 9. AI Gap Detection & Guidance
 10. Client-ready Share / Report
 
-These capabilities must now also respect universal-core / jurisdiction-rule-pack / locale separation.
+Treat this as AgentCal-specific product planning, not ten universal Avenxa UI mandates.
 
-AI explanation should be grounded in **Scenario + jurisdiction + verified deterministic result + rule metadata**. AI never becomes numeric or jurisdictional authority.
+## Completed
+
+- SELL Feature 01 merged and accepted. Implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
+- AgentCal / AgentConsult responsibility split aligned.
+- PR #4 product-boundary alignment merged.
+- PR #5 stage-closeout / Hold documentation merged.
+- PR #6 UX Rebaseline / Hold synchronization merged.
+- PR #7 jurisdiction-architecture synchronization merged to `main` at `30aa7256885c0ffabc20b5baa2fd367edf1280fa`.
+- Product Owner approved **Universal calculation workflow, localized financial authority** while keeping AgentCal On Hold.
+- Notion AgentCal Hub, UX Rebaseline, and Project Instructions now inherit APXS for universal experience principles.
 
 ## Preserved Unfinished Execution Work
 
@@ -81,7 +91,7 @@ AI explanation should be grounded in **Scenario + jurisdiction + verified determ
 - It contains a Technical Plan, Estimate Summary implementation, narration/handoff code, and tests.
 - It is substantive unfinished execution, not an accepted feature.
 - Do not delete or automatically merge it.
-- On resume, inspect it against current Product Truth, the UX Rebaseline, and the new architecture boundary before deciding whether to review/finish, defer, redesign, or abandon it.
+- On resume, inspect it against current Product Truth, APXS, the AgentCal UX Rebaseline, and the architecture boundary before deciding whether to review/finish, defer, redesign, or abandon it.
 
 ## Open / Deferred
 
@@ -100,28 +110,29 @@ AI explanation should be grounded in **Scenario + jurisdiction + verified determ
 On explicit `Resume Work`, reconstruct in this order:
 
 1. Current AgentCal Hub Product Truth.
-2. `AGENTS.md`.
-3. `docs/HANDOFF.md`.
-4. AgentCal UX Rebaseline.
-5. Actual `main`, branch, PR, test, and runtime state.
-6. Inspect `feature/02-tier2-export-share` at the preserved tip.
-7. Reconcile preserved Feature 02 work against current Product Truth and UX direction.
-8. Inspect existing SELL/Feature 02 structures for BC-specific logic embedded in otherwise universal Scenario/input/result/UI structures. Do **not** refactor blindly; document actual coupling first.
-9. Reopen Product Owner sequencing: finish/review Feature 02, formally defer Feature 02 and authorize BUY, or approve a separately bounded UX/architecture objective.
-10. Only after sequencing is resolved, create/refresh a bounded Technical Plan and Builder handoff.
+2. APXS.
+3. `AGENTS.md`.
+4. `docs/HANDOFF.md`.
+5. AgentCal UX Rebaseline.
+6. Actual `main`, branch, PR, test, and runtime state.
+7. Inspect `feature/02-tier2-export-share` at the preserved tip.
+8. Reconcile preserved Feature 02 work against current Product Truth and AgentCal-specific UX direction.
+9. Inspect existing SELL/Feature 02 structures for BC-specific logic embedded in otherwise universal Scenario/input/result/UI structures. Do **not** refactor blindly; document actual coupling first.
+10. Reopen Product Owner sequencing: finish/review Feature 02, formally defer Feature 02 and authorize BUY, or approve a separately bounded UX/architecture objective.
+11. Only after sequencing is resolved, create/refresh a bounded Technical Plan and Builder handoff.
 
 Do not implement a second jurisdiction merely to prove abstraction. If a future second-jurisdiction need becomes real, scope it as a separate Product Owner-approved bounded task.
 
-## Verification for This Documentation Sync
+## Verification for This APXS Documentation Sync
 
 This sync is governance/documentation only.
 
 Confirmed before branch creation:
 
-- live `main` = `e78c5e267f40e37075bbe91c0d2dd394d689f9db`;
+- live `main` = `30aa7256885c0ffabc20b5baa2fd367edf1280fa`;
 - AgentCal Hub status = **On Hold / Paused**;
 - Feature 02 preserved branch remains the known unfinished candidate at `25ffeea2e52b652b1345dc6c5978a328349c9d32`;
-- no application code, financial formula, package, schema, BUY/MOVE implementation, or runtime behavior is intentionally changed by this sync.
+- no application code, financial formula, package, schema, BUY/MOVE implementation, jurisdiction implementation, or runtime behavior is intentionally changed by this sync.
 
 No application test rerun is claimed for this documentation-only change.
 
@@ -131,7 +142,7 @@ No application test rerun is claimed for this documentation-only change.
 
 ## Authority / Gate
 
-A future agent may autonomously read Product Truth, repository state, UX Rebaseline, `AGENTS.md`, and this handoff.
+A future agent may autonomously read Product Truth, APXS, repository state, AgentCal UX Rebaseline, `AGENTS.md`, and this handoff.
 
 A future agent may perform Product Owner-requested planning/documentation refinement without treating it as reactivation.
 
