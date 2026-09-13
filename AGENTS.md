@@ -10,9 +10,10 @@ Before implementation, orient in this order:
 4. Use the Command Protocol Quick Reference only as an operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
 5. Read **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 6. Read **AgentCal / AgentConsult product split**: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-7. Read **AgentCal UX Rebaseline**: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
-8. Read `docs/HANDOFF.md`.
-9. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
+7. Read **Avenxa Product Experience Standard (APXS)**: https://app.notion.com/p/3daeca0675e381b6a3cef40b4c666402
+8. Read **AgentCal UX Rebaseline**: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+9. Read `docs/HANDOFF.md`.
+10. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
 
 ## Shared Command Protocol
 
@@ -34,14 +35,15 @@ It owns deterministic calculation, explicit assumptions, transparent result brea
 
 - Product Truth: AgentCal Hub — https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 - Product split — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-- UX/product planning authority while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+- **APXS — cross-product product-experience/UI/UX authority:** https://app.notion.com/p/3daeca0675e381b6a3cef40b4c666402
+- AgentCal-specific UX/product planning authority while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
 - ADS — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 - Command Protocol — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository, Git/PR state, tests, verification evidence, and `docs/HANDOFF.md`.
 
 If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict. Repository history proves what is implemented; it does not silently redefine Product Truth.
 
-The UX Rebaseline is planning authority only while AgentCal is On Hold. It does not authorize implementation or override the Resume Work reconstruction/sequencing gate.
+APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is a product-specific extension/planning authority only while AgentCal is On Hold. Neither authorizes implementation or overrides the Resume Work reconstruction/sequencing gate.
 
 ## ADS v1.1 Role Model — Mandatory Default
 
@@ -55,15 +57,15 @@ The Planner/Reviewer does **not** implement the same task by default. A same-AI 
 ## Current Execution — Paused / On Hold
 
 - **AgentCal is On Hold / Paused.** No feature implementation is active.
-- Current repository `main` at this architecture-sync starting point is `e78c5e267f40e37075bbe91c0d2dd394d689f9db` (PR #6 merge commit).
+- Current repository `main` is `30aa7256885c0ffabc20b5baa2fd367edf1280fa` (PR #7 merge commit).
 - SELL Feature 01 is implemented and merged. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
-- The approved future UX sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
+- The approved future AgentCal sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
 - A preserved Feature 02 candidate exists on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It is unreviewed, unaccepted, and unmerged. Do not delete or merge it automatically.
 - BUY and MOVE are not implemented on `main` and are not authorized while paused.
 - AgentCal ↔ AgentConsult integration remains deferred.
 
-**Current Next Action while paused = no implementation.** Product/UX/governance documentation may be refined when explicitly requested. On `Resume Work`, reconstruct state, reconcile Product Truth + UX Rebaseline + preserved Feature 02 work, then resolve sequencing before a new bounded Technical Plan or Builder handoff.
+**Current Next Action while paused = no implementation.** Product/UX/governance documentation may be refined when explicitly requested. On `Resume Work`, reconstruct state, reconcile Product Truth + APXS + AgentCal UX Rebaseline + preserved Feature 02 work, then resolve sequencing before a new bounded Technical Plan or Builder handoff.
 
 ## Product Boundary
 
@@ -93,17 +95,17 @@ Do not move AgentCal's engine into AgentConsult or pull AgentConsult's consultat
 
 **Universal calculation workflow, localized financial authority.**
 
-Universal experience/architecture:
+Universal calculation architecture:
 
 `Scenario → Inputs → Jurisdiction → Rules → Deterministic Calculation → Results → Adjust → Compare → Explain → Share`
 
-### Universal core should own
+### Universal calculation core should own
 
 - Scenario identity/lifecycle and revision model;
 - input and result contracts;
-- validation/readiness framework;
+- calculation validity/readiness framework;
 - result breakdown/comparison structure;
-- UX patterns such as Build/Results, inline recalculation, next actions and client-ready sharing;
+- deterministic recalculation contracts;
 - AI explanation framework grounded in verified deterministic results.
 
 ### Jurisdiction rule packs should own
@@ -132,11 +134,22 @@ Universal experience/architecture:
 - Jurisdiction-agnostic does not mean jurisdiction-unaware. Do not invent, infer, or silently substitute local legal/tax/fee authority.
 - Do **not** implement additional jurisdictions during the current Hold. This architecture decision establishes boundaries only.
 
-## UX Rebaseline Boundary
+## Product Experience — APXS + AgentCal Extensions
 
-The UX Rebaseline changes how future AgentCal work should be structured and experienced, not what product AgentCal is. It must not introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
+**APXS is the canonical reusable product-experience authority.** Do not redefine general rules such as Outcome First, Progressive Disclosure, one primary decision/action, contextual next action, state/readiness, edit-in-context, immediate feedback, responsive/accessibility baseline, AI-in-context, trust through transparency, or natural end artifacts in this repository unless an explicit AgentCal exception is required.
 
-Future UX work must also respect the universal-core / jurisdiction-rule / locale separation above.
+The AgentCal UX Rebaseline translates APXS into a calculation-specific implementation sequence. AgentCal-specific extensions include:
+- **Scenario-first:** Scenario is the persistent calculation object and owns assumptions, jurisdiction/rule context, results, and revision state.
+- **Financial result hierarchy:** the main monetary conclusion should be immediately legible while assumptions and breakdown depth remain available.
+- **Deterministic recalculation:** changing an approved assumption must route through authoritative application code; UX convenience never bypasses formula/rounding authority.
+- **Calculation readiness:** distinguish data completeness, calculation validity, and professional certainty.
+- **Jurisdiction rule authority:** local rules remain explicit, governed, and traceable; Locale must not alter calculation cents.
+- **AI explanation:** ground interpretation in Scenario + jurisdiction + verified deterministic result + rule metadata.
+- **Client-ready financial output:** preserve assumptions, caveats, calculation provenance, and advisor-safe presentation.
+
+The approved future sequence remains **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**. Treat it as AgentCal product-specific planning, not ten universal Avenxa UI mandates.
+
+The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
 
 ## Non-Negotiable Constraints
 
@@ -260,7 +273,7 @@ Keep the handoff current rather than appending chat transcripts or maintaining c
 
 AgentCal is paused. There is no active implementation next action.
 
-The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing. Reconcile the preserved Feature 02 candidate with current Product Truth, the UX Rebaseline, and the universal-calculation/localized-authority architecture; then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX/architecture task. Do not build another jurisdiction as part of reactivation unless separately approved.
+The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing. Reconcile the preserved Feature 02 candidate with current Product Truth, APXS, the AgentCal UX Rebaseline, and the universal-calculation/localized-authority architecture; then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX/architecture task. Do not build another jurisdiction as part of reactivation unless separately approved.
 
 ## Tool-Specific Instructions
 
