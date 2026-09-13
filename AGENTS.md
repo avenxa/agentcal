@@ -2,97 +2,79 @@
 
 ## Start Here — ADS Takeover Route
 
-A fresh human or AI taking over AgentCal must orient in this order before implementation:
+Before implementation, orient in this order:
 
-1. Read this file first.
-2. Read the **Avenxa Agentic Development System (ADS) v1.1**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
-3. Read the sole canonical **Avenxa Command Protocol v1**: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
-4. Use the **Command Protocol Quick Reference** only as a fast operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
-5. Read the current **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
-6. Read the active **AgentCal / AgentConsult product-split decision**: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-7. Read the approved **AgentCal UX Rebaseline — 10 Priority Capabilities & Reactivation Plan**: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
-8. Read the current durable technical handoff: `docs/HANDOFF.md`.
+1. Read this file.
+2. Read **Avenxa Agentic Development System (ADS) v1.1**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+3. Read **Avenxa Command Protocol v1**: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
+4. Use the Command Protocol Quick Reference only as an operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
+5. Read **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
+6. Read **AgentCal / AgentConsult product split**: https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
+7. Read **AgentCal UX Rebaseline**: https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+8. Read `docs/HANDOFF.md`.
 9. Inspect actual code, tests, Git/PR state, verification evidence, and runtime evidence before changing implementation.
 
 ## Shared Command Protocol
 
-Avenxa Command Protocol v1 is the canonical Product Owner → ChatGPT / reasoning AI → Builder control language for AgentCal development work. The sole semantic authority is https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490. Learning Centre explanations, Quick References, copied text, and repo-local wording are subordinate for command meaning. Each canonical Command is an Operating Contract, not casual wording.
+Avenxa Command Protocol v1 is the canonical Product Owner → reasoning AI → Builder control language. Apply known canonical commands without asking the Product Owner to restate them. Commands never override approved scope, acceptance criteria, verification requirements, financial-methodology controls, security/privacy, production protection, or Human Gates.
 
-- Apply known canonical Commands without requiring the Product Owner to restate their meaning.
-- Commands never override approved Scope, Acceptance Criteria, Verification requirements, financial-methodology controls, Security / Privacy, Production protection, or Human Gates.
-- Builder execution must remain inside the approved bounded task.
-- Read `docs/HANDOFF.md` and use its `Protocol State / Command` as the active lifecycle state when present.
-- If canonical Command meaning conflicts with repo-local wording, the sole canonical Notion Command Protocol governs Command meaning; repository reality governs technical execution context. Surface material conflicts rather than guessing.
-- Repository shell/package commands are execution mechanics, not Avenxa Command Protocol commands.
-
-The canonical command set includes: `Define Scope`, `Prepare Handoff`, `Execute Task`, `Code Complete`, `Review Work`, `Check Diff`, `Verify Work`, `Fix Handoff`, `Recheck Work`, `Check Blocker`, `Commit Ready`, `Push Ready`, `Preview Ready`, `Review Preview`, `Release Ready`, `Human Gate`, `Update Truth`, `Resume Work`, `Next Action`, and `Hold Work`.
+Canonical commands include: `Define Scope`, `Prepare Handoff`, `Execute Task`, `Code Complete`, `Review Work`, `Check Diff`, `Verify Work`, `Fix Handoff`, `Recheck Work`, `Check Blocker`, `Commit Ready`, `Push Ready`, `Preview Ready`, `Review Preview`, `Release Ready`, `Human Gate`, `Update Truth`, `Resume Work`, `Next Action`, and `Hold Work`.
 
 ## Mission
 
-AgentCal is the dedicated **Calculate** platform for BC real-estate advisors. It owns deterministic financial calculation for **SELL → BUY → MOVE** scenarios and presents transparent assumptions, results, breakdowns, and calculation-focused comparison. AI may explain trusted results; it must not create or alter authoritative financial amounts.
+AgentCal is Avenxa's dedicated **Calculate** platform for real-estate **SELL → BUY → MOVE** financial scenarios.
 
-**Cross-product boundary:** AgentCal = Calculate. AgentConsult = Clarify & Decide. AgentCal must not absorb the conversation-first consultation workflow, Advisor-private consultation notes, recommendation workflow, or other AgentConsult responsibilities.
+It owns deterministic calculation, explicit assumptions, transparent result breakdowns, fast recalculation, calculation-focused comparison, and grounded explanation.
+
+**Canonical architecture principle:** **Universal calculation workflow, localized financial authority.**
+
+**Cross-product boundary:** AgentCal = Calculate. AgentConsult = Clarify & Decide. AgentCal must not absorb conversation-first consultation workflow, Advisor-private notes, recommendation workflow, decision capture, CRM, transaction management, or other AgentConsult responsibilities.
 
 ## Authority
 
 - Product Truth: AgentCal Hub — https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
-- Cross-product product-split decision — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
-- Approved UX/product planning reference while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
-- Development process authority: Avenxa Agentic Development System — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
-- Command semantics authority: Avenxa Command Protocol v1 — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
-- Execution Truth: this repository — code, configuration, technical decisions, plans, tests, verification commands, Git history, and `docs/HANDOFF.md`.
-- Runtime Evidence: preview/deployed behavior when a runtime exists for the bounded task.
+- Product split — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
+- UX/product planning authority while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+- ADS — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+- Command Protocol — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
+- Execution Truth: this repository, Git/PR state, tests, verification evidence, and `docs/HANDOFF.md`.
 
-If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict before changing product behavior. Repository history may prove what is implemented; it does not silently redefine Product Truth.
+If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict. Repository history proves what is implemented; it does not silently redefine Product Truth.
 
-The UX Rebaseline is a **planning authority only while AgentCal is On Hold**. It defines intended future UX priorities but does not authorize implementation or override the Resume Work reconstruction/sequencing gate.
+The UX Rebaseline is planning authority only while AgentCal is On Hold. It does not authorize implementation or override the Resume Work reconstruction/sequencing gate.
 
 ## ADS v1.1 Role Model — Mandatory Default
 
-The default operating model is role-separated:
+- **Product Owner / Human:** intent, priority, consequential product decisions, Human Gates, sequencing, final acceptance.
+- **ChatGPT / reasoning AI:** AI Product Manager + Planner + Architect + Reviewer. Define bounded work, prepare Builder handoffs, identify conflicts/risks, review actual implementation evidence, and recommend next action.
+- **Claude Code / approved coding agent:** Builder. Implement the bounded task, run verification, diagnose, self-correct, and maintain durable repository continuity.
+- **Independent Reviewer:** inspect objective, actual diff, verification evidence, and runtime evidence where required.
 
-- **Product Owner / Human:** owns intent, priorities, consequential product decisions, approval boundaries, explicit role-combination exceptions, sequencing gates, and final product acceptance.
-- **ChatGPT / reasoning AI:** acts as **AI Product Manager + Planner + Architect + Reviewer**. It proactively defines bounded work, prepares Builder handoffs, sequences the development chain, identifies conflicts/risks, and reviews the actual implementation evidence.
-- **Claude Code / capable coding agent:** acts as **Builder / Coding Agent**. It implements the bounded task, runs verification, diagnoses failures, self-corrects, and maintains durable repository continuity.
-- **Independent Reviewer:** inspects objective, actual diff/change set, verification evidence, and runtime evidence before consequential acceptance.
-
-### Hard boundary
-
-The AI Product Manager / Planner / Architect / Reviewer does **not** perform the same task's implementation build by default.
-
-A same-AI Planner/Reviewer + Builder combination is permitted only when the **Product Owner explicitly authorizes that exception for the specific task**. Provider capability or repository access alone is not authorization.
-
-If such an exception is authorized, preserve the durable Technical Plan, verification evidence, and use a fresh independent reviewer where practical.
-
-### Proactive leadership rule
-
-The AI Product Manager must not wait passively for the Product Owner to project-manage routine work. Within approved Product Truth and Human Gates it should identify the next bounded action, prepare the Builder-ready handoff, route/retrieve the execution result, inspect evidence, and recommend the next action. Escalate only genuine consequential decisions, unresolved material uncertainty, or capability/authority dependencies.
+The Planner/Reviewer does **not** implement the same task by default. A same-AI Planner/Reviewer + Builder combination requires explicit Product Owner authorization for that specific task.
 
 ## Current Execution — Paused / On Hold
 
-- **AgentCal is currently paused / on hold.** Lifecycle = Paused per current AgentCal Hub Product Truth. Do not resume feature implementation without a Product Owner `Resume Work` decision.
-- The **AgentCal UX Rebaseline — 10 Priority Capabilities & Reactivation Plan** is approved as future product/UX planning only. Its priority sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**. None of these items is implementation-authorized while paused.
-- SELL Feature 01 is implemented and merged to `main`; its accepted implementation merge commit remains `eaf0cb7503980e217f8078e6228cd57139be69e4`.
+- **AgentCal is On Hold / Paused.** No feature implementation is active.
+- Current repository `main` at this architecture-sync starting point is `e78c5e267f40e37075bbe91c0d2dd394d689f9db` (PR #6 merge commit).
+- SELL Feature 01 is implemented and merged. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
-- `plans/features/01-sell-net-proceeds.md` is a completed implementation reference, not the active feature plan.
-- PR #4 (product-boundary documentation alignment) is merged. PR #5 (stage closeout / hold-state documentation) is also merged. Current `main` is `6092b8d2cd38bc5818cdbab6d2bf1d6fcc93cca9` at the last verified checkpoint.
-- There were no open AgentCal pull requests at the final PR #5 closeout checkpoint. Always re-check live PR state before acting.
-- A preserved Feature 02 implementation candidate exists on remote branch `feature/02-tier2-export-share` at tip `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It has not been reviewed, accepted, or merged, and must not be treated as such. Do not delete or merge that branch.
-- No BUY or MOVE engine module is currently present on `main`; do not claim those scenarios are implemented. No BUY/MOVE work is authorized while paused.
-- Technical handoff: `docs/HANDOFF.md`.
+- The approved future UX sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
+- A preserved Feature 02 candidate exists on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It is unreviewed, unaccepted, and unmerged. Do not delete or merge it automatically.
+- BUY and MOVE are not implemented on `main` and are not authorized while paused.
+- AgentCal ↔ AgentConsult integration remains deferred.
 
-**Current Next Action while paused = no implementation.** Product/UX documentation may be refined when explicitly requested by the Product Owner, but repository feature work remains frozen. On `Resume Work`, follow the reconstruction sequence in Product Truth and `docs/HANDOFF.md`, reconcile the UX Rebaseline against current Product Truth and preserved Feature 02 work, then resolve the Product Owner sequencing gate before any bounded Technical Plan or Builder handoff is created.
+**Current Next Action while paused = no implementation.** Product/UX/governance documentation may be refined when explicitly requested. On `Resume Work`, reconstruct state, reconcile Product Truth + UX Rebaseline + preserved Feature 02 work, then resolve sequencing before a new bounded Technical Plan or Builder handoff.
 
 ## Product Boundary
 
 ### AgentCal owns
 
 - deterministic SELL / BUY / MOVE financial engines;
-- explicit financial assumptions, rules, rounding, and jurisdiction-specific calculation logic;
-- transparent calculation breakdowns and result structures;
+- explicit assumptions, money/rounding behavior, and authoritative jurisdiction-specific calculation rules;
+- scenario/input/result contracts and transparent result breakdowns;
 - immediate recalculation when assumptions change;
 - calculation-focused scenario comparison;
-- AI explanation only when grounded in authoritative deterministic results.
+- AI explanation grounded in deterministic results and rule metadata.
 
 ### AgentConsult owns
 
@@ -103,48 +85,94 @@ The AI Product Manager must not wait passively for the Product Owner to project-
 
 ### Integration rule
 
-Do not move AgentCal's engine into AgentConsult and do not pull AgentConsult's consultation workflow into AgentCal. A future cross-product integration is a separate bounded task and should prefer a small explicit versioned scenario/result contract after both sides have stable shapes.
+Do not move AgentCal's engine into AgentConsult or pull AgentConsult's consultation workflow into AgentCal. Any future integration is a separate bounded task and should prefer a small, explicit, versioned scenario/result contract after both sides stabilize.
 
-### UX rebaseline boundary
+## Jurisdiction Architecture
 
-The UX Rebaseline changes how future AgentCal work should be **structured and experienced**, not what product AgentCal is. It must not be used to introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
+### Canonical principle
+
+**Universal calculation workflow, localized financial authority.**
+
+Universal experience/architecture:
+
+`Scenario → Inputs → Jurisdiction → Rules → Deterministic Calculation → Results → Adjust → Compare → Explain → Share`
+
+### Universal core should own
+
+- Scenario identity/lifecycle and revision model;
+- input and result contracts;
+- validation/readiness framework;
+- result breakdown/comparison structure;
+- UX patterns such as Build/Results, inline recalculation, next actions and client-ready sharing;
+- AI explanation framework grounded in verified deterministic results.
+
+### Jurisdiction rule packs should own
+
+- jurisdiction-specific formulas;
+- taxes, fees, exemptions, rebates and thresholds;
+- local financial methodology and transaction-cost rules;
+- required disclosures/caveats that materially affect calculation presentation;
+- explicit source/validation metadata where applicable.
+
+### Locale layer should own
+
+- language;
+- terminology;
+- currency/date/number formatting;
+- presentation choices that must not silently change calculation cents.
+
+### Architecture rules
+
+- **BC is the first supported calculation jurisdiction, not the universal product definition.**
+- Current configured jurisdiction/locale remain `CA-BC` and `en-CA` until explicitly changed.
+- Prefer **stable contracts + explicit jurisdiction modules** over scattered `if jurisdiction...` logic.
+- Do not build a giant abstract universal formula engine before a real second-jurisdiction need exists.
+- Where practical, make rule packs traceable by **jurisdiction + rule version/effective date + validation/source metadata** so saved scenarios remain reproducible and explainable.
+- A saved scenario should not silently change historical amounts merely because current rules later change; any future recalculation/version-migration behavior requires explicit Product Truth and acceptance criteria.
+- Jurisdiction-agnostic does not mean jurisdiction-unaware. Do not invent, infer, or silently substitute local legal/tax/fee authority.
+- Do **not** implement additional jurisdictions during the current Hold. This architecture decision establishes boundaries only.
+
+## UX Rebaseline Boundary
+
+The UX Rebaseline changes how future AgentCal work should be structured and experienced, not what product AgentCal is. It must not introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
+
+Future UX work must also respect the universal-core / jurisdiction-rule / locale separation above.
 
 ## Non-Negotiable Constraints
 
-- Financial amounts are produced only by deterministic application code.
-- AI must not calculate, invent, or silently alter financial amounts or source assumptions.
-- Scenario, Jurisdiction, and Locale remain separable. Current configured values are `CA-BC` and `en-CA`; locale must never change calculation cents.
+- Financial amounts are produced only by deterministic application code using approved jurisdiction rules.
+- AI must not calculate, invent, override, or silently alter authoritative financial amounts, formulas, local rules, or source assumptions.
+- Scenario, Jurisdiction, and Locale remain separable.
+- Locale must never silently change calculation cents.
 - Preserve money/rounding behavior unless Product Truth explicitly authorizes a change.
 - BUY must not recommend or steer toward a particular mortgage product, rate, term, or lender.
-- Do not add consultation-question orchestration, Advisor-private notes, recommendation capture, CRM, or transaction-management scope merely to make AgentCal resemble AgentConsult.
-- Preserve the approved responsive interaction intent for implemented calculator experiences.
-- Existing Feature 01 privacy/data-handling constraints remain binding unless current Product Truth explicitly changes them.
-- Preserve ADS v1.1 Planner/Reviewer ↔ Builder separation unless the Product Owner explicitly authorizes a task-specific exception.
-- UX improvements must preserve transparent assumptions and deterministic calculation authority; visual simplicity must never hide material assumptions or uncertainty.
+- Do not add consultation orchestration, Advisor-private notes, recommendation capture, CRM, or transaction-management scope merely to make AgentCal resemble AgentConsult.
+- Existing Feature 01 privacy/data-handling constraints remain binding unless Product Truth explicitly changes them.
+- Preserve ADS Planner/Reviewer ↔ Builder separation unless the Product Owner explicitly authorizes a task-specific exception.
+- UX simplicity must never hide material assumptions, rule provenance, or uncertainty.
+- Do not create multi-jurisdiction implementation work merely to prove abstraction.
 
 ## Repository Map
 
 - `app/` — Next.js App Router presentation and calculator interaction.
-- `lib/engine/` — pure authoritative calculation logic. Nothing here may import React, DOM, browser storage, Supabase, or AgentConsult UI/workflow modules.
+- `lib/engine/` — pure authoritative calculation logic. Nothing here may import React, DOM, browser storage, Supabase, or AgentConsult workflow modules.
 - `lib/` — non-engine presentation or interaction helpers.
-- `e2e/` — Playwright browser checks for implemented calculator UI.
+- `e2e/` — Playwright browser checks.
 - `plans/features/01-sell-net-proceeds.md` — completed SELL technical-plan reference.
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
-- `PROJECT_BRIEFING.md` — thin routing note to current Product Truth and repository entrypoints.
-- `package.json` — installed dependencies and executable scripts.
+- `PROJECT_BRIEFING.md` — thin routing note.
+- `package.json` — dependencies/scripts.
 - `CLAUDE.md` — redirect to this file.
 
-## Calculation Engine Module Convention
+## Calculation Engine Convention
 
-Pure calculation logic for every scenario lives under `lib/engine/`, never directly under `lib/` and never inside `app/`:
-
-- `lib/engine/sell.ts` — current SELL calculation functions and input/result types.
-- `lib/engine/currency.ts` — shared money-as-cents helpers currently used by SELL.
-- When BUY is explicitly authorized, use `lib/engine/buy.ts` on the same pure-engine pattern unless the bounded Technical Plan documents a better compatible structure.
-- When MOVE is explicitly authorized, it should compose verified SELL and BUY result types rather than reimplement their calculations.
-- Add cross-scenario shared types only when a real second-scenario need exists; do not over-generalize in advance.
-- Nothing under `lib/engine/` may import React, DOM, browser storage, Supabase, or AgentConsult code.
-- UI imports from `lib/engine/`; never reverse that dependency.
+- `lib/engine/sell.ts` — current SELL calculation functions and types.
+- `lib/engine/currency.ts` — shared money-as-cents helpers.
+- When BUY is authorized, use the same pure-engine separation pattern unless a bounded Technical Plan documents a compatible improvement.
+- When MOVE is authorized, compose verified SELL and BUY results rather than reimplementing their calculations.
+- Add cross-scenario/shared abstractions only when a real second-scenario need exists.
+- Add jurisdiction abstraction only to the extent needed to keep universal contracts clean and BC rules explicit; avoid speculative frameworks.
+- UI may import from `lib/engine/`; never reverse that dependency.
 
 ## Repository Commands
 
@@ -157,50 +185,51 @@ E2E/UI:    `pnpm test:e2e`
 Build:     `pnpm build`
 Schema:    N/A unless a future bounded task explicitly adds persistence/schema work.
 
-Run additional checks required by the active Technical Plan. Do not claim an unavailable or unexecuted check passed.
+Do not claim an unavailable or unexecuted check passed.
 
 ## Execution Rules
 
-1. **Invoke ADS automatically.** The Product Owner should not need to say “use ADS.”
-2. **Apply ADS v1.1 role separation.** ChatGPT/reasoning AI owns product management, planning, architecture, sequencing, Builder handoff, and review; the Builder/Coding Agent owns implementation, debugging, verification, and self-correction for the same task.
-3. Work on one bounded objective at a time and keep unrelated edits out.
-4. Inspect actual repository state before assuming dependencies, components, tests, schema, prior features, or runtime behavior exist.
-5. The AI Product Manager confirms current Product Truth, active sequencing, acceptance, expected evidence, and applicable Human Gates before meaningful feature implementation.
-6. Do not start Feature 02 continuation, BUY, MOVE, or UX Rebaseline implementation while AgentCal is paused. After `Resume Work`, do not start them without a current bounded Technical Plan and Builder-ready handoff.
-7. The Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before reporting `Code Complete`.
-8. A failing or unavailable required check remains unresolved until fixed or explicitly recorded/escalated.
-9. Update tests and durable technical documentation when implementation changes their truth.
-10. After `Code Complete`, the Reviewer inspects the actual diff/change set and evidence; the Builder is not the sole reviewer of consequential work.
-11. If the Product Owner explicitly authorized a same-AI Planner + Builder exception, use a fresh independent reviewer where practical.
+1. Invoke ADS automatically.
+2. Apply Planner/Reviewer ↔ Builder role separation by default.
+3. Work on one bounded objective at a time; keep unrelated edits out.
+4. Inspect actual repository state before assuming dependencies, components, tests, schema, features, or runtime behavior exist.
+5. Confirm Product Truth, sequencing, acceptance, expected evidence, and Human Gates before meaningful implementation.
+6. Do not start Feature 02 continuation, BUY, MOVE, UX implementation, jurisdiction refactoring, or new jurisdiction work while AgentCal is paused.
+7. After `Resume Work`, do not refactor existing BC logic simply for architectural purity. First identify actual coupling, preserve accepted behavior, and create a bounded plan.
+8. Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before `Code Complete`.
+9. A failing/unavailable required check remains unresolved until fixed or explicitly escalated.
+10. Update tests and durable technical documentation when implementation changes their truth.
+11. Reviewer inspects actual diff plus evidence after `Code Complete`.
 12. Never store secrets or credentials in committed files or documentation.
 13. Keep AgentCal calculation responsibilities separate from AgentConsult consultation responsibilities.
-14. When one coding agent is the active Builder, no other actor should concurrently edit the same working tree for that bounded cycle.
-15. After each bounded action, the AI Product Manager identifies and prepares or executes the next authorized workflow action. Do not start unrelated backlog work.
+14. Avoid concurrent edits to the same working tree by multiple Builders.
+15. After each bounded action, identify the next authorized workflow action; do not start unrelated backlog work.
 
 ## Human Gates
 
-Human/Product Owner approval is required for:
+Product Owner approval is required for:
 
-- `Resume Work` and any move from On Hold / Paused into implementation;
-- product scope, priority, acceptance, or milestone sequencing changes — including resolving Feature 02 versus BUY sequencing and deciding which UX Rebaseline phase becomes the first implementation objective;
-- explicitly combining Planner/Reviewer and Builder roles for the same task;
-- changes to authoritative formulas, rounding, disclosures, privacy/data handling, or jurisdiction/locale boundaries;
-- changes to the AgentCal / AgentConsult responsibility boundary;
-- consequential architecture, security, privacy, compliance, or data-model decisions;
-- new material external services or paid commitments;
-- production data mutation, destructive operations, or production schema migration;
-- final product acceptance and any merge/release gate required by ADS/project policy.
-
-Routine reversible Builder mechanics inside an approved bounded task do not require repeated approval.
+- `Resume Work` / leaving On Hold;
+- product scope, priority, acceptance, milestone sequencing, and Feature 02 versus BUY sequencing;
+- choosing which UX Rebaseline phase becomes implementation work;
+- changes to authoritative formulas, rounding, disclosures, privacy/data handling, or calculation methodology;
+- changes to universal-core / jurisdiction-rule-pack / locale boundaries;
+- adding or materially changing a jurisdiction pack;
+- changes to AgentCal / AgentConsult responsibility boundaries;
+- consequential architecture, security, privacy, compliance, auth, or data-model decisions;
+- destructive operations or production mutation/schema migration;
+- task-specific Planner/Reviewer + Builder role-combination exceptions;
+- final product acceptance and applicable merge/release gates.
 
 ## Definition of Done
 
 A bounded task is complete only when:
-- intended scope and acceptance criteria are satisfied;
+
+- scope and acceptance criteria are satisfied;
 - required verification passes;
 - Builder self-correction is complete;
 - actual diff/change set has been reviewed;
-- ADS v1.1 Planner/Reviewer ↔ Builder separation was preserved, or a same-AI exception was explicitly authorized by the Product Owner;
+- role separation was preserved or an exception was explicitly authorized;
 - independent review/runtime evidence exists where required;
 - applicable Human Gates and Product Owner acceptance are satisfied;
 - `docs/HANDOFF.md` is current.
@@ -209,39 +238,33 @@ A bounded task is complete only when:
 
 Before stopping after meaningful work, update `docs/HANDOFF.md` with:
 
-**Protocol State / Command**
-- current canonical Command
+**Protocol State / Command** — current canonical command
 
-**Objective**
-- current bounded outcome
+**Objective** — current bounded outcome
 
-**Completed**
-- what is complete
+**Completed** — what is complete
 
-**Changed**
-- important implementation/configuration/behaviour changes
+**Changed** — important implementation/configuration/behavior changes
 
-**Verified**
-- exact commands/checks and actual results
+**Verified** — exact commands/checks and results
 
-**Open**
-- known defect, blocker, verification gap, or deferred item
+**Open** — defect, blocker, verification gap, or deferred item
 
-**Next**
-- one bounded next technical action
+**Next** — one bounded next technical action
 
-**Authority / Gate**
-- what the receiver may continue autonomously and what requires Product Owner approval
+**Authority / Gate** — what may continue autonomously vs what needs Product Owner approval
 
 Keep the handoff current rather than appending chat transcripts or maintaining competing status documents.
 
 ## Current Next Action
 
-AgentCal is paused. There is no active implementation next action. The approved UX Rebaseline is a future planning reference, not an execution trigger. The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing: reconcile the preserved Feature 02 candidate (`feature/02-tier2-export-share`) with current Product Truth and the UX Rebaseline, then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX foundation task that does not violate engine sequencing. Only after that Human Gate should a bounded Technical Plan be created and handed to the Builder.
+AgentCal is paused. There is no active implementation next action.
+
+The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing. Reconcile the preserved Feature 02 candidate with current Product Truth, the UX Rebaseline, and the universal-calculation/localized-authority architecture; then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX/architecture task. Do not build another jurisdiction as part of reactivation unless separately approved.
 
 ## Tool-Specific Instructions
 
-`AGENTS.md` is the common cross-agent repository authority. Tool-specific files should only redirect here or contain genuinely tool-specific scoped instructions; do not maintain duplicate full rule sets.
+`AGENTS.md` is the common cross-agent repository authority. Tool-specific files should redirect here or contain only genuinely tool-specific scoped instructions.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
