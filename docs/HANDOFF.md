@@ -2,11 +2,11 @@
 
 ## Protocol State / Command
 
-**Builder Dispatch AUTHORIZED — awaiting external Builder execution** — Product Owner approved Builder dispatch on 2026-10-04. The implementation branch is `feature/03-sell-scenario-foundation-v1`. This connected ChatGPT environment has no Claude Code execution entry, so no implementation has been started here. Cursor is discontinued and is not part of the ADS toolchain.
+**ADS vNext migrated — Builder execution READY / WAITING — ACCESS in this ChatGPT environment.** The implementation branch is `feature/03-sell-scenario-foundation-v1`. Claude Code is the sole AgentCal Builder. This ChatGPT environment has no Claude Code execution entry, so Builder execution cannot be launched here. This is an Access Gate, not a Human Gate, and no implementation has been simulated by the AI PM.
 
 ## Objective
 
-Approve the completed **SELL Scenario Foundation v1** Design Truth before Technical Definition / Builder work.
+Implement and self-verify the already-defined **SELL Scenario Foundation v1** without changing accepted SELL financial authority or expanding scope.
 
 ## Product Truth
 
@@ -75,11 +75,11 @@ Not re-run in this documentation/definition cycle:
 
 Historical test evidence remains history only and must be rerun by Builder when implementation begins.
 
-## Human Gate Status
+## Human Gate / Access Status
 
-**HUMAN GATE: Design Approved — corrected Design Truth.**
+**Human Gate: None.** Previously completed Definition / Design approvals remain valid and are not reopened by ADS vNext migration.
 
-Definition Ready remains approved. The corrected Design Truth now includes Scenario Entry on mobile and desktop, restoring Definition ↔ Design traceability. Implementation remains blocked until Product Owner re-approval.
+**WAITING — ACCESS:** this ChatGPT environment cannot invoke Claude Code. Manual Claude Code dispatch remains the safe fallback. No GitHub Action or verified GitHub → Claude Code automatic trigger exists in this repository.
 
 ## Design Evidence
 
@@ -106,18 +106,29 @@ Definition Ready remains approved. The corrected Design Truth now includes Scena
 - Technical Definition: https://app.notion.com/p/3f0eca0675e3813e97a9dcda4d955f24
 - Figma: https://www.figma.com/design/5MQ4tslEDHs26UTTbV0JBg
 - No implementation code has been written yet.
+- ADS vNext migration updated repository execution docs only; no product code, formulas, tests, deployment or runtime state was changed.
 
 ## ONE NEXT ACTION
 
-**Claude Code Builder Execution:** open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute `plans/features/03-sell-scenario-foundation-v1.md` under `CLAUDE.md` / `AGENTS.md`.
+**Owner: Claude Code.** Open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute from repository context in this order: `CLAUDE.md` → `AGENTS.md` → `docs/HANDOFF.md` → `plans/features/03-sell-scenario-foundation-v1.md` → necessary Product Truth / Figma references.
 
 When the Builder reports **Code Complete**, return control to AI PM for independent review. Merge/production release remains separately gated.
 
 ## Stop / Escalation Conditions
 
-Stop if:
+Stop only the affected path if:
 - Product Truth conflicts with accepted SELL calculation behavior;
 - scope expands into BUY/MOVE/Feature 02/CRM/runtime AI;
 - authoritative formulas, rounding, jurisdiction rules or disclosures would change;
 - persistence/auth choice becomes a consequential architecture decision before Design approval;
 - a destructive production/data action or release boundary is reached.
+
+## ADS vNext Migration Record — 2026-10-05
+
+- Project-owned ADS migration completed without restarting the lifecycle or reopening settled Feature 03 decisions.
+- `AGENTS.md` now treats Human Gates as exception-control points and distinguishes WAITING — ACCESS.
+- `CLAUDE.md` is now a concise Builder contract instead of a redirect-only file.
+- README and PROJECT_BRIEFING intentionally remain unchanged because they do not own ADS execution policy.
+- No `PLOT.md`, `.github/workflows`, or `docs/handoffs/CURRENT.md` exists; `docs/HANDOFF.md` remains the declared repository checkpoint.
+- Builder automation status: **NOT IMPLEMENTED**. Manual Claude Code dispatch is temporary fallback.
+- Verification for this migration is documentation consistency and actual Git-state inspection only; application tests were not rerun because no product code changed.
