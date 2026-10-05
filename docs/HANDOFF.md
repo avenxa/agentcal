@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Builder Dispatch AUTHORIZED — awaiting external Builder execution** — Product Owner approved Builder dispatch on 2026-10-04. The implementation branch is `feature/03-sell-scenario-foundation-v1`. This connected environment has no Claude Code / Cursor coding-agent execution entry, so no implementation has been started here.
+**Builder Dispatch AUTHORIZED — awaiting external Builder execution** — Product Owner approved Builder dispatch on 2026-10-04. The implementation branch is `feature/03-sell-scenario-foundation-v1`. This connected ChatGPT environment has no Claude Code execution entry, so no implementation has been started here. Cursor is discontinued and is not part of the ADS toolchain.
 
 ## Objective
 
@@ -109,7 +109,7 @@ Definition Ready remains approved. The corrected Design Truth now includes Scena
 
 ## ONE NEXT ACTION
 
-**External Builder Execution:** open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute `plans/features/03-sell-scenario-foundation-v1.md` under `CLAUDE.md` / `AGENTS.md`.
+**Claude Code Builder Execution:** open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute `plans/features/03-sell-scenario-foundation-v1.md` under `CLAUDE.md` / `AGENTS.md`.
 
 When the Builder reports **Code Complete**, return control to AI PM for independent review. Merge/production release remains separately gated.
 
