@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Human Gate — Design Approved** — Definition Ready was approved; User Flow / IA and Figma Design Truth are complete. No implementation is authorized until Product Owner approval.
+**Human Gate — Design Approved (corrected Design Truth)** — The first approved Figma set omitted the Scenario Entry screen required by the approved Definition. Mobile + desktop Scenario Entry screens are now added and QA-corrected. No implementation is authorized until Product Owner re-approves the corrected Design Truth.
 
 ## Objective
 
@@ -77,9 +77,9 @@ Historical test evidence remains history only and must be rerun by Builder when 
 
 ## Human Gate Status
 
-**HUMAN GATE: Design Approved.**
+**HUMAN GATE: Design Approved — corrected Design Truth.**
 
-Definition Ready was approved. Design Truth is complete and has passed the current visual QA scope. Implementation remains blocked until Product Owner approval.
+Definition Ready remains approved. The corrected Design Truth now includes Scenario Entry on mobile and desktop, restoring Definition ↔ Design traceability. Implementation remains blocked until Product Owner re-approval.
 
 ## Design Evidence
 
@@ -90,7 +90,7 @@ Definition Ready was approved. Design Truth is complete and has passed the curre
 
 ## ONE NEXT ACTION
 
-**HUMAN GATE: Design Approved — approve or reject the current Figma Design Truth.**
+**HUMAN GATE: Design Approved — approve or reject the corrected Figma Design Truth including Scenario Entry.**
 
 If approved, continue automatically to Technical Definition → Builder handoff → implementation / verification under ADS.
 
