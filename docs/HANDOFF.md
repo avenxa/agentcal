@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Human Gate — Design Approved (corrected Design Truth)** — The first approved Figma set omitted the Scenario Entry screen required by the approved Definition. Mobile + desktop Scenario Entry screens are now added and QA-corrected. No implementation is authorized until Product Owner re-approves the corrected Design Truth.
+**Human Gate — Builder Dispatch Authorization** — Corrected Design Truth is approved. Technical Definition is complete. No implementation is authorized until Product Owner dispatches the Builder.
 
 ## Objective
 
@@ -88,11 +88,21 @@ Definition Ready remains approved. The corrected Design Truth now includes Scena
 - Frames: Mobile Build, Mobile Results, Desktop Build, Desktop Results, exception / continuity states.
 - QA: desktop composition passed; mobile header clipping was detected and corrected; final mobile recheck passed.
 
+## Technical Definition
+
+- Product Truth: https://app.notion.com/p/3f0eca0675e3813e97a9dcda4d955f24
+- v1 persistence: browser-local `localStorage` behind a replaceable storage adapter.
+- No Supabase/auth/cloud sync in this bounded slice.
+- Existing deterministic SELL engine remains authoritative.
+- Selling Price is the only calculation-blocking positive-value input under accepted engine behavior; Mortgage remains a key input but `$0` is valid.
+- Planned Builder branch: `feature/03-sell-scenario-foundation-v1`.
+- Required checks: lint, type-check, unit, build, Playwright, responsive/browser QA, Figma comparison, independent QC.
+
 ## ONE NEXT ACTION
 
-**HUMAN GATE: Design Approved — approve or reject the corrected Figma Design Truth including Scenario Entry.**
+**HUMAN GATE: Builder Dispatch Authorization — authorize Claude Code / approved Builder to implement the bounded Technical Definition.**
 
-If approved, continue automatically to Technical Definition → Builder handoff → implementation / verification under ADS.
+If approved, Builder may implement and self-verify. Merge/production release remains separately gated.
 
 ## Stop / Escalation Conditions
 
