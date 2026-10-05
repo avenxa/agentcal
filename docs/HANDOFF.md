@@ -2,11 +2,11 @@
 
 ## Protocol State / Command
 
-**Active Definition** — AgentCal was reactivated on 2026-10-04 under the current Avenxa Development System (ADS).
+**Human Gate — Design Approved** — Definition Ready was approved; User Flow / IA and Figma Design Truth are complete. No implementation is authorized until Product Owner approval.
 
 ## Objective
 
-Make **SELL Scenario Foundation v1** Definition Ready without changing accepted SELL financial logic.
+Approve the completed **SELL Scenario Foundation v1** Design Truth before Technical Definition / Builder work.
 
 ## Product Truth
 
@@ -77,19 +77,22 @@ Historical test evidence remains history only and must be rerun by Builder when 
 
 ## Human Gate Status
 
-**Not yet approved for Design.**
+**HUMAN GATE: Design Approved.**
 
-The current Definition artifact is ready for Product Owner review.
+Definition Ready was approved. Design Truth is complete and has passed the current visual QA scope. Implementation remains blocked until Product Owner approval.
+
+## Design Evidence
+
+- User Flow / IA: https://app.notion.com/p/3f0eca0675e3810abbfbd12dcd4db1bc
+- Figma Design Truth: https://www.figma.com/design/5MQ4tslEDHs26UTTbV0JBg
+- Frames: Mobile Build, Mobile Results, Desktop Build, Desktop Results, exception / continuity states.
+- QA: desktop composition passed; mobile header clipping was detected and corrected; final mobile recheck passed.
 
 ## ONE NEXT ACTION
 
-**HUMAN GATE: Definition Ready — approve or reject SELL Scenario Foundation v1 Design Definition.**
+**HUMAN GATE: Design Approved — approve or reject the current Figma Design Truth.**
 
-If approved:
-1. produce User Flow / IA;
-2. create proportionate Wireframe / Design Truth;
-3. stop at **HUMAN GATE: Design Approved**;
-4. only after Design Approved proceed to Technical Definition and Builder work.
+If approved, continue automatically to Technical Definition → Builder handoff → implementation / verification under ADS.
 
 ## Stop / Escalation Conditions
 
