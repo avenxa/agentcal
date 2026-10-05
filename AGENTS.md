@@ -36,14 +36,14 @@ It owns deterministic calculation, explicit assumptions, transparent result brea
 - Product Truth: AgentCal Hub — https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
 - Product split — https://app.notion.com/p/3d8eca0675e381bda84ac79174ff2211
 - **APXS — cross-product product-experience/UI/UX authority:** https://app.notion.com/p/3daeca0675e381b6a3cef40b4c666402
-- AgentCal-specific UX/product planning authority while paused — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
+- AgentCal-specific UX/product planning reference — https://app.notion.com/p/3daeca0675e3817d9af9d2b66d047446
 - ADS — https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 - Command Protocol — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository, Git/PR state, tests, verification evidence, and `docs/HANDOFF.md`.
 
 If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict. Repository history proves what is implemented; it does not silently redefine Product Truth.
 
-APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is a product-specific extension/planning authority only while AgentCal is On Hold. Neither authorizes implementation or overrides the Resume Work reconstruction/sequencing gate.
+APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is the product-specific planning reference. Implementation still requires the applicable current ADS Definition and Design gates.
 
 ## ADS v1.1 Role Model — Mandatory Default
 
@@ -54,18 +54,21 @@ APXS governs reusable cross-product product-experience principles. The AgentCal 
 
 The Planner/Reviewer does **not** implement the same task by default. A same-AI Planner/Reviewer + Builder combination requires explicit Product Owner authorization for that specific task.
 
-## Current Execution — Paused / On Hold
+## Current Execution — Reactivated / Definition
 
-- **AgentCal is On Hold / Paused.** No feature implementation is active.
-- Current repository `main` is `30aa7256885c0ffabc20b5baa2fd367edf1280fa` (PR #7 merge commit).
-- SELL Feature 01 is implemented and merged. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
+- **AgentCal was reactivated on 2026-10-04 under the current ADS.**
+- Reactivation baseline before this documentation sync: `main` = `d566e24621fa63000589676dfe429960cc4d5acd` (PR #8 merge commit).
+- SELL Feature 01 is implemented and accepted. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
-- The approved future AgentCal sequence is: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
-- A preserved Feature 02 candidate exists on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`. It is unreviewed, unaccepted, and unmerged. Do not delete or merge it automatically.
-- BUY and MOVE are not implemented on `main` and are not authorized while paused.
+- Current ADS stage: **Definition**.
+- Current bounded objective: **SELL Scenario Foundation v1**.
+- Product Owner has authorized proactive ADS progression until the next true Human Gate.
+- The approved product sequence remains: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
+- Preserved Feature 02 remains on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`; it is unfinished and not authorized for merge or continuation during the current objective.
+- BUY and MOVE remain unimplemented and outside the current bounded objective.
 - AgentCal ↔ AgentConsult integration remains deferred.
 
-**Current Next Action while paused = no implementation.** Product/UX/governance documentation may be refined when explicitly requested. On `Resume Work`, reconstruct state, reconcile Product Truth + APXS + AgentCal UX Rebaseline + preserved Feature 02 work, then resolve sequencing before a new bounded Technical Plan or Builder handoff.
+**ONE NEXT ACTION:** complete SELL Scenario Foundation v1 Definition and stop only at **HUMAN GATE: Definition Ready**. After approval, continue through User Flow / IA / Design Truth → **HUMAN GATE: Design Approved** before Builder implementation.
 
 ## Product Boundary
 
