@@ -2,7 +2,9 @@
 
 ## Protocol State
 
-**BUILDER DISPATCH AUTHORIZED — 2026-10-04**
+**AI READY / BUILDER EXECUTION AUTHORIZED — ADS vNext migrated 2026-10-05**
+
+The prior Builder Dispatch approval remains valid. Under ADS vNext, routine Builder dispatch is not itself a Human Gate; this bounded task is already READY.
 
 Implement this bounded task on:
 
@@ -240,6 +242,8 @@ Playwright/runtime must cover:
 
 ## Builder workflow
 
+Use **Build → Test → Diagnose → Fix / self-correct → Re-test / Re-verify** until the bounded candidate satisfies required checks or a true blocker remains.
+
 1. Read all authority sources.
 2. Inspect current code before editing.
 3. Implement only this bounded slice.
@@ -259,7 +263,7 @@ Playwright/runtime must cover:
 
 ## Stop conditions
 
-STOP rather than improvise if you need to:
+STOP only the affected path rather than improvise if you need to:
 - change financial formulas, rounding, BC rule authority or disclosures;
 - change approved primary flow / IA;
 - add backend/auth/cloud persistence;
@@ -267,7 +271,10 @@ STOP rather than improvise if you need to:
 - add BUY / MOVE / AI / CRM / Share / Report;
 - merge Feature 02;
 - implement another jurisdiction;
-- perform destructive production actions.
+- perform destructive production actions;
+- cross a protected real-data / merge / release / Production boundary without the applicable authorization.
+
+A login, credential, tool-permission or account-connection problem is **WAITING — ACCESS**, not a Human Gate. Continue other authorized work where safe.
 
 ## Completion signal
 
