@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Human Gate — Builder Dispatch Authorization** — Corrected Design Truth is approved. Technical Definition is complete. No implementation is authorized until Product Owner dispatches the Builder.
+**Builder Dispatch AUTHORIZED — awaiting external Builder execution** — Product Owner approved Builder dispatch on 2026-10-04. The implementation branch is `feature/03-sell-scenario-foundation-v1`. This connected environment has no Claude Code / Cursor coding-agent execution entry, so no implementation has been started here.
 
 ## Objective
 
@@ -98,11 +98,20 @@ Definition Ready remains approved. The corrected Design Truth now includes Scena
 - Planned Builder branch: `feature/03-sell-scenario-foundation-v1`.
 - Required checks: lint, type-check, unit, build, Playwright, responsive/browser QA, Figma comparison, independent QC.
 
+## Builder Handoff
+
+- Branch: `feature/03-sell-scenario-foundation-v1`
+- Branch creation base: `145b6b339b3d5fbeaf89f7d1fb3509ef28b36c55`
+- Builder plan: `plans/features/03-sell-scenario-foundation-v1.md`
+- Technical Definition: https://app.notion.com/p/3f0eca0675e3813e97a9dcda4d955f24
+- Figma: https://www.figma.com/design/5MQ4tslEDHs26UTTbV0JBg
+- No implementation code has been written yet.
+
 ## ONE NEXT ACTION
 
-**HUMAN GATE: Builder Dispatch Authorization — authorize Claude Code / approved Builder to implement the bounded Technical Definition.**
+**External Builder Execution:** open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute `plans/features/03-sell-scenario-foundation-v1.md` under `CLAUDE.md` / `AGENTS.md`.
 
-If approved, Builder may implement and self-verify. Merge/production release remains separately gated.
+When the Builder reports **Code Complete**, return control to AI PM for independent review. Merge/production release remains separately gated.
 
 ## Stop / Escalation Conditions
 
