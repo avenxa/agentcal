@@ -41,9 +41,9 @@ It owns deterministic calculation, explicit assumptions, transparent result brea
 - Command Protocol — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository, Git/PR state, tests, verification evidence, and `docs/HANDOFF.md`.
 
-If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict. Repository history proves what is implemented; it does not silently redefine Product Truth.
+If Product Truth and repository reality materially conflict, pause only the affected action, surface the conflict, and continue unrelated authorized work. Repository history proves what is implemented; it does not silently redefine Product Truth.
 
-APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is the product-specific planning reference. Implementation still requires the applicable current ADS Definition and Design gates.
+APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is the product-specific planning reference. Under ADS vNext, Definition Ready, routine design completion, and Builder dispatch are not automatic Human Gates. Use just-enough design and stop only when an unresolved consequential decision requires Product Owner judgment.
 
 ## Current ADS Role Model — Mandatory
 
@@ -179,7 +179,7 @@ The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
 - `PROJECT_BRIEFING.md` — thin routing note.
 - `package.json` — dependencies/scripts.
-- `CLAUDE.md` — redirect to this file.
+- `CLAUDE.md` — concise Claude Code Builder contract; read it before this file.
 
 ## Calculation Engine Convention
 
@@ -210,10 +210,10 @@ Do not claim an unavailable or unexecuted check passed.
 2. Claude Code is the sole Builder; preserve AI PM / Reviewer ↔ Builder role separation.
 3. Work on one bounded objective at a time; keep unrelated edits out.
 4. Inspect actual repository state before assuming dependencies, components, tests, schema, features, or runtime behavior exist.
-5. Confirm Product Truth, sequencing, acceptance, expected evidence, and Human Gates before meaningful implementation.
+5. Confirm Product Truth, sequencing, acceptance, expected evidence, and any actual Human Gate before meaningful implementation. AI PM readiness is READY / NEEDS WORK / HUMAN GATE; READY continues automatically.
 6. Do not start Feature 02 continuation, BUY, MOVE, unrelated jurisdiction refactoring, or new jurisdiction work during Feature 03.
 7. Do not refactor existing BC logic simply for architectural purity. Preserve accepted behavior and follow the active bounded plan.
-8. Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before `Code Complete`.
+8. Builder uses **Build → Test → Diagnose → Fix / self-correct → Re-Test / Re-Verify** before `Code Complete`; do not return after the first code-writing attempt.
 9. A failing/unavailable required check remains unresolved until fixed or explicitly escalated.
 10. Update tests and durable technical documentation when implementation changes their truth.
 11. Reviewer inspects actual diff plus evidence after `Code Complete`.
@@ -224,18 +224,21 @@ Do not claim an unavailable or unexecuted check passed.
 
 ## Human Gates
 
-Product Owner approval is required for:
+Human Gates are exception-control points, not routine stage boundaries. Product Owner judgment is required for:
 
-- product scope, priority, acceptance, milestone sequencing, and Feature 02 versus BUY sequencing;
-- choosing which UX Rebaseline phase becomes implementation work;
+- material product scope, priority, core workflow/IA/UX choice, acceptance, milestone sequencing, and Feature 02 versus BUY sequencing;
+- a consequential choice of which UX Rebaseline phase becomes implementation work;
 - changes to authoritative formulas, rounding, disclosures, privacy/data handling, or calculation methodology;
 - changes to universal-core / jurisdiction-rule-pack / locale boundaries;
 - adding or materially changing a jurisdiction pack;
 - changes to AgentCal / AgentConsult responsibility boundaries;
 - consequential architecture, security, privacy, compliance, auth, or data-model decisions;
 - destructive operations or production mutation/schema migration;
+- protected real-data access or consequential new cost/external commitment;
 - task-specific Planner/Reviewer + Builder role-combination exceptions;
-- final product acceptance and applicable merge/release gates.
+- final product acceptance where required and applicable merge/release/Production gates.
+
+Definition Ready, routine design completion, Builder dispatch, testing, bug fixing, preview work, documentation, reversible implementation and handoff refresh are not Human Gates by default. Access/login/tool-permission blockers are **WAITING — ACCESS**, not Human Gates, and block only the affected path.
 
 ## Definition of Done
 
@@ -271,6 +274,10 @@ Before stopping after meaningful work, update `docs/HANDOFF.md` with:
 **Authority / Gate** — what may continue autonomously vs what needs Product Owner approval
 
 Keep the handoff current rather than appending chat transcripts or maintaining competing status documents.
+
+## Builder Dispatch / Automation
+
+GitHub is the execution/handoff layer. No GitHub Action or verified GitHub → Claude Code automatic trigger exists in this repository as of 2026-10-05. Use the current safe manual Claude Code dispatch fallback until automation is separately implemented and verified; never claim automated dispatch is operational without repository evidence.
 
 ## Current Next Action
 
