@@ -60,7 +60,7 @@ The Planner/Reviewer does **not** implement the same task by default. A same-AI 
 - Reactivation baseline before this documentation sync: `main` = `d566e24621fa63000589676dfe429960cc4d5acd` (PR #8 merge commit).
 - SELL Feature 01 is implemented and accepted. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
-- Current ADS stage: **Definition**.
+- Current ADS stage: **Design**.
 - Current bounded objective: **SELL Scenario Foundation v1**.
 - Product Owner has authorized proactive ADS progression until the next true Human Gate.
 - The approved product sequence remains: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
@@ -68,7 +68,7 @@ The Planner/Reviewer does **not** implement the same task by default. A same-AI 
 - BUY and MOVE remain unimplemented and outside the current bounded objective.
 - AgentCal ↔ AgentConsult integration remains deferred.
 
-**ONE NEXT ACTION:** complete SELL Scenario Foundation v1 Definition and stop only at **HUMAN GATE: Definition Ready**. After approval, continue through User Flow / IA / Design Truth → **HUMAN GATE: Design Approved** before Builder implementation.
+**Definition Ready is approved.** User Flow / IA and Figma Design Truth are complete. **ONE NEXT ACTION:** stop at **HUMAN GATE: Design Approved**. After approval, continue through Technical Definition → Builder handoff → Build / Verify; do not implement before this gate.
 
 ## Product Boundary
 
