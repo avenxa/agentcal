@@ -4,7 +4,6 @@ import { useEffect, useId, useRef } from "react";
 
 import { formatExactCad } from "../lib/engine/currency";
 import type { SellerNetProceedsResult } from "../lib/engine/sell";
-import type { SellerCalculatorUiState } from "../lib/engine/sell-calculator-form";
 import {
   COMMISSION_PRESET_FORMULA,
   COMMISSION_PRESET_LABEL,
@@ -15,7 +14,7 @@ import {
 type ViewCalculationProps = {
   open: boolean;
   onClose: () => void;
-  calc: SellerCalculatorUiState;
+  result: SellerNetProceedsResult | null;
 };
 
 function Row({
@@ -51,11 +50,10 @@ function focusVisibleViewTrigger() {
 export function ViewCalculationDialog({
   open,
   onClose,
-  calc,
+  result,
 }: ViewCalculationProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
-  const result = calc.result;
 
   useEffect(() => {
     const dialog = dialogRef.current;
