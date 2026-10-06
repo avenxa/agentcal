@@ -136,7 +136,7 @@ Universal calculation architecture:
 - Where practical, make rule packs traceable by **jurisdiction + rule version/effective date + validation/source metadata** so saved scenarios remain reproducible and explainable.
 - A saved scenario should not silently change historical amounts merely because current rules later change; any future recalculation/version-migration behavior requires explicit Product Truth and acceptance criteria.
 - Jurisdiction-agnostic does not mean jurisdiction-unaware. Do not invent, infer, or silently substitute local legal/tax/fee authority.
-- Do **not** implement additional jurisdictions during the current Hold. This architecture decision establishes boundaries only.
+- Do **not** implement additional jurisdictions during the current Feature 03 objective. This architecture decision establishes boundaries only.
 
 ## Product Experience — APXS + AgentCal Extensions
 
