@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**ADS vNext migrated — Builder execution READY / WAITING — ACCESS in this ChatGPT environment.** The implementation branch is `feature/03-sell-scenario-foundation-v1`. Claude Code is the sole AgentCal Builder. This ChatGPT environment has no Claude Code execution entry, so Builder execution cannot be launched here. This is an Access Gate, not a Human Gate, and no implementation has been simulated by the AI PM.
+**Code Complete — Feature 03 SELL Scenario Foundation v1.** Builder (Claude Code) implemented the bounded slice on `feature/03-sell-scenario-foundation-v1` and self-verified it. Awaiting AI PM independent review. Not merged; merge/release remain separately gated.
 
 ## Objective
 
@@ -98,21 +98,47 @@ Historical test evidence remains history only and must be rerun by Builder when 
 - Planned Builder branch: `feature/03-sell-scenario-foundation-v1`.
 - Required checks: lint, type-check, unit, build, Playwright, responsive/browser QA, Figma comparison, independent QC.
 
-## Builder Handoff
+## Code Complete Report — Feature 03
 
 - Branch: `feature/03-sell-scenario-foundation-v1`
-- Branch creation base: `145b6b339b3d5fbeaf89f7d1fb3509ef28b36c55`
-- Builder plan: `plans/features/03-sell-scenario-foundation-v1.md`
-- Technical Definition: https://app.notion.com/p/3f0eca0675e3813e97a9dcda4d955f24
-- Figma: https://www.figma.com/design/5MQ4tslEDHs26UTTbV0JBg
-- No implementation code has been written yet.
-- ADS vNext migration updated repository execution docs only; no product code, formulas, tests, deployment or runtime state was changed.
+- Implementation commit: `73a682a4cd3d97fc0f3ce83fa6d6ead39c0dd9bd` (branch head is this commit plus the docs-only handoff commit that follows it)
+- Base: `9bb2ad07c1f108e3cee05720c0cb3a3223518bf0` (docs-only Builder dispatch head)
+
+### Changed files
+- New `lib/scenarios/sell-scenario.ts` — versioned SELL Scenario model, create/duplicate/save, lifecycle (Draft/Calculated/Saved/Updated), readiness (5 groups), displayed-result resolution (clean saved Scenario keeps its saved snapshot).
+- New `lib/scenarios/sell-scenario-storage.ts` — replaceable repository interface; `localStorage` adapter at `agentcal.sell-scenarios.v1`; parse guards; defensive load (corrupt data backed up to `…v1.corrupt-<ts>` before any write; unknown/invalid records retained verbatim).
+- New `lib/scenarios/sell-scenario.test.ts` — 22 unit tests.
+- New `app/sell-scenario-app.tsx`, `sell-scenario-entry.tsx`, `sell-scenario-editor.tsx`, `sell-build-panel.tsx`, `sell-results-panel.tsx`.
+- Modified `app/page.tsx` (renders `SellScenarioApp`), `app/layout.tsx` (title), `app/currency-field.tsx` (optional `badge`, `onBlur`), `app/view-calculation.tsx` (takes `result` instead of UI state), `app/globals.css` (appended `sc-*` section, existing tokens reused), `package.json` (`test` now also runs the scenario tests).
+- Removed `app/seller-net-proceeds.tsx` and `e2e/sell-consultation.spec.ts` (the single-page consultation UI replaced by Entry → Build → Results).
+- Added `e2e/sell-scenario.spec.ts` (22 Playwright tests, 1 evidence test gated on `VISUAL_DIR`).
+- **Untouched:** `lib/engine/*` (formulas, rounding, BC rules, rule version `sell-bc-2026-08-09-v1`), `lib/sell-copy.ts`, `lib/sell-consultation.ts` (still covered by `sell.test.ts`).
+
+### Verified (run from the repo, Oct 6 2026)
+- `pnpm lint` — pass.
+- `pnpm type-check` — pass.
+- `pnpm test` — 43/43 pass (21 existing engine/form + 22 new scenario tests).
+- `pnpm build` — pass (`/` static).
+- Playwright — 21 passed + 1 evidence test passed with `VISUAL_DIR` set (22/22). **Caveat:** `pnpm test:e2e` with the repo config could not launch here (sandbox Chromium is build 1194, Playwright expects 1234). I ran the same spec with an untracked local config that only sets `executablePath: /opt/pw-browsers/chromium`; no repo config was changed. Please re-run `pnpm test:e2e` in CI/your environment.
+- Every Playwright test fails on any browser `console.error` / `pageerror` (auto fixture) — none occurred.
+- Coverage of the required flows: Entry→New, Draft Build, $850,000 → `$822,963` (accepted result), mortgage edit → `$422,963`, invalid input removes result, Build↔Results preserves edits, Save→Entry→reload→reopen, Draft save/reopen, Updated lifecycle, Duplicate (Entry and Results), mortgage warning, negative result, all selling/planning inputs reachable (exact `$835,450` / `$834,750` after planning checked by hand), keyboard arrows/focus, malformed storage, widths 320/390/768/834/1280/1366 with no horizontal overflow.
+
+### Runtime / visual evidence
+- Screenshots captured with Playwright at 390×844 and 1366×900 for Entry, Build, Results and compared by eye against Figma frames `9:2`, `3:3`, `3:48`, `3:84`, `3:139`. Structure matches (Entry cards + badges, readiness banner, Essential inputs, optional disclosure, result preview, hero + next action + key breakdown + assumptions, desktop two-column with side rail, Duplicate Scenario). Screenshots are not committed (scratch only).
+- No Vercel Preview URL was checked from this session.
+
+### Residual risks / deviations
+1. `pnpm test:e2e` not run with the stock config (browser build mismatch, see above).
+2. Figma comparison was visual by eye, not pixel diff; hero shows the full rule version instead of Figma's short "Rule v1" because the exact version must stay inspectable.
+3. Old consultation CSS in `globals.css` (topic rail, sticky summary) is now unused; left in place to keep the diff bounded. Candidate for a cleanup task.
+4. Readiness "reviewed" flags (mortgage blur, opening selling/planning sections) are saved with the Scenario and count toward Updated vs Saved.
+5. Mobile Build shows the result preview below the inputs per Figma; desktop shows it in the side rail.
+6. Persistence is browser-local only (single device/browser); no delete/archive by design.
+7. Preview/runtime on Vercel and independent QC are still outstanding.
 
 ## ONE NEXT ACTION
 
-**Owner: Claude Code.** Open `avenxa/agentcal`, checkout `feature/03-sell-scenario-foundation-v1`, and execute from repository context in this order: `CLAUDE.md` → `AGENTS.md` → `docs/HANDOFF.md` → `plans/features/03-sell-scenario-foundation-v1.md` → necessary Product Truth / Figma references.
-
-When the Builder reports **Code Complete**, return control to AI PM for independent review. Merge/production release remains separately gated.
+**Owner: AI PM / Independent Reviewer.** Review PR diff and evidence above, run `pnpm test:e2e` and open the Vercel Preview for the PR, then return Review Work findings. Merge/production release remain separately gated.
 
 ## Stop / Escalation Conditions
 
