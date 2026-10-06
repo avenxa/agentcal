@@ -77,9 +77,7 @@ Historical test evidence remains history only and must be rerun by Builder when 
 
 ## Human Gate / Access Status
 
-**Human Gate: None.** Previously completed Definition / Design approvals remain valid and are not reopened by ADS vNext migration.
-
-**WAITING — ACCESS:** this ChatGPT environment cannot invoke Claude Code. Manual Claude Code dispatch remains the safe fallback. No GitHub Action or verified GitHub → Claude Code automatic trigger exists in this repository.
+**Human Gate: None for Builder work.** Access is no longer blocked: Claude Code executed the Builder task. Review, merge and release remain separately gated.
 
 ## Design Evidence
 
