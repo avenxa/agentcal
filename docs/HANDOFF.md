@@ -120,7 +120,7 @@ Stop only the affected path if:
 - Product Truth conflicts with accepted SELL calculation behavior;
 - scope expands into BUY/MOVE/Feature 02/CRM/runtime AI;
 - authoritative formulas, rounding, jurisdiction rules or disclosures would change;
-- persistence/auth choice becomes a consequential architecture decision before Design approval;
+- persistence/auth choice becomes a consequential architecture decision outside the approved Feature 03 Technical Definition;
 - a destructive production/data action or release boundary is reached.
 
 ## ADS vNext Migration Record — 2026-10-05
