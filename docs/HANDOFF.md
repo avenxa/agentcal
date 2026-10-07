@@ -121,12 +121,17 @@ Historical test evidence remains history only and must be rerun by Builder when 
 - Every Playwright test fails on any browser `console.error` / `pageerror` (auto fixture) — none occurred.
 - Coverage of the required flows: Entry→New, Draft Build, $850,000 → `$822,963` (accepted result), mortgage edit → `$422,963`, invalid input removes result, Build↔Results preserves edits, Save→Entry→reload→reopen, Draft save/reopen, Updated lifecycle, Duplicate (Entry and Results), mortgage warning, negative result, all selling/planning inputs reachable (exact `$835,450` / `$834,750` after planning checked by hand), keyboard arrows/focus, malformed storage, widths 320/390/768/834/1280/1366 with no horizontal overflow.
 
+### Fix Handoff — QC findings on 6481b966 (Oct 7 2026)
+- **Snapshot preservation:** added `hasSameCalculationInputs` (financial form values + commission mode only). `resolveDisplayedResult` and `saveSellScenario` (new optional `baseline` arg) now use it, so rename / readiness-review-only edits and re-saves keep the saved snapshot and its `ruleVersion`; only a financial edit recalculates and updates the snapshot. `hasSameEditableState` still drives dirty / Saved vs Updated. Regression test added (simulated historical snapshot: rename + review edit + save preserved; financial edit recalculates).
+- **E2E command:** `playwright.config.ts` now honors optional `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` (unset by default; no hardcoded path). Added `.github/workflows/ci.yml` (lint, type-check, test, build, `playwright install --with-deps chromium`, `pnpm test:e2e`).
+- Verified: `pnpm lint`, `pnpm type-check`, `pnpm build` pass; `pnpm test` 44/44; `pnpm test:e2e` (repo config, with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` only because this sandbox lacks the pinned Chromium) 21 passed, 1 skipped (evidence test gated on `VISUAL_DIR`). The CI workflow has **not** run yet; first GitHub Actions run on this PR is the supported-environment evidence.
+
 ### Runtime / visual evidence
 - Screenshots captured with Playwright at 390×844 and 1366×900 for Entry, Build, Results and compared by eye against Figma frames `9:2`, `3:3`, `3:48`, `3:84`, `3:139`. Structure matches (Entry cards + badges, readiness banner, Essential inputs, optional disclosure, result preview, hero + next action + key breakdown + assumptions, desktop two-column with side rail, Duplicate Scenario). Screenshots are not committed (scratch only).
 - No Vercel Preview URL was checked from this session.
 
 ### Residual risks / deviations
-1. `pnpm test:e2e` not run with the stock config (browser build mismatch, see above).
+1. `pnpm test:e2e` still needs a green run in CI (workflow added, not yet run); see Fix Handoff above.
 2. Figma comparison was visual by eye, not pixel diff; hero shows the full rule version instead of Figma's short "Rule v1" because the exact version must stay inspectable.
 3. Old consultation CSS in `globals.css` (topic rail, sticky summary) is now unused; left in place to keep the diff bounded. Candidate for a cleanup task.
 4. Readiness "reviewed" flags (mortgage blur, opening selling/planning sections) are saved with the Scenario and count toward Updated vs Saved.

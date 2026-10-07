@@ -10,6 +10,7 @@ import {
   deriveReadiness,
   deriveStoredLifecycle,
   duplicateSellScenario,
+  hasSameCalculationInputs,
   hasSameEditableState,
   resolveDisplayedResult,
   saveSellScenario,
@@ -152,6 +153,42 @@ test("saved result snapshot is preserved while clean and recalculated after edit
   const recalculated = resolveDisplayedResult(edited, historical, deriveCalculation(edited));
   assert.equal(recalculated?.ruleVersion, SELL_RULE_VERSION);
   assert.notEqual(recalculated?.estimatedNetProceedsCents, 1);
+});
+
+test("name/review-only edits and save preserve the historical snapshot; financial edit recalculates", () => {
+  const working = withPrice("850000");
+  const saved = saveSellScenario(working, deriveCalculation(working), NOW);
+  const historical = {
+    ...saved,
+    ruleVersion: "sell-bc-historical",
+    savedResult: { ...saved.savedResult!, ruleVersion: "sell-bc-historical", estimatedNetProceedsCents: 1 },
+  } as unknown as SellScenario;
+
+  const renamed = {
+    ...historical,
+    name: "Renamed",
+    review: { mortgage: true, sellingCosts: true, planningCosts: true },
+  };
+  assert.ok(hasSameCalculationInputs(renamed, historical));
+  assert.ok(!hasSameEditableState(renamed, historical));
+  const shown = resolveDisplayedResult(renamed, historical, deriveCalculation(renamed));
+  assert.equal(shown?.estimatedNetProceedsCents, 1);
+  assert.equal(deriveLifecycle(renamed, historical, shown), "Updated");
+
+  const resaved = saveSellScenario(renamed, deriveCalculation(renamed), NOW, historical);
+  assert.equal(resaved.name, "Renamed");
+  assert.equal(resaved.ruleVersion, "sell-bc-historical");
+  assert.equal(resaved.savedResult?.ruleVersion, "sell-bc-historical");
+  assert.equal(resaved.savedResult?.estimatedNetProceedsCents, 1);
+
+  const commissionEdit = { ...historical, commissionMode: "manual" as const };
+  assert.ok(!hasSameCalculationInputs(commissionEdit, historical));
+
+  const edited = { ...historical, formValues: { ...historical.formValues, mortgagePayout: "1000" } };
+  assert.ok(!hasSameCalculationInputs(edited, historical));
+  const editedSaved = saveSellScenario(edited, deriveCalculation(edited), NOW, historical);
+  assert.equal(editedSaved.ruleVersion, SELL_RULE_VERSION);
+  assert.notEqual(editedSaved.savedResult?.estimatedNetProceedsCents, 1);
 });
 
 test("same inputs give the accepted deterministic Feature 01 result", () => {

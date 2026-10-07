@@ -113,6 +113,21 @@ export function duplicateSellScenario(
   };
 }
 
+/**
+ * Calculation-affecting equivalence: only the financial form values and the
+ * commission mode feed the engine. Name and review flags never do, so they must
+ * not invalidate a saved result snapshot.
+ */
+export function hasSameCalculationInputs(
+  a: SellScenario,
+  b: SellScenario,
+): boolean {
+  return (
+    a.commissionMode === b.commissionMode &&
+    CURRENCY_FIELD_NAMES.every((name) => a.formValues[name] === b.formValues[name])
+  );
+}
+
 /** Editable state comparison used for dirty / Saved vs Updated derivation. */
 export function hasSameEditableState(
   a: SellScenario,
@@ -135,14 +150,19 @@ export function deriveCalculation(scenario: SellScenario): SellerCalculatorUiSta
 /**
  * The authoritative result to display. A clean saved Scenario keeps showing its
  * saved snapshot so historical amounts never change silently when rules later
- * change; any edit recalculates through the engine.
+ * change; name/review-only edits keep it, and only a calculation-affecting
+ * edit recalculates through the engine.
  */
 export function resolveDisplayedResult(
   working: SellScenario,
   baseline: SellScenario | null,
   calc: SellerCalculatorUiState,
 ): SellerNetProceedsResult | null {
-  if (baseline && baseline.savedResult && hasSameEditableState(working, baseline)) {
+  if (
+    baseline &&
+    baseline.savedResult &&
+    hasSameCalculationInputs(working, baseline)
+  ) {
     return baseline.savedResult;
   }
   return calc.result;
@@ -171,16 +191,27 @@ export function saveSellScenario(
   working: SellScenario,
   calc: SellerCalculatorUiState,
   now: Date = new Date(),
+  baseline: SellScenario | null = null,
 ): SellScenario {
   const timestamp = now.toISOString();
   const name = working.name.trim() === "" ? defaultScenarioName(now) : working.name.trim();
+  // Preserve the historical snapshot + rule version unless a financial input changed.
+  const keepSnapshot =
+    baseline !== null &&
+    baseline.savedResult !== null &&
+    hasSameCalculationInputs(working, baseline);
+  const savedResult = keepSnapshot ? baseline.savedResult : calc.result;
   return {
     ...working,
     name,
     formValues: { ...working.formValues },
     review: { ...working.review },
-    savedResult: calc.result,
-    ruleVersion: calc.result ? calc.result.ruleVersion : SELL_RULE_VERSION,
+    savedResult,
+    ruleVersion: keepSnapshot
+      ? baseline.ruleVersion
+      : calc.result
+        ? calc.result.ruleVersion
+        : SELL_RULE_VERSION,
     updatedAt: timestamp,
     savedAt: timestamp,
   };

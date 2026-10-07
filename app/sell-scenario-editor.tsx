@@ -141,7 +141,7 @@ export function SellScenarioEditor({
   }
 
   function handleSave() {
-    const saved = saveSellScenario(working, calc);
+    const saved = saveSellScenario(working, calc, new Date(), baseline);
     const outcome = onSave(saved);
     if (outcome.ok) {
       setWorking(saved);
