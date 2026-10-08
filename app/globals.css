@@ -805,3 +805,548 @@ body {
     display: none;
   }
 }
+
+/* ───────── Feature 03: SELL Scenario Foundation (Entry / Build / Results) ───────── */
+
+.sc-shell {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding: 16px var(--space-page) 48px;
+}
+
+.sc-title,
+.sc-name-heading {
+  margin: 0;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+}
+
+.sc-subtitle {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sc-entry-header {
+  margin-bottom: 20px;
+}
+
+.sc-section-title {
+  margin: 28px 0 12px;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.sc-primary-button {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-brand);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sc-primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sc-inline-button {
+  width: auto;
+  margin-top: 12px;
+  padding: 0 20px;
+}
+
+.sc-card-list {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.sc-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.sc-card-head,
+.sc-banner-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.sc-card-name {
+  margin: 0;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sc-card-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.sc-card-label {
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sc-card-amount,
+.sc-side-amount {
+  margin: 4px 0 8px;
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  color: var(--color-brand);
+}
+
+.sc-card-amount-empty {
+  font-size: 22px;
+  line-height: 28px;
+}
+
+.sc-card-meta {
+  margin: 0 0 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.sc-card-actions,
+.sc-inline-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.sc-link-button {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--color-brand);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sc-link-button-quiet {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.sc-badge,
+.sc-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-muted);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sc-pill-inline {
+  margin-left: 8px;
+}
+
+.sc-badge-saved {
+  color: var(--color-positive);
+}
+
+.sc-badge-updated,
+.sc-badge-calculated {
+  color: var(--color-brand-secondary);
+}
+
+.sc-notice {
+  margin: 12px 0;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-muted);
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sc-notice-warning {
+  color: var(--color-text);
+  border-color: var(--color-warning);
+}
+
+.sc-notice-text {
+  margin: 0 0 8px;
+}
+
+.sc-caption,
+.sc-muted-text,
+.sc-status-text {
+  margin: 8px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.sc-muted-text {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sc-editor-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.sc-name-heading {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.sc-name-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-overflow: ellipsis;
+}
+
+.sc-name-input:hover,
+.sc-name-input:focus-visible {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.sc-editor-subtitle {
+  margin: 0 0 12px 52px;
+}
+
+.sc-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin: 4px 0 16px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-muted);
+}
+
+.sc-tab {
+  min-height: 44px;
+  min-width: 88px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sc-tab-active {
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: 0 0 0 1px var(--color-border);
+}
+
+.sc-banner {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-muted);
+}
+
+.sc-banner-title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 700;
+}
+
+.sc-field-label {
+  font-weight: 600;
+}
+
+.sc-disclosure {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sc-disclosure-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.sc-disclosure-icon {
+  color: var(--color-brand);
+  font-size: 24px;
+  line-height: 1;
+}
+
+.sc-subsections,
+.sc-subsection {
+  margin-top: 12px;
+}
+
+.sc-subsection[hidden],
+.sc-subsections[hidden] {
+  display: none;
+}
+
+.sc-preview {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--color-brand);
+  color: #fff;
+}
+
+.sc-preview-label {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.sc-preview-text {
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.sc-hero-amount {
+  margin: 4px 0 8px;
+  font-size: 44px;
+  line-height: 48px;
+  font-weight: 700;
+  color: var(--color-brand);
+  overflow-wrap: anywhere;
+}
+
+.sc-hero-empty {
+  color: var(--color-text-secondary);
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.sc-breakdown {
+  margin: 0;
+}
+
+.sc-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.sc-breakdown-row dt {
+  color: var(--color-text-secondary);
+}
+
+.sc-breakdown-row dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.sc-status-heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.sc-status-ok {
+  color: var(--color-positive);
+}
+
+.sc-chip-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sc-save-block {
+  margin-top: 4px;
+}
+
+.sc-editor-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Mobile: columns dissolve so each card can be ordered across both columns. */
+.sc-col {
+  display: contents;
+}
+
+.sc-col > * {
+  min-width: 0;
+}
+
+.sc-order-1 { order: 1; }
+.sc-order-2 { order: 2; }
+.sc-order-3 { order: 3; }
+.sc-order-4 { order: 4; }
+.sc-order-5 { order: 5; }
+.sc-order-6 { order: 6; }
+.sc-order-save { order: 90; }
+
+.sc-editor-grid .secondary-button {
+  margin-top: 0;
+}
+
+.sc-card .secondary-button {
+  margin-top: 12px;
+}
+
+@media (min-width: 1024px) {
+  .sc-editor-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    grid-template-rows: auto 1fr;
+    gap: 16px 24px;
+    align-items: start;
+  }
+
+  .sc-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .sc-col-main {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .sc-col-side {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .sc-save-block {
+    grid-column: 1;
+    grid-row: 2;
+    order: 0;
+  }
+
+  .sc-save-block .sc-primary-button {
+    max-width: 280px;
+  }
+
+  .sc-primary-button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 768px) {
+  .sc-shell {
+    padding-top: 24px;
+  }
+
+  .sc-entry-header,
+  .sc-primary-button.sc-entry-new {
+    max-width: 560px;
+  }
+
+  .sc-card-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 400px) {
+  .sc-hero-amount {
+    font-size: 36px;
+    line-height: 40px;
+  }
+}
+
+/* Editable currency rows inside Scenario cards stack label above a boxed input (Figma Build frames). */
+.sc-card .amount-row:has(.amount-input) {
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.sc-card .amount-row:has(.amount-input) .amount-input {
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.sc-card .amount-row:has(.amount-input) .amount-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.sc-card .amount-row:has(.amount-input) .sc-pill-inline {
+  margin-left: 4px;
+}
+
+@media (max-width: 1023px) {
+  .sc-desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sc-col-side .sc-side-result {
+    order: 0;
+  }
+
+  .sc-mobile-only {
+    display: none;
+  }
+}

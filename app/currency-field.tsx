@@ -7,6 +7,7 @@ import { formatFieldCad, parseCurrencyToCents } from "../lib/engine/currency";
 type CurrencyFieldProps = {
   id: string;
   label: string;
+  badge?: string;
   hint?: string;
   value: string;
   error?: string;
@@ -16,11 +17,13 @@ type CurrencyFieldProps = {
   emptyMeansBlank?: boolean;
   describedBy?: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
 };
 
 export function CurrencyField({
   id,
   label,
+  badge,
   hint,
   value,
   error,
@@ -30,6 +33,7 @@ export function CurrencyField({
   emptyMeansBlank = false,
   describedBy,
   onChange,
+  onBlur,
 }: CurrencyFieldProps) {
   const [focused, setFocused] = useState(false);
   const errorId = `${id}-error`;
@@ -72,7 +76,10 @@ export function CurrencyField({
       className={`amount-row ${focused ? "amount-row-editing" : ""} ${error ? "amount-row-error" : ""}`}
     >
       <label className="amount-row-text" htmlFor={id}>
-        <span className="amount-label">{label}</span>
+        <span className="amount-label">
+          {label}
+          {badge ? <span className="sc-pill sc-pill-inline">{badge}</span> : null}
+        </span>
         {hint ? (
           <span id={hintId} className="amount-hint">
             {hint}
@@ -97,7 +104,10 @@ export function CurrencyField({
         aria-describedby={describedByIds || undefined}
         onChange={(event) => onChange(event.target.value)}
         onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false);
+          onBlur?.();
+        }}
       />
       {error ? (
         <p id={errorId} className="field-error" role="alert">

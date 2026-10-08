@@ -5,7 +5,7 @@
 Before implementation, orient in this order:
 
 1. Read this file.
-2. Read **Avenxa Agentic Development System (ADS) v1.1**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
+2. Read **Avenxa Development System (ADS)**: https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08
 3. Read **Avenxa Command Protocol v1**: https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 4. Use the Command Protocol Quick Reference only as an operational aid: https://app.notion.com/p/3d7eca0675e381e98746ff8718a09d79
 5. Read **AgentCal Hub — Product Truth**: https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e
@@ -41,26 +41,27 @@ It owns deterministic calculation, explicit assumptions, transparent result brea
 - Command Protocol — https://app.notion.com/p/3d7eca0675e381fc9ea5da038a735490
 - Execution Truth: this repository, Git/PR state, tests, verification evidence, and `docs/HANDOFF.md`.
 
-If Product Truth and repository reality materially conflict, stop the affected action and surface the conflict. Repository history proves what is implemented; it does not silently redefine Product Truth.
+If Product Truth and repository reality materially conflict, pause only the affected action, surface the conflict, and continue unrelated authorized work. Repository history proves what is implemented; it does not silently redefine Product Truth.
 
-APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is the product-specific planning reference. Implementation still requires the applicable current ADS Definition and Design gates.
+APXS governs reusable cross-product product-experience principles. The AgentCal UX Rebaseline is the product-specific planning reference. Under ADS vNext, Definition Ready, routine design completion, and Builder dispatch are not automatic Human Gates. Use just-enough design and stop only when an unresolved consequential decision requires Product Owner judgment.
 
-## ADS v1.1 Role Model — Mandatory Default
+## Current ADS Role Model — Mandatory
 
 - **Product Owner / Human:** intent, priority, consequential product decisions, Human Gates, sequencing, final acceptance.
 - **ChatGPT / reasoning AI:** AI Product Manager + Planner + Architect + Reviewer. Define bounded work, prepare Builder handoffs, identify conflicts/risks, review actual implementation evidence, and recommend next action.
-- **Claude Code / approved coding agent:** Builder. Implement the bounded task, run verification, diagnose, self-correct, and maintain durable repository continuity.
+- **Claude Code:** the sole Builder for AgentCal. Implement the bounded task, run verification, diagnose, self-correct, manage Git, and maintain durable repository continuity.
+- **Cursor is discontinued and must not be used.** Do not substitute Codex, another coding agent, or ChatGPT itself as Builder unless the Product Owner explicitly changes this AgentCal project rule.
 - **Independent Reviewer:** inspect objective, actual diff, verification evidence, and runtime evidence where required.
 
-The Planner/Reviewer does **not** implement the same task by default. A same-AI Planner/Reviewer + Builder combination requires explicit Product Owner authorization for that specific task.
+The AI PM / Planner / Reviewer does **not** implement the same bounded task. Claude Code remains the implementation owner. Independent review inspects the actual diff and evidence before release readiness.
 
-## Current Execution — Reactivated / Definition
+## Current Execution — Feature 03 Build
 
 - **AgentCal was reactivated on 2026-10-04 under the current ADS.**
 - Reactivation baseline before this documentation sync: `main` = `d566e24621fa63000589676dfe429960cc4d5acd` (PR #8 merge commit).
 - SELL Feature 01 is implemented and accepted. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
 - Pure SELL calculation logic and tests live under `lib/engine/`.
-- Current ADS stage: **Design**.
+- Current ADS stage: **Builder Dispatch / Build**.
 - Current bounded objective: **SELL Scenario Foundation v1**.
 - Product Owner has authorized proactive ADS progression until the next true Human Gate.
 - The approved product sequence remains: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
@@ -68,7 +69,7 @@ The Planner/Reviewer does **not** implement the same task by default. A same-AI 
 - BUY and MOVE remain unimplemented and outside the current bounded objective.
 - AgentCal ↔ AgentConsult integration remains deferred.
 
-**Definition Ready is approved.** User Flow / IA and Figma Design Truth are complete. **ONE NEXT ACTION:** stop at **HUMAN GATE: Design Approved**. After approval, continue through Technical Definition → Builder handoff → Build / Verify; do not implement before this gate.
+**Definition Ready and corrected Design Approved are approved. Builder Dispatch is approved.** Active implementation branch: `feature/03-sell-scenario-foundation-v1`. Claude Code must execute `plans/features/03-sell-scenario-foundation-v1.md`, self-verify, and return Code Complete evidence for independent review.
 
 ## Product Boundary
 
@@ -135,7 +136,7 @@ Universal calculation architecture:
 - Where practical, make rule packs traceable by **jurisdiction + rule version/effective date + validation/source metadata** so saved scenarios remain reproducible and explainable.
 - A saved scenario should not silently change historical amounts merely because current rules later change; any future recalculation/version-migration behavior requires explicit Product Truth and acceptance criteria.
 - Jurisdiction-agnostic does not mean jurisdiction-unaware. Do not invent, infer, or silently substitute local legal/tax/fee authority.
-- Do **not** implement additional jurisdictions during the current Hold. This architecture decision establishes boundaries only.
+- Do **not** implement additional jurisdictions during the current Feature 03 objective. This architecture decision establishes boundaries only.
 
 ## Product Experience — APXS + AgentCal Extensions
 
@@ -164,7 +165,7 @@ The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-
 - BUY must not recommend or steer toward a particular mortgage product, rate, term, or lender.
 - Do not add consultation orchestration, Advisor-private notes, recommendation capture, CRM, or transaction-management scope merely to make AgentCal resemble AgentConsult.
 - Existing Feature 01 privacy/data-handling constraints remain binding unless Product Truth explicitly changes them.
-- Preserve ADS Planner/Reviewer ↔ Builder separation unless the Product Owner explicitly authorizes a task-specific exception.
+- Preserve AI PM / Reviewer ↔ Claude Code Builder separation.
 - UX simplicity must never hide material assumptions, rule provenance, or uncertainty.
 - Do not create multi-jurisdiction implementation work merely to prove abstraction.
 
@@ -178,7 +179,7 @@ The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
 - `PROJECT_BRIEFING.md` — thin routing note.
 - `package.json` — dependencies/scripts.
-- `CLAUDE.md` — redirect to this file.
+- `CLAUDE.md` — concise Claude Code Builder contract; read it before this file.
 
 ## Calculation Engine Convention
 
@@ -206,13 +207,13 @@ Do not claim an unavailable or unexecuted check passed.
 ## Execution Rules
 
 1. Invoke ADS automatically.
-2. Apply Planner/Reviewer ↔ Builder role separation by default.
+2. Claude Code is the sole Builder; preserve AI PM / Reviewer ↔ Builder role separation.
 3. Work on one bounded objective at a time; keep unrelated edits out.
 4. Inspect actual repository state before assuming dependencies, components, tests, schema, features, or runtime behavior exist.
-5. Confirm Product Truth, sequencing, acceptance, expected evidence, and Human Gates before meaningful implementation.
-6. Do not start Feature 02 continuation, BUY, MOVE, UX implementation, jurisdiction refactoring, or new jurisdiction work while AgentCal is paused.
-7. After `Resume Work`, do not refactor existing BC logic simply for architectural purity. First identify actual coupling, preserve accepted behavior, and create a bounded plan.
-8. Builder uses **Build → Verify → Diagnose → Fix → Re-Verify** before `Code Complete`.
+5. Confirm Product Truth, sequencing, acceptance, expected evidence, and any actual Human Gate before meaningful implementation. AI PM readiness is READY / NEEDS WORK / HUMAN GATE; READY continues automatically.
+6. Do not start Feature 02 continuation, BUY, MOVE, unrelated jurisdiction refactoring, or new jurisdiction work during Feature 03.
+7. Do not refactor existing BC logic simply for architectural purity. Preserve accepted behavior and follow the active bounded plan.
+8. Builder uses **Build → Test → Diagnose → Fix / self-correct → Re-Test / Re-Verify** before `Code Complete`; do not return after the first code-writing attempt.
 9. A failing/unavailable required check remains unresolved until fixed or explicitly escalated.
 10. Update tests and durable technical documentation when implementation changes their truth.
 11. Reviewer inspects actual diff plus evidence after `Code Complete`.
@@ -223,19 +224,21 @@ Do not claim an unavailable or unexecuted check passed.
 
 ## Human Gates
 
-Product Owner approval is required for:
+Human Gates are exception-control points, not routine stage boundaries. Product Owner judgment is required for:
 
-- `Resume Work` / leaving On Hold;
-- product scope, priority, acceptance, milestone sequencing, and Feature 02 versus BUY sequencing;
-- choosing which UX Rebaseline phase becomes implementation work;
+- material product scope, priority, core workflow/IA/UX choice, acceptance, milestone sequencing, and Feature 02 versus BUY sequencing;
+- a consequential choice of which UX Rebaseline phase becomes implementation work;
 - changes to authoritative formulas, rounding, disclosures, privacy/data handling, or calculation methodology;
 - changes to universal-core / jurisdiction-rule-pack / locale boundaries;
 - adding or materially changing a jurisdiction pack;
 - changes to AgentCal / AgentConsult responsibility boundaries;
 - consequential architecture, security, privacy, compliance, auth, or data-model decisions;
 - destructive operations or production mutation/schema migration;
+- protected real-data access or consequential new cost/external commitment;
 - task-specific Planner/Reviewer + Builder role-combination exceptions;
-- final product acceptance and applicable merge/release gates.
+- final product acceptance where required and applicable merge/release/Production gates.
+
+Definition Ready, routine design completion, Builder dispatch, testing, bug fixing, preview work, documentation, reversible implementation and handoff refresh are not Human Gates by default. Access/login/tool-permission blockers are **WAITING — ACCESS**, not Human Gates, and block only the affected path.
 
 ## Definition of Done
 
@@ -272,11 +275,13 @@ Before stopping after meaningful work, update `docs/HANDOFF.md` with:
 
 Keep the handoff current rather than appending chat transcripts or maintaining competing status documents.
 
+## Builder Dispatch / Automation
+
+GitHub is the execution/handoff layer. No GitHub Action or verified GitHub → Claude Code automatic trigger exists in this repository as of 2026-10-05. Use the current safe manual Claude Code dispatch fallback until automation is separately implemented and verified; never claim automated dispatch is operational without repository evidence.
+
 ## Current Next Action
 
-AgentCal is paused. There is no active implementation next action.
-
-The first future implementation action begins only after **Resume Work** reconstruction and Product Owner sequencing. Reconcile the preserved Feature 02 candidate with current Product Truth, APXS, the AgentCal UX Rebaseline, and the universal-calculation/localized-authority architecture; then decide whether to finish/review Feature 02, formally defer it and authorize BUY, or authorize a separately bounded UX/architecture task. Do not build another jurisdiction as part of reactivation unless separately approved.
+**Claude Code Builder execution is authorized for Feature 03.** On `feature/03-sell-scenario-foundation-v1`, execute `plans/features/03-sell-scenario-foundation-v1.md`, run the required verification, update `docs/HANDOFF.md`, push the branch, and report **Code Complete — Feature 03 SELL Scenario Foundation v1**. Do not merge; AI PM independent review follows.
 
 ## Tool-Specific Instructions
 

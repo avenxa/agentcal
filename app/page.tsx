@@ -1,5 +1,5 @@
-import { SellerNetProceeds } from "./seller-net-proceeds";
+import { SellScenarioApp } from "./sell-scenario-app";
 
 export default function Home() {
-  return <SellerNetProceeds />;
+  return <SellScenarioApp />;
 }

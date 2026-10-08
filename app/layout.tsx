@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Seller Net Proceeds · AgentCal",
+  title: "SELL Scenarios · AgentCal",
   description:
     "Estimated seller net proceeds for a BC real-estate consultation. Estimate only — not a quote, approval, or professional advice.",
 };
