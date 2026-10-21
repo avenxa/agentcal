@@ -811,7 +811,9 @@ body {
 .sc-shell {
   width: min(100%, 1180px);
   margin: 0 auto;
-  padding: 16px var(--space-page) 48px;
+  padding: 16px var(--space-page) calc(48px + env(safe-area-inset-bottom));
+  padding-left: max(var(--space-page), env(safe-area-inset-left));
+  padding-right: max(var(--space-page), env(safe-area-inset-right));
 }
 
 .sc-title,
@@ -1036,6 +1038,7 @@ body {
   background: transparent;
   color: var(--color-text);
   font: inherit;
+  text-align: left;
   text-overflow: ellipsis;
 }
 
@@ -1045,37 +1048,117 @@ body {
   background: var(--color-surface);
 }
 
-.sc-editor-subtitle {
+.sc-editor-title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.sc-name-row {
   margin: 0 0 12px 52px;
 }
 
-.sc-tabs {
-  display: inline-flex;
-  gap: 4px;
-  margin: 4px 0 16px;
-  padding: 4px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  background: var(--color-muted);
+.sc-disclosure-sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
 }
 
-.sc-tab {
-  min-height: 44px;
-  min-width: 88px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: 15px;
+.sc-hero-card {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-brand);
+  color: #ffffff;
+}
+
+.sc-hero-label {
+  margin: 0;
+  font-size: 13px;
+  line-height: 18px;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sc-hero-card .sc-hero-amount {
+  margin: 8px 0;
+  color: #ffffff;
+  overflow-wrap: anywhere;
+}
+
+.sc-hero-card .sc-hero-empty {
+  font-size: 24px;
+  line-height: 32px;
+  color: #d4e4e6;
+}
+
+.sc-hero-card .result-negative {
+  color: #ffc9c9;
+}
+
+.sc-hero-context,
+.sc-hero-alert {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sc-hero-alert {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  color: #8a2f2f;
+  font-weight: 600;
+}
+
+.sc-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.sc-tab-active {
-  background: var(--color-surface);
-  color: var(--color-brand);
-  box-shadow: 0 0 0 1px var(--color-border);
+.sc-hero-link:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sc-hero-link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.sc-readiness-line {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.sc-readiness-line:last-child {
+  margin-bottom: 0;
+}
+
+.sc-save-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sc-save-block .secondary-button {
+  margin-top: 0;
 }
 
 .sc-banner {
@@ -1237,7 +1320,9 @@ body {
 .sc-order-4 { order: 4; }
 .sc-order-5 { order: 5; }
 .sc-order-6 { order: 6; }
-.sc-order-save { order: 90; }
+.sc-order-7 { order: 7; }
+.sc-order-8 { order: 8; }
+.sc-order-9 { order: 9; }
 
 .sc-editor-grid .secondary-button {
   margin-top: 0;
@@ -1250,8 +1335,7 @@ body {
 @media (min-width: 1024px) {
   .sc-editor-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    grid-template-rows: auto 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px 24px;
     align-items: start;
   }
@@ -1260,30 +1344,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-
-  .sc-col-main {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .sc-col-side {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-
-  .sc-save-block {
-    grid-column: 1;
-    grid-row: 2;
-    order: 0;
-  }
-
-  .sc-save-block .sc-primary-button {
-    max-width: 280px;
-  }
-
-  .sc-primary-button {
-    width: 100%;
   }
 }
 
@@ -1333,20 +1393,4 @@ body {
 
 .sc-card .amount-row:has(.amount-input) .sc-pill-inline {
   margin-left: 4px;
-}
-
-@media (max-width: 1023px) {
-  .sc-desktop-only {
-    display: none;
-  }
-}
-
-@media (min-width: 1024px) {
-  .sc-col-side .sc-side-result {
-    order: 0;
-  }
-
-  .sc-mobile-only {
-    display: none;
-  }
 }
