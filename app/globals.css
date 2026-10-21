@@ -1130,6 +1130,14 @@ body {
   cursor: pointer;
 }
 
+.sc-hero-link-quiet {
+  display: flex;
+  min-height: 32px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
 .sc-hero-link:disabled {
   opacity: 0.55;
   cursor: not-allowed;

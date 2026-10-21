@@ -348,15 +348,12 @@ export function SellScenarioEditor({
             <p className="sc-hero-context" data-testid="hero-provenance">
               {result
                 ? usingSnapshot
-                  ? `Saved result from ${formatTimestamp(baseline?.savedAt ?? null)} · ${result.jurisdiction} · Rule ${result.ruleVersion}`
-                  : `Preliminary estimate · Updates when inputs change · ${result.jurisdiction} · Rule ${result.ruleVersion}`
-                : "Your estimate appears here once you enter a selling price."}
+                  ? `Saved result · ${formatTimestamp(baseline?.savedAt ?? null)}`
+                  : "Preliminary estimate · Updates when inputs change"
+                : calc.salePriceState === "empty"
+                  ? "Your estimate appears here once you enter a selling price."
+                  : "Correct the highlighted amount(s) to see the estimate."}
             </p>
-            {!result && calc.salePriceState === "valid" ? (
-              <p className="sc-hero-alert" data-testid="invalid-inputs-note">
-                Fix the highlighted amounts to see a result.
-              </p>
-            ) : null}
             {negative ? (
               <p className="sc-hero-alert" data-testid="negative-note">
                 {NEGATIVE_RESULT_NOTE}
@@ -366,6 +363,20 @@ export function SellScenarioEditor({
               <p className="sc-hero-alert" data-testid="results-mortgage-warning">
                 {calc.mortgageWarning}
               </p>
+            ) : null}
+            {result ? (
+              <button
+                type="button"
+                className="sc-hero-link sc-hero-link-quiet"
+                data-testid="provenance-link"
+                onClick={() => {
+                  setDetailsOpen(true);
+                  pendingFocus.current = "details-toggle";
+                  setFocusTick((tick) => tick + 1);
+                }}
+              >
+                Jurisdiction &amp; rule version
+              </button>
             ) : null}
             <button
               type="button"
@@ -420,6 +431,7 @@ export function SellScenarioEditor({
               className="sc-disclosure"
               aria-expanded={detailsOpen}
               aria-controls="calculation-details"
+              id="details-toggle"
               data-testid="details-toggle"
               onClick={() => setDetailsOpen((open) => !open)}
             >

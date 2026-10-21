@@ -75,7 +75,14 @@ test.describe("SELL Mobile UX Reset v1", () => {
     await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
     await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
-    await expect(page.getByTestId("hero-provenance")).toContainText(`CA-BC · Rule ${RULE_VERSION}`);
+    await expect(page.getByTestId("hero-provenance")).toHaveText(
+      "Preliminary estimate · Updates when inputs change",
+    );
+    await expect(page.getByTestId("hero")).not.toContainText(RULE_VERSION);
+    await page.getByTestId("provenance-link").click();
+    await expect(page.getByTestId("details-toggle")).toBeFocused();
+    await expect(page.getByTestId("detail-rule-version")).toHaveText(RULE_VERSION);
+    await expect(page.getByTestId("detail-jurisdiction")).toHaveText("CA-BC");
     await page.getByTestId("breakdown-toggle").click();
     await expect(page.getByTestId("key-breakdown")).toContainText("$850,000");
     await page.getByTestId("details-toggle").click();
@@ -99,12 +106,18 @@ test.describe("SELL Mobile UX Reset v1", () => {
     await expect(page.getByTestId("result-amount")).not.toContainText("$");
     await expect(page.getByTestId("result-amount")).toHaveText("—");
     await expect(page.getByTestId("breakdown-toggle")).toBeDisabled();
+    await expect(page.getByTestId("hero-provenance")).toHaveText(
+      "Correct the highlighted amount(s) to see the estimate.",
+    );
     await expect(page.locator("#sellingPrice")).toHaveAttribute("aria-invalid", "true");
     await fill(page, "#sellingPrice", "850000");
     await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
     await fill(page, "#mortgagePayout", "x");
     await expect(page.getByTestId("result-amount")).toHaveText("—");
-    await expect(page.getByTestId("invalid-inputs-note")).toBeVisible();
+    await expect(page.getByTestId("hero-provenance")).toHaveText(
+      "Correct the highlighted amount(s) to see the estimate.",
+    );
+    await expect(page.getByTestId("hero-provenance")).not.toContainText("enter a selling price");
   });
 
   test("disclosure sections preserve in-session edits", async ({ page }) => {
@@ -314,6 +327,26 @@ test.describe("SELL Mobile UX Reset v1", () => {
       await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
       await expectNoHorizontalOverflow(page);
     }
+  });
+
+  test("first fold 390×844: empty hero and the $822,963 result are visible without scrolling", async ({
+    page,
+  }) => {
+    await startNew(page, 390);
+    const inFirstFold = async (testId: string) => {
+      const box = await page.getByTestId(testId).boundingBox();
+      expect(box, testId).not.toBeNull();
+      expect(box!.y, `${testId} top`).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height, `${testId} bottom`).toBeLessThanOrEqual(844);
+    };
+    await expect(page.getByTestId("result-amount")).toHaveText("Enter selling price");
+    await inFirstFold("result-amount");
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    await page.locator("#sellingPrice").fill("850000");
+    await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+    await inFirstFold("result-amount");
+    await inFirstFold("hero");
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
   test("BC preset: $1,000,000 → commission $29,500 + GST $1,475, net $969,025", async ({ page }) => {
