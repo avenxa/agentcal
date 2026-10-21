@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Code Complete — Issue #11 SELL Mobile UX Reset v1.** Builder (Claude Code) implemented the bounded UX/IA reset on `claude/kind-faraday-89oqfv` (PR #12). Awaiting independent AI PM review. Not merged; merge/release remain Product Owner-gated.
+**Code Complete — PR #12 Fix Work: price-to-net explanation.** Builder (Claude Code) added the always-visible price → net bridge to the hero (Product Owner iPhone finding on `74a8098`). Awaiting independent AI PM recheck. Not merged; merge/release remain Product Owner-gated.
 
 ## Objective
 
@@ -19,6 +19,15 @@ Replace the Build/Results tab flow with a single-flow mobile-first SELL estimato
 - Untouched (verified empty diff vs main): `lib/engine/**`, `lib/scenarios/**`. Rule `sell-bc-2026-08-09-v1`, 5% commission GST, storage schema, snapshots unchanged.
 - E2E covers: first fold at 320×640 and 390×844 (price field within viewport and above hero, no tabs), $850,000 → $822,963, $400k mortgage → $422,963, $1,000,000 preset → $969,025 with $29,500 + $1,475, invalid/negative/mortgage-warning states, disclosures, keyboard/focus, save/reopen, rename keeps ruleVersion, overflow at 320/390/768/834/1280/1366, zero console errors.
 - Visual check: screenshots at 390 and 1366 compared with Figma node 25:41 / 27:2; layout matches (price → dark hero → mortgage → cost disclosures).
+
+## Fix Work — price-to-net explanation (PO iPhone finding on `74a8098`)
+
+- Hero now shows, directly under the net amount and without a disclosure: `From $X selling price`, `Less $Y mortgage payout` (only if > 0), `Less|Plus $Z estimated commission incl. GST` (preset; "commission incl. GST" for manual) or `net selling costs & adjustments` when legal/discharge/penalty/property-tax/other adjustments are present, and `Net shown to the nearest dollar` when net cents are not whole dollars. Planning costs are excluded (they do not reduce estimated net proceeds).
+- Source of truth: `PriceToNetBridge` in `app/sell-breakdown.tsx` reads only the resolved result (`inputs`, `commissionBeforeGstCents`, `gstOnCommissionCents`, `displayedSellingCostDeductionCents`, adjustments), so saved snapshots show their saved result and ruleVersion. Nothing is recomputed or hard-coded; lines reconcile to `estimatedNetProceedsCents`. Hidden when the result is null (empty/invalid).
+- Focused input stays raw (`1250000`, no mid-keystroke formatting, no caret/focus change); the grouped price appears in the bridge line.
+- `lib/engine/**`, `lib/scenarios/**` untouched.
+- Local verification: `pnpm lint` PASS; `pnpm type-check` PASS; `pnpm test` 44/44 PASS; `pnpm build` PASS; `pnpm test:e2e` 34 passed (incl. 8 new bridge tests: $1.25M → $1,212,463 + $37,537.50 at 390×844 while typing and in a 390×544 keyboard-sized viewport, 320×640, mortgage, manual commission, adjustments/credit "Plus", planning excluded, negative, empty/invalid, saved reopen) — run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` because the sandbox lacks the pinned Chromium.
+- Not verified: real iPhone Safari with the actual keyboard (Chromium viewport resize is only an approximation); exact-head CI and Vercel Preview for this fix commit (see PR comment).
 
 ## Known gaps / Open
 

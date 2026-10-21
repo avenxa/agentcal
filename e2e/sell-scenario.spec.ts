@@ -349,6 +349,124 @@ test.describe("SELL Mobile UX Reset v1", () => {
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
   });
 
+  test.describe("price → net bridge", () => {
+    const line = (page: Page, key: string) => page.getByTestId(`bridge-${key}`);
+
+    test("390×844 while typing $1,250,000: price, $37,537.50 deduction and net are in the first fold", async ({
+      page,
+    }) => {
+      await startNew(page, 390);
+      const input = page.locator("#sellingPrice");
+      await input.focus();
+      await input.pressSequentially("1250000");
+      // Focused input is not reformatted mid-keystroke; the bridge shows the grouped amount.
+      await expect(input).toBeFocused();
+      await expect(input).toHaveValue("1250000");
+      await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+      await expect(line(page, "price")).toHaveText("From $1,250,000 selling price");
+      await expect(line(page, "selling")).toHaveText("Less $37,537.50 estimated commission incl. GST");
+      await expect(line(page, "mortgage")).toHaveCount(0);
+      await expect(line(page, "rounding")).toBeVisible();
+      for (const id of ["sellingPrice", "result-amount", "price-to-net"]) {
+        const box = await (id === "sellingPrice" ? input : page.getByTestId(id)).boundingBox();
+        expect(box, id).not.toBeNull();
+        expect(box!.y + box!.height, id).toBeLessThanOrEqual(844);
+      }
+      // iPhone numeric keyboard covers roughly the bottom 300px of a 844px viewport.
+      await page.setViewportSize({ width: 390, height: 544 });
+      const bridge = await page.getByTestId("price-to-net").boundingBox();
+      expect(bridge!.y + bridge!.height).toBeLessThanOrEqual(544);
+      expect(await page.evaluate(() => window.scrollY)).toBe(0);
+      await expectNoHorizontalOverflow(page);
+    });
+
+    test("320×640 shows the bridge in the first fold", async ({ page }) => {
+      await page.setViewportSize({ width: 320, height: 640 });
+      await page.goto("/");
+      await page.getByTestId("new-scenario").click();
+      await page.locator("#sellingPrice").fill("1250000");
+      const bridge = await page.getByTestId("price-to-net").boundingBox();
+      expect(bridge!.y + bridge!.height).toBeLessThanOrEqual(640);
+      await expectNoHorizontalOverflow(page);
+    });
+
+    test("mortgage payout adds its own line and the lines reconcile to the net", async ({ page }) => {
+      await startNew(page);
+      await fill(page, "#sellingPrice", "850000");
+      await fill(page, "#mortgagePayout", "400000");
+      await expect(page.getByTestId("result-amount")).toHaveText("$422,963");
+      await expect(line(page, "price")).toHaveText("From $850,000 selling price");
+      await expect(line(page, "mortgage")).toHaveText("Less $400,000 mortgage payout");
+      await expect(line(page, "selling")).toHaveText("Less $27,037.50 estimated commission incl. GST");
+    });
+
+    test("manual commission only is not labelled estimated; other costs use a neutral label", async ({
+      page,
+    }) => {
+      await startNew(page);
+      await fill(page, "#sellingPrice", "850000");
+      await page.getByTestId("selling-toggle").click();
+      await page.getByRole("radio", { name: "Manual amount" }).check();
+      await fill(page, "#manualCommission", "10000");
+      await expect(line(page, "selling")).toHaveText("Less $10,500 commission incl. GST");
+      await fill(page, "#legalNotary", "1500");
+      await expect(line(page, "selling")).toHaveText("Less $12,000 net selling costs & adjustments");
+      await fill(page, "#otherClosingAdjustments", "500");
+      await expect(line(page, "selling")).toHaveText("Less $11,500 net selling costs & adjustments");
+      await expect(page.getByTestId("result-amount")).toHaveText("$838,500");
+    });
+
+    test("credit adjustments flip the line to Plus; planning costs stay out of the bridge", async ({
+      page,
+    }) => {
+      await startNew(page);
+      await fill(page, "#sellingPrice", "100000");
+      await page.getByTestId("selling-toggle").click();
+      await page.getByRole("radio", { name: "Manual amount" }).check();
+      await fill(page, "#manualCommission", "0");
+      await fill(page, "#otherClosingAdjustments", "2000");
+      await expect(line(page, "selling")).toHaveText("Plus $2,000 net selling costs & adjustments");
+      await expect(page.getByTestId("result-amount")).toHaveText("$102,000");
+      await page.getByTestId("planning-toggle").click();
+      await fill(page, "#staging", "1000");
+      await expect(page.getByTestId("result-amount")).toHaveText("$102,000");
+      await expect(page.getByTestId("price-to-net")).not.toContainText("staging");
+      await expect(page.getByTestId("price-to-net")).not.toContainText("planning");
+    });
+
+    test("negative proceeds still reconcile", async ({ page }) => {
+      await startNew(page);
+      await fill(page, "#sellingPrice", "100000");
+      await fill(page, "#mortgagePayout", "200000");
+      await expect(page.getByTestId("negative-note")).toBeVisible();
+      await expect(line(page, "mortgage")).toHaveText("Less $200,000 mortgage payout");
+      await expect(line(page, "selling")).toHaveText("Less $7,350 estimated commission incl. GST");
+    });
+
+    test("empty or invalid input shows no bridge", async ({ page }) => {
+      await startNew(page);
+      await expect(page.getByTestId("price-to-net")).toHaveCount(0);
+      await fill(page, "#sellingPrice", "850000");
+      await expect(page.getByTestId("price-to-net")).toBeVisible();
+      await fill(page, "#mortgagePayout", "abc");
+      await expect(page.getByTestId("price-to-net")).toHaveCount(0);
+      await fill(page, "#mortgagePayout", "0");
+      await fill(page, "#sellingPrice", "-5");
+      await expect(page.getByTestId("price-to-net")).toHaveCount(0);
+    });
+
+    test("saved snapshot bridge is derived from the saved result after reopen", async ({ page }) => {
+      await startNew(page);
+      await fill(page, "#sellingPrice", "1250000");
+      await save(page);
+      await page.reload();
+      await page.getByRole("button", { name: /^Open Sell Scenario/ }).click();
+      await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+      await expect(line(page, "price")).toHaveText("From $1,250,000 selling price");
+      await expect(line(page, "selling")).toHaveText("Less $37,537.50 estimated commission incl. GST");
+    });
+  });
+
   test("BC preset: $1,000,000 → commission $29,500 + GST $1,475, net $969,025", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "1000000");

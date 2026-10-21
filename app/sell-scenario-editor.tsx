@@ -24,7 +24,7 @@ import {
   TAX_EXCLUSION_NOTE,
   UNAVAILABLE_AMOUNT,
 } from "../lib/sell-copy";
-import { CalculationDetails, KeyBreakdown } from "./sell-breakdown";
+import { CalculationDetails, KeyBreakdown, PriceToNetBridge } from "./sell-breakdown";
 import { Chevron, PlanningCostFields, SellingCostFields } from "./sell-cost-fields";
 import { CurrencyField } from "./currency-field";
 import { formatTimestamp } from "./sell-scenario-entry";
@@ -345,6 +345,7 @@ export function SellScenarioEditor({
             >
               {heroAmount}
             </p>
+            {result ? <PriceToNetBridge result={result} /> : null}
             <p className="sc-hero-context" data-testid="hero-provenance">
               {result
                 ? usingSnapshot

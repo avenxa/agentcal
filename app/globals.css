@@ -1101,6 +1101,20 @@ body {
   color: #ffc9c9;
 }
 
+.sc-bridge {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.sc-bridge-note {
+  color: #d4e4e6;
+  font-size: 13px;
+}
+
 .sc-hero-context,
 .sc-hero-alert {
   margin: 0 0 8px;

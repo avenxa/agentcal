@@ -18,6 +18,56 @@ function deduction(cents: number): string {
   return formatWholeCad(0);
 }
 
+type BridgeLine = { key: string; text: string };
+
+/**
+ * Always-visible price → net bridge. Every figure is read from the resolved
+ * engine result (live or saved snapshot); nothing is recomputed here.
+ */
+export function PriceToNetBridge({ result }: { result: SellerNetProceedsResult }) {
+  const { inputs } = result;
+  const netSellingCents = result.displayedSellingCostDeductionCents;
+  const commissionOnly =
+    result.fixedClosingCostsCents ===
+      result.commissionBeforeGstCents + result.gstOnCommissionCents &&
+    result.propertyTaxAdjustmentCents === 0 &&
+    result.otherClosingAdjustmentsCents === 0;
+  const lines: BridgeLine[] = [
+    { key: "price", text: `From ${formatFieldCad(inputs.sellingPriceCents)} selling price` },
+  ];
+  if (inputs.mortgagePayoutCents > 0) {
+    lines.push({
+      key: "mortgage",
+      text: `Less ${formatFieldCad(inputs.mortgagePayoutCents)} mortgage payout`,
+    });
+  }
+  if (netSellingCents !== 0) {
+    const amount = formatFieldCad(Math.abs(netSellingCents));
+    const label = commissionOnly
+      ? `${result.commissionMode === "bc-preset" ? "estimated " : ""}commission incl. GST`
+      : "net selling costs & adjustments";
+    lines.push({
+      key: "selling",
+      text: `${netSellingCents > 0 ? "Less" : "Plus"} ${amount} ${label}`,
+    });
+  }
+  const rounded = result.estimatedNetProceedsCents % 100 !== 0;
+  return (
+    <ul className="sc-bridge" data-testid="price-to-net">
+      {lines.map((line) => (
+        <li key={line.key} data-testid={`bridge-${line.key}`}>
+          {line.text}
+        </li>
+      ))}
+      {rounded ? (
+        <li className="sc-bridge-note" data-testid="bridge-rounding">
+          Net shown to the nearest dollar
+        </li>
+      ) : null}
+    </ul>
+  );
+}
+
 export function KeyBreakdown({ result }: { result: SellerNetProceedsResult }) {
   const planningCents = result.optionalPlanningTotalCents;
   return (
