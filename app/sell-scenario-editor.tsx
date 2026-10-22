@@ -2,11 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { CurrencyFieldName } from "../lib/engine/sell-calculator-form";
+import {
+  OPTIONAL_FIELD_NAMES,
+  type CurrencyFieldName,
+} from "../lib/engine/sell-calculator-form";
+import type { CommissionMode } from "../lib/engine/sell";
 import {
   deriveCalculation,
   deriveLifecycle,
-  deriveReadiness,
   hasSameEditableState,
   resolveDisplayedResult,
   saveSellScenario,
@@ -14,17 +17,10 @@ import {
   type SellScenario,
 } from "../lib/scenarios/sell-scenario";
 import type { SaveResult } from "../lib/scenarios/sell-scenario-storage";
-import type { CommissionMode } from "../lib/engine/sell";
-import { SellBuildPanel } from "./sell-build-panel";
-import { SellResultsPanel } from "./sell-results-panel";
+import { SellInputsView, type CostSections } from "./sell-inputs-view";
+import { SellResultsView } from "./sell-results-view";
 
-export type EditorTab = "build" | "results";
-
-export type CostSections = {
-  optional: boolean;
-  selling: boolean;
-  planning: boolean;
-};
+type Mode = "inputs" | "results";
 
 type EditorProps = {
   initialWorking: SellScenario;
@@ -35,11 +31,20 @@ type EditorProps = {
   onDuplicate: (source: SellScenario) => void;
 };
 
-const TABS: Array<{ id: EditorTab; label: string }> = [
-  { id: "build", label: "Build" },
-  { id: "results", label: "Results" },
+const SELLING_SECTION_FIELDS: CurrencyFieldName[] = [
+  "manualCommission",
+  "legalNotary",
+  "mortgageDischarge",
+  "prepaymentPenalty",
+  "propertyTaxAdjustment",
+  "otherClosingAdjustments",
 ];
 
+/**
+ * Two distinct mental modes: Inputs (creating, never shows an amount) and
+ * Results (interpreting, never shows an input). The engine state is derived on
+ * every change, but only the explicit Calculate action presents it.
+ */
 export function SellScenarioEditor({
   initialWorking,
   initialBaseline,
@@ -50,12 +55,12 @@ export function SellScenarioEditor({
 }: EditorProps) {
   const [working, setWorking] = useState(initialWorking);
   const [baseline, setBaseline] = useState(initialBaseline);
-  const [tab, setTab] = useState<EditorTab>("build");
-  const [sections, setSections] = useState<CostSections>({
-    optional: false,
-    selling: false,
-    planning: false,
-  });
+  // A clean saved Scenario with a valid saved result reopens on Results; a Draft reopens on Inputs.
+  const opensOnResults = initialBaseline?.savedResult != null;
+  const [mode, setMode] = useState<Mode>(opensOnResults ? "results" : "inputs");
+  const [hasCalculated, setHasCalculated] = useState(opensOnResults);
+  const [attempted, setAttempted] = useState(false);
+  const [sections, setSections] = useState<CostSections>({ selling: false, planning: false });
   const [leavePrompt, setLeavePrompt] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -63,15 +68,10 @@ export function SellScenarioEditor({
   const [focusTick, setFocusTick] = useState(0);
   const pendingFocus = useRef<string | null>(null);
   const [pristine] = useState(initialWorking);
-  const tabRefs = useRef<Record<EditorTab, HTMLButtonElement | null>>({
-    build: null,
-    results: null,
-  });
 
   const calc = useMemo(() => deriveCalculation(working), [working]);
   const result = resolveDisplayedResult(working, baseline, calc);
   const lifecycle = deriveLifecycle(working, baseline, result);
-  const readiness = deriveReadiness(working, calc);
   const usingSnapshot = result !== null && result === baseline?.savedResult;
   const hasUnsavedChanges = baseline
     ? !hasSameEditableState(working, baseline)
@@ -81,12 +81,18 @@ export function SellScenarioEditor({
     const id = pendingFocus.current;
     if (!id) return;
     pendingFocus.current = null;
-    document.getElementById(id)?.focus();
-  }, [focusTick]);
+    const element = document.getElementById(id);
+    element?.focus();
+    if (id === "mode-heading") window.scrollTo({ top: 0 });
+  }, [focusTick, mode]);
+
+  function requestFocus(id: string) {
+    pendingFocus.current = id;
+    setFocusTick((tick) => tick + 1);
+  }
 
   function touch(update: (current: SellScenario) => SellScenario) {
     setWorking(update);
-    setCalculatedAt(new Date().toISOString());
     setSaveMessage(null);
     setSaveError(null);
   }
@@ -110,8 +116,8 @@ export function SellScenarioEditor({
     );
   }
 
-  function setCommissionMode(mode: CommissionMode) {
-    touch((current) => ({ ...current, commissionMode: mode }));
+  function setCommissionMode(next: CommissionMode) {
+    touch((current) => ({ ...current, commissionMode: next }));
   }
 
   function setName(name: string) {
@@ -125,19 +131,34 @@ export function SellScenarioEditor({
     if (opening && section === "planning") markReviewed("planningCosts");
   }
 
-  function goToField(fieldId: string, open: Array<keyof CostSections> = []) {
-    setTab("build");
-    if (open.length > 0) {
-      setSections((current) => {
-        const next = { ...current };
-        for (const section of open) next[section] = true;
-        return next;
-      });
-      if (open.includes("selling")) markReviewed("sellingCosts");
-      if (open.includes("planning")) markReviewed("planningCosts");
+  function calculate() {
+    setAttempted(true);
+    if (result === null) {
+      const erroneous = (Object.keys(calc.fieldErrors) as CurrencyFieldName[])[0];
+      const target = erroneous ?? "sellingPrice";
+      const needsSelling = SELLING_SECTION_FIELDS.includes(target);
+      const needsPlanning = (OPTIONAL_FIELD_NAMES as readonly string[]).includes(target);
+      if (needsSelling || needsPlanning) {
+        setSections((current) => ({
+          selling: current.selling || needsSelling,
+          planning: current.planning || needsPlanning,
+        }));
+      }
+      requestFocus(calc.fieldErrors.sellingPrice || calc.salePriceState !== "valid" ? "sellingPrice" : target);
+      return;
     }
-    pendingFocus.current = fieldId;
-    setFocusTick((tick) => tick + 1);
+    // Dismiss the on-screen keyboard before the mode switch.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    setCalculatedAt(new Date().toISOString());
+    setHasCalculated(true);
+    setAttempted(false);
+    setMode("results");
+    requestFocus("mode-heading");
+  }
+
+  function editInputs() {
+    setMode("inputs");
+    requestFocus("mode-heading");
   }
 
   function handleSave() {
@@ -162,18 +183,11 @@ export function SellScenarioEditor({
     }
   }
 
-  function handleTabKey(event: React.KeyboardEvent, current: EditorTab) {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
-    event.preventDefault();
-    const next: EditorTab = current === "build" ? "results" : "build";
-    setTab(next);
-    tabRefs.current[next]?.focus();
-  }
-
   const saveDisabled = baseline !== null && !hasUnsavedChanges;
+  const inResults = mode === "results" && result !== null;
 
   return (
-    <div className="sc-shell" data-testid="scenario-editor">
+    <div className="sc-shell v2-shell" data-testid="scenario-editor" data-mode={inResults ? "results" : "inputs"}>
       <header className="sc-editor-header">
         <button
           type="button"
@@ -193,16 +207,14 @@ export function SellScenarioEditor({
             />
           </svg>
         </button>
-        <h1 className="sc-name-heading">
-          <input
-            className="sc-name-input"
-            aria-label="Scenario name"
-            data-testid="scenario-name"
-            value={working.name}
-            maxLength={80}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </h1>
+        <input
+          className="sc-name-input"
+          aria-label="Scenario name"
+          data-testid="scenario-name"
+          value={working.name}
+          maxLength={80}
+          onChange={(event) => setName(event.target.value)}
+        />
         <span
           className={`sc-badge sc-badge-${lifecycle.toLowerCase()}`}
           data-testid="lifecycle-badge"
@@ -210,7 +222,6 @@ export function SellScenarioEditor({
           {lifecycle}
         </span>
       </header>
-      <p className="sc-subtitle sc-editor-subtitle">SELL Scenario</p>
 
       {leavePrompt ? (
         <div className="sc-notice sc-notice-warning" role="alert" data-testid="leave-prompt">
@@ -228,87 +239,53 @@ export function SellScenarioEditor({
         </div>
       ) : null}
 
-      <div className="sc-tabs" role="tablist" aria-label="Scenario sections">
-        {TABS.map(({ id, label }) => (
-          <button
-            key={id}
-            ref={(element) => {
-              tabRefs.current[id] = element;
-            }}
-            type="button"
-            role="tab"
-            id={`${id}-tab`}
-            aria-selected={tab === id}
-            aria-controls={`${id}-panel`}
-            tabIndex={tab === id ? 0 : -1}
-            className={`sc-tab ${tab === id ? "sc-tab-active" : ""}`}
-            data-testid={`tab-${id}`}
-            onClick={() => setTab(id)}
-            onKeyDown={(event) => handleTabKey(event, id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      {inResults && result ? (
+        <SellResultsView
+          working={working}
+          result={result}
+          lifecycle={lifecycle}
+          usingSnapshot={usingSnapshot}
+          calculatedAt={calculatedAt}
+          savedAt={baseline?.savedAt ?? null}
+          mortgageWarning={calc.mortgageWarning}
+          onEdit={editInputs}
+          onDuplicate={() => onDuplicate(working)}
+        />
+      ) : (
+        <SellInputsView
+          working={working}
+          calc={calc}
+          sections={sections}
+          attempted={attempted}
+          hasCalculated={hasCalculated}
+          onField={setField}
+          onMortgageBlur={() => markReviewed("mortgage")}
+          onCommissionMode={setCommissionMode}
+          onToggleSection={toggleSection}
+          onCalculate={calculate}
+        />
+      )}
 
-      <div
-        className="sc-editor-grid"
-        role="tabpanel"
-        id={`${tab}-panel`}
-        aria-labelledby={`${tab}-tab`}
-      >
-        {tab === "build" ? (
-          <SellBuildPanel
-            working={working}
-            calc={calc}
-            result={result}
-            readiness={readiness}
-            sections={sections}
-            usingSnapshot={usingSnapshot}
-            calculatedAt={calculatedAt}
-            savedAt={baseline?.savedAt ?? null}
-            onField={setField}
-            onMortgageBlur={() => markReviewed("mortgage")}
-            onCommissionMode={setCommissionMode}
-            onToggleSection={toggleSection}
-            onViewResults={() => setTab("results")}
-          />
-        ) : (
-          <SellResultsPanel
-            working={working}
-            calc={calc}
-            result={result}
-            readiness={readiness}
-            lifecycle={lifecycle}
-            usingSnapshot={usingSnapshot}
-            calculatedAt={calculatedAt}
-            savedAt={baseline?.savedAt ?? null}
-            onGoToField={goToField}
-            onDuplicate={() => onDuplicate(working)}
-          />
-        )}
-
-        <div className="sc-save-block sc-order-save">
-          <button
-            type="button"
-            className="sc-primary-button"
-            data-testid="save-scenario"
-            disabled={saveDisabled}
-            onClick={handleSave}
-          >
-            {saveDisabled ? "Saved" : "Save Scenario"}
-          </button>
-          {saveMessage ? (
-            <p className="sc-status-text" role="status" data-testid="save-status">
-              {saveMessage}
-            </p>
-          ) : null}
-          {saveError ? (
-            <p className="field-error" role="alert" data-testid="save-error">
-              {saveError}
-            </p>
-          ) : null}
-        </div>
+      <div className="sc-save-block v2-save">
+        <button
+          type="button"
+          className={inResults ? "sc-primary-button" : "secondary-button"}
+          data-testid="save-scenario"
+          disabled={saveDisabled}
+          onClick={handleSave}
+        >
+          {saveDisabled ? "Saved" : inResults ? "Save Scenario" : "Save draft"}
+        </button>
+        {saveMessage ? (
+          <p className="sc-status-text" role="status" data-testid="save-status">
+            {saveMessage}
+          </p>
+        ) : null}
+        {saveError ? (
+          <p className="field-error" role="alert" data-testid="save-error">
+            {saveError}
+          </p>
+        ) : null}
       </div>
     </div>
   );
