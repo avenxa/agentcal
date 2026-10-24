@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { INITIAL_FORM_VALUES } from "../lib/engine/sell-calculator-form";
 import {
+  CURRENCY_FIELD_NAMES,
   createSellScenario,
   duplicateSellScenario,
   type SellScenario,
@@ -38,7 +40,12 @@ export function SellScenarioApp() {
   }, [repository]);
 
   function openNew() {
-    const working = createSellScenario();
+    // Untouched amounts start genuinely empty (muted "0" placeholder), not a typed "0".
+    // Empty parses to $0 in the engine, so calculation is unchanged.
+    const base = createSellScenario();
+    const blank = { ...INITIAL_FORM_VALUES };
+    for (const name of CURRENCY_FIELD_NAMES) blank[name] = "";
+    const working = { ...base, formValues: blank };
     setSession({ key: working.id, working, baseline: null, startsUnsaved: false });
   }
 

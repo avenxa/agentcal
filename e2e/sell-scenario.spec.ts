@@ -32,9 +32,23 @@ async function fill(page: Page, selector: string, value: string) {
   await input.blur();
 }
 
-async function openTab(page: Page, tab: "build" | "results") {
-  await page.getByTestId(`tab-${tab}`).click();
-  await expect(page.getByTestId(`tab-${tab}`)).toHaveAttribute("aria-selected", "true");
+async function calculate(page: Page) {
+  await page.getByTestId("calculate").click();
+  await expect(page.getByTestId("results-view")).toBeVisible();
+}
+
+async function editInputs(page: Page) {
+  await page.getByTestId("edit-inputs").click();
+  await expect(page.getByTestId("inputs-view")).toBeVisible();
+}
+
+async function expectNoResultOnInputs(page: Page) {
+  await expect(page.getByTestId("inputs-view")).toBeVisible();
+  await expect(page.getByTestId("result-amount")).toHaveCount(0);
+  await expect(page.getByTestId("estimated-net")).toHaveCount(0);
+  await expect(page.getByTestId("results-view")).toHaveCount(0);
+  const text = await page.getByTestId("scenario-editor").innerText();
+  expect(text).not.toMatch(/Estimated net proceeds/i);
 }
 
 async function save(page: Page) {
@@ -49,91 +63,132 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow).toBeLessThanOrEqual(0);
 }
 
-test.describe("SELL Scenario Foundation v1", () => {
-  test("Entry → New Scenario opens a Draft Build with default name", async ({ page }) => {
+test.describe("SELL v2 Inputs → Calculate → Results", () => {
+  test("Entry → New opens a Draft on Inputs with no result", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await expect(page.getByRole("heading", { name: "SELL Scenarios" })).toBeVisible();
     await expect(page.getByTestId("entry-empty")).toBeVisible();
-    await expect(page.getByTestId("tier1-disclaimer")).toBeVisible();
-
     await page.getByTestId("new-scenario").click();
+    await expect(page.getByRole("heading", { name: "SELL · Inputs" })).toBeVisible();
     await expect(page.getByTestId("scenario-name")).toHaveValue(/^Sell Scenario — \d{4}-\d{2}-\d{2}$/);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
-    await expect(page.getByTestId("tab-build")).toHaveAttribute("aria-selected", "true");
-    await expect(page.getByTestId("readiness-count")).toHaveText("1 of 5 key assumptions confirmed");
     await expect(page.locator("#sellingPrice")).toHaveValue("");
-    await expect(page.locator("#mortgagePayout")).toHaveValue("$0");
+    await expect(page.locator("#mortgagePayout")).toHaveValue("");
+    await expect(page.locator("#mortgagePayout")).toHaveAttribute("placeholder", "0");
+    await expect(page.getByTestId("calculate")).toHaveText("Calculate net proceeds");
+    await expectNoResultOnInputs(page);
   });
 
-  test("Draft Results has no authoritative result and a disabled breakdown", async ({ page }) => {
+  test("typing 1250000 shows no net result or competing dollar total", async ({ page }) => {
     await startNew(page);
-    await openTab(page, "results");
-    await expect(page.getByTestId("result-amount")).toHaveText("Enter selling price");
-    await expect(page.getByTestId("view-calculation")).toBeDisabled();
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    const input = page.locator("#sellingPrice");
+    await input.focus();
+    await page.keyboard.type("1250000");
+    await expect(input).toHaveValue("1250000");
+    await expect(input).toBeFocused();
+    await expectNoResultOnInputs(page);
+    const body = await page.locator("body").innerText();
+    expect(body).not.toContain("1,212,463");
+    expect(body).not.toContain("1,212,462");
+    // Only the entered price may appear as a dollar amount near the field after blur.
+    await input.blur();
+    await expect(input).toHaveValue("$1,250,000");
+    await expectNoResultOnInputs(page);
   });
 
-  test("selling price returns the accepted deterministic result", async ({ page }) => {
+  test("Calculate shows the $1.25M ledger with the final net last", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "1250000");
+    await calculate(page);
+    await expect(page.getByRole("heading", { name: "SELL · Results" })).toBeFocused();
+    await expect(page.locator("#sellingPrice")).toHaveCount(0);
+    const rows = page.getByTestId("ledger-row");
+    await expect(rows).toHaveCount(5);
+    await expect(rows.nth(0)).toContainText("Selling price");
+    await expect(rows.nth(0)).toContainText("$1,250,000.00");
+    await expect(rows.nth(1)).toContainText("Commission");
+    await expect(rows.nth(1)).toContainText("negotiable");
+    await expect(rows.nth(1)).toContainText("−$35,750.00");
+    await expect(rows.nth(2)).toContainText("GST on commission (5%)");
+    await expect(rows.nth(2)).toContainText("−$1,787.50");
+    await expect(rows.nth(3)).toContainText("Mortgage payout");
+    await expect(rows.nth(3)).toContainText("−$0.00");
+    await expect(rows.nth(4)).toContainText("Other closing costs & adjustments");
+    await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+    await expect(page.getByTestId("net-exact")).toContainText("Exact $1,212,462.50");
+    await expect(page.getByTestId("net-exact")).toContainText("rounded");
+    await expect(page.getByTestId("result-status")).toHaveText("Preliminary");
+    // Final net is the last element of the ledger, after every deduction.
+    const lastTestId = await page
+      .getByTestId("ledger")
+      .locator("> li")
+      .last()
+      .getAttribute("data-testid");
+    expect(lastTestId).toBe("estimated-net");
+  });
+
+  test("accepted vectors: $850k, $1M manual commission, mortgage $400k", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "850000");
-    await expect(page.getByTestId("readiness-count")).toHaveText("2 of 5 key assumptions confirmed");
-    await expect(page.getByTestId("side-result")).toContainText("$822,963");
-    await openTab(page, "results");
+    await calculate(page);
     await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
-    await expect(page.getByTestId("hero-provenance")).toContainText(`CA-BC · Rule ${RULE_VERSION}`);
-    await expect(page.getByTestId("view-calculation")).toBeEnabled();
-  });
-
-  test("mortgage edit recalculates; $0 mortgage never blocks", async ({ page }) => {
-    await startNew(page);
-    await fill(page, "#sellingPrice", "850000");
+    await editInputs(page);
     await fill(page, "#mortgagePayout", "400000");
-    await expect(page.getByTestId("readiness-count")).toHaveText("3 of 5 key assumptions confirmed");
-    await openTab(page, "results");
+    await calculate(page);
     await expect(page.getByTestId("result-amount")).toHaveText("$422,963");
-    await expect(page.getByTestId("key-breakdown")).toContainText("− $400,000");
+
+    await editInputs(page);
+    await fill(page, "#mortgagePayout", "0");
+    await fill(page, "#sellingPrice", "1000000");
+    await page.getByTestId("selling-toggle").click();
+    await page.getByRole("radio", { name: "Manual amount" }).check();
+    await fill(page, "#manualCommission", "29500");
+    await calculate(page);
+    const rows = page.getByTestId("ledger-row");
+    await expect(rows.nth(1)).toContainText("−$29,500.00");
+    await expect(rows.nth(2)).toContainText("−$1,475.00");
+    await expect(page.getByTestId("result-amount")).toHaveText("$969,025");
   });
 
-  test("invalid current input removes the authoritative result", async ({ page }) => {
+  test("Edit inputs shows prior values, hides the old result, recalculates", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "850000");
-    await fill(page, "#sellingPrice", "abc");
-    await expect(page.getByTestId("side-result")).not.toContainText("$");
-    await openTab(page, "results");
-    await expect(page.getByTestId("result-amount")).toHaveText("—");
-    await expect(page.getByTestId("view-calculation")).toBeDisabled();
-    await openTab(page, "build");
+    await calculate(page);
+    await editInputs(page);
+    await expect(page.locator("#sellingPrice")).toHaveValue("$850,000");
+    await expect(page.getByTestId("calculate")).toHaveText("Recalculate & show results");
+    await expectNoResultOnInputs(page);
+    await fill(page, "#mortgagePayout", "400000");
+    await expectNoResultOnInputs(page);
+    await calculate(page);
+    await expect(page.getByTestId("result-amount")).toHaveText("$422,963");
+  });
+
+  test("empty or invalid input cannot reach Results", async ({ page }) => {
+    await startNew(page);
+    await page.getByTestId("calculate").click();
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
     await expect(page.locator("#sellingPrice")).toHaveAttribute("aria-invalid", "true");
+    await expect(page.locator("#sellingPrice")).toBeFocused();
+    await fill(page, "#sellingPrice", "abc");
+    await page.getByTestId("calculate").click();
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+    await expect(page.getByTestId("results-view")).toHaveCount(0);
     await fill(page, "#sellingPrice", "850000");
-    await openTab(page, "results");
-    await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
-
-    await openTab(page, "build");
     await fill(page, "#mortgagePayout", "x");
-    await openTab(page, "results");
-    await expect(page.getByTestId("result-amount")).toHaveText("—");
-    await expect(page.getByTestId("invalid-inputs-note")).toBeVisible();
+    await page.getByTestId("calculate").click();
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+    await expect(page.locator("#mortgagePayout")).toBeFocused();
+    await expectNoResultOnInputs(page);
   });
 
-  test("Build ↔ Results preserves in-session edits", async ({ page }) => {
-    await startNew(page);
-    await fill(page, "#sellingPrice", "900000");
-    await page.getByTestId("optional-toggle").click();
-    await page.getByTestId("planning-toggle").click();
-    await fill(page, "#staging", "5000");
-    await openTab(page, "results");
-    await openTab(page, "build");
-    await expect(page.locator("#sellingPrice")).toHaveValue("$900,000");
-    await expect(page.locator("#staging")).toHaveValue("$5,000");
-  });
-
-  test("Save → Entry → reopen restores the Scenario and its provenance", async ({ page }) => {
+  test("Save → Entry → reopen opens Results under the saved basis", async ({ page }) => {
     await startNew(page);
     await page.getByTestId("scenario-name").fill("Sell — 123 Main Street");
     await fill(page, "#sellingPrice", "850000");
     await fill(page, "#mortgagePayout", "400000");
+    await calculate(page);
     await save(page);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
     await expect(page.getByTestId("save-scenario")).toBeDisabled();
@@ -141,58 +196,75 @@ test.describe("SELL Scenario Foundation v1", () => {
     await page.getByTestId("back-to-entry").click();
     const card = page.getByTestId("scenario-card");
     await expect(card).toHaveCount(1);
-    await expect(card).toContainText("Sell — 123 Main Street");
-    await expect(card).toContainText("Saved");
     await expect(card).toContainText("$422,963");
 
     await page.reload();
     await page.getByRole("button", { name: "Open Sell — 123 Main Street" }).click();
-    await expect(page.getByTestId("scenario-name")).toHaveValue("Sell — 123 Main Street");
-    await expect(page.locator("#sellingPrice")).toHaveValue("$850,000");
-    await expect(page.locator("#mortgagePayout")).toHaveValue("$400,000");
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
-    await openTab(page, "results");
+    await expect(page.getByTestId("results-view")).toBeVisible();
     await expect(page.getByTestId("result-amount")).toHaveText("$422,963");
+    await expect(page.getByTestId("result-status")).toHaveText("Saved result");
     await page.getByTestId("details-toggle").click();
     await expect(page.getByTestId("detail-rule-version")).toHaveText(RULE_VERSION);
     await expect(page.getByTestId("detail-jurisdiction")).toHaveText("CA-BC");
+    await editInputs(page);
+    await expect(page.locator("#sellingPrice")).toHaveValue("$850,000");
+    await expect(page.locator("#mortgagePayout")).toHaveValue("$400,000");
   });
 
-  test("Saved → edit → Updated → save again", async ({ page }) => {
+  test("Saved → edit → Updated; editing does not persist until saved", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
     await save(page);
+    await editInputs(page);
     await fill(page, "#mortgagePayout", "100000");
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Updated");
-    await expect(page.getByTestId("save-scenario")).toBeEnabled();
+    await page.getByTestId("back-to-entry").click();
+    await expect(page.getByTestId("leave-prompt")).toBeVisible();
+    await page.getByTestId("discard-changes").click();
+    await expect(page.getByTestId("scenario-card")).toContainText("$822,963");
+
+    await page.getByRole("button", { name: /^Open/ }).first().click();
+    await editInputs(page);
+    await fill(page, "#mortgagePayout", "100000");
+    await calculate(page);
     await save(page);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await expect(page.getByTestId("result-amount")).toHaveText("$722,963");
   });
 
-  test("Draft can be saved and reopened", async ({ page }) => {
+  test("rename-only edit keeps the saved snapshot result", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await save(page);
+    await page.getByTestId("scenario-name").fill("Renamed");
+    await expect(page.getByTestId("result-status")).toHaveText("Saved result");
+    await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+  });
+
+  test("Draft can be saved from Inputs and reopens on Inputs", async ({ page }) => {
     await startNew(page);
     await save(page);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
     await page.getByTestId("back-to-entry").click();
     const card = page.getByTestId("scenario-card");
-    await expect(card).toContainText("Draft");
     await expect(card).toContainText("No result yet");
     await card.getByRole("button", { name: /^Open/ }).click();
-    await expect(page.locator("#sellingPrice")).toHaveValue("");
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+    await expectNoResultOnInputs(page);
   });
 
-  test("Duplicate creates an unsaved copy until explicitly saved", async ({ page }) => {
+  test("Duplicate creates an unsaved copy on Inputs until saved", async ({ page }) => {
     await startNew(page);
     await page.getByTestId("scenario-name").fill("Original");
     await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
     await save(page);
-    await page.getByTestId("back-to-entry").click();
-    await page.getByRole("button", { name: "Duplicate Original" }).click();
+    await page.getByTestId("duplicate-scenario").click();
     await expect(page.getByTestId("scenario-name")).toHaveValue("Copy of Original");
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
     await expect(page.locator("#sellingPrice")).toHaveValue("$850,000");
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
-
     await page.getByTestId("back-to-entry").click();
     await expect(page.getByTestId("leave-prompt")).toBeVisible();
     await page.getByTestId("discard-changes").click();
@@ -202,27 +274,17 @@ test.describe("SELL Scenario Foundation v1", () => {
     await save(page);
     await page.getByTestId("back-to-entry").click();
     await expect(page.getByTestId("scenario-card")).toHaveCount(2);
-    await expect(page.getByTestId("scenario-card").first()).toContainText("Copy of Original");
   });
 
-  test("Duplicate from Results opens an unsaved copy", async ({ page }) => {
-    await startNew(page);
-    await fill(page, "#sellingPrice", "850000");
-    await save(page);
-    await openTab(page, "results");
-    await page.getByTestId("duplicate-scenario").click();
-    await expect(page.getByTestId("scenario-name")).toHaveValue(/^Copy of Sell Scenario/);
-    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
-  });
-
-  test("mortgage warning still calculates a signed negative result", async ({ page }) => {
+  test("mortgage above price warns on Inputs and yields a negative result", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "100000");
     await fill(page, "#mortgagePayout", "200000");
     await expect(page.getByTestId("mortgage-warning")).toHaveText(
       "Mortgage payout exceeds the expected selling price.",
     );
-    await openTab(page, "results");
+    await expectNoResultOnInputs(page);
+    await calculate(page);
     const amount = page.getByTestId("result-amount");
     await expect(amount).toContainText("-");
     await expect(amount).toHaveClass(/result-negative/);
@@ -232,35 +294,18 @@ test.describe("SELL Scenario Foundation v1", () => {
     await expect(page.getByTestId("results-mortgage-warning")).toBeVisible();
   });
 
-  test("all accepted selling and planning inputs remain reachable and affect the result", async ({
-    page,
-  }) => {
+  test("selling and planning inputs reach the ledger; planning stays separate", async ({ page }) => {
     await startNew(page, 1366);
     await fill(page, "#sellingPrice", "850000");
     await expect(page.locator("#legalNotary")).toBeHidden();
-    await page.getByTestId("optional-toggle").click();
     await page.getByTestId("selling-toggle").click();
-
-    await expect(page.getByRole("radio", { name: "Typical BC preset" })).toBeChecked();
-    for (const id of [
-      "legalNotary",
-      "mortgageDischarge",
-      "prepaymentPenalty",
-      "propertyTaxAdjustment",
-      "otherClosingAdjustments",
-    ]) {
-      await expect(page.locator(`#${id}`)).toBeVisible();
-    }
-    await expect(page.getByText("GST on commission", { exact: true })).toBeVisible();
     await page.getByRole("radio", { name: "Manual amount" }).check();
-    await expect(page.locator("#manualCommission")).toBeVisible();
     await fill(page, "#manualCommission", "10000");
     await fill(page, "#legalNotary", "1500");
     await fill(page, "#mortgageDischarge", "300");
     await fill(page, "#prepaymentPenalty", "2000");
     await fill(page, "#propertyTaxAdjustment", "-500");
     await fill(page, "#otherClosingAdjustments", "250");
-
     await page.getByTestId("planning-toggle").click();
     for (const id of [
       "staging",
@@ -274,39 +319,153 @@ test.describe("SELL Scenario Foundation v1", () => {
       await fill(page, `#${id}`, "100");
     }
     await expect(page.getByTestId("planning-total")).toContainText("$700");
-    await expect(page.getByTestId("readiness-count")).toHaveText("4 of 5 key assumptions confirmed");
-
-    await openTab(page, "results");
+    await calculate(page);
     // 850,000 − 10,000 − 500 GST − 1,500 − 300 − 2,000 − 500 + 250 = 835,450
     await expect(page.getByTestId("result-amount")).toHaveText("$835,450");
     await expect(page.getByTestId("planning-row")).toContainText("$700");
     await expect(page.getByTestId("after-planning-row")).toContainText("$834,750");
-    await page.getByTestId("view-calculation").click();
-    await expect(page.getByRole("dialog")).toContainText(`Rule version ${RULE_VERSION}`);
-    await page.keyboard.press("Escape");
-    await expect(page.getByTestId("view-calculation")).toBeFocused();
+    await expect(page.getByTestId("ledger")).toContainText("Property-tax adjustment");
+    await expect(page.getByTestId("ledger")).not.toContainText("Optional planning");
   });
 
-  test("keyboard: tabs use arrow keys and next actions move focus to the field", async ({ page }) => {
+  test("keyboard: Enter in a field calculates; Edit inputs is reachable", async ({ page }) => {
+    await startNew(page);
+    const input = page.locator("#sellingPrice");
+    await input.focus();
+    await page.keyboard.type("850000");
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("results-view")).toBeVisible();
+    await page.getByTestId("edit-inputs").focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+  });
+
+  for (const width of [320, 390]) {
+    test(`untouched optional amounts are empty with a "0" placeholder at ${width}px`, async ({ page }) => {
+      await startNew(page, width);
+      await expect(page.locator("#sellingPrice")).toHaveValue("");
+      await expect(page.locator("#sellingPrice")).toHaveAttribute("placeholder", "Enter amount");
+      await page.getByTestId("selling-toggle").click();
+      await page.getByRole("radio", { name: "Manual amount" }).check();
+      await page.getByTestId("planning-toggle").click();
+      const plain = [
+        "mortgagePayout",
+        "manualCommission",
+        "legalNotary",
+        "mortgageDischarge",
+        "prepaymentPenalty",
+        "staging",
+        "repairs",
+        "inspectionAppraisal",
+        "cleaning",
+        "movingStorage",
+        "overlapHousing",
+        "otherPlanningCosts",
+      ];
+      for (const id of plain) {
+        const input = page.locator(`#${id}`);
+        await expect(input).toHaveValue("");
+        await expect(input).toHaveAttribute("placeholder", "0");
+        await input.focus();
+        await expect(input).toHaveValue("");
+      }
+      for (const id of ["propertyTaxAdjustment", "otherClosingAdjustments"]) {
+        const input = page.locator(`#${id}`);
+        await expect(input).toHaveValue("");
+        await expect(input).toHaveAttribute("placeholder", "0 or signed amount");
+      }
+      const mortgage = page.locator("#mortgagePayout");
+      await mortgage.focus();
+      await mortgage.pressSequentially("2500");
+      await expect(mortgage).toHaveValue("2500");
+      await mortgage.blur();
+      await expect(mortgage).toHaveValue("$2,500");
+      const signed = page.locator("#propertyTaxAdjustment");
+      await signed.focus();
+      await signed.pressSequentially("-500");
+      await expect(signed).toHaveValue("-500");
+      await signed.blur();
+      // A cleared optional amount is $0 again and still calculates.
+      await mortgage.focus();
+      await mortgage.fill("");
+      await mortgage.blur();
+      await expect(mortgage).toHaveValue("");
+      await fill(page, "#sellingPrice", "850000");
+      await fill(page, "#propertyTaxAdjustment", "");
+      await page.getByRole("radio", { name: "Typical BC preset" }).check();
+      await calculate(page);
+      await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  test("valid price stays Draft on Inputs; Save draft reopens on Inputs, not Results", async ({ page }) => {
+    await startNew(page);
+    await page.locator("#sellingPrice").focus();
+    await page.keyboard.type("1250000");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await expect(page.getByTestId("lifecycle-badge")).not.toHaveText(/Calculated/);
+    await expectNoResultOnInputs(page);
+    await save(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await page.getByTestId("back-to-entry").click();
+    const card = page.getByTestId("scenario-card");
+    await expect(card).toContainText("Draft");
+    await expect(card).toContainText("No result yet");
+
+    await page.reload();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await expect(page.locator("#sellingPrice")).toHaveValue("$1,250,000");
+    await expectNoResultOnInputs(page);
+
+    // Calculating the reopened draft is unsaved work until saved.
+    await calculate(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
+    await expect(page.getByTestId("save-scenario")).toBeEnabled();
+    await save(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await page.getByTestId("back-to-entry").click();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("results-view")).toBeVisible();
+    await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+  });
+
+  test("changed numbers on a saved Scenario need Calculate before saving", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "850000");
-    await page.getByTestId("tab-build").focus();
-    await page.keyboard.press("ArrowRight");
-    await expect(page.getByTestId("tab-results")).toBeFocused();
-    await expect(page.getByTestId("tab-results")).toHaveAttribute("aria-selected", "true");
-    await page.getByTestId("action-mortgage").click();
-    await expect(page.locator("#mortgagePayout")).toBeFocused();
+    await calculate(page);
+    await save(page);
+    await editInputs(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await fill(page, "#mortgagePayout", "100000");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Updated");
+    await expect(page.getByTestId("save-scenario")).toHaveCount(0);
+    await expect(page.getByTestId("save-needs-calculate")).toBeVisible();
+    await expectNoResultOnInputs(page);
+  });
 
-    await fill(page, "#mortgagePayout", "100");
-    await openTab(page, "results");
-    await page.getByTestId("action-edit-mortgage").focus();
-    await page.keyboard.press("Enter");
-    await expect(page.locator("#mortgagePayout")).toBeFocused();
-
-    await openTab(page, "results");
-    await page.getByTestId("action-selling").click();
-    await expect(page.locator("#legalNotary")).toBeFocused();
-    await expect(page.getByTestId("selling-toggle")).toHaveAttribute("aria-expanded", "true");
+  test("explicit saved zero and snapshot survive reopen, focus and blur", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await fill(page, "#mortgagePayout", "0");
+    await calculate(page);
+    await save(page);
+    await page.getByTestId("back-to-entry").click();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await editInputs(page);
+    const mortgage = page.locator("#mortgagePayout");
+    await expect(mortgage).toHaveValue("$0");
+    await mortgage.focus();
+    await expect(mortgage).toHaveValue("0");
+    await mortgage.blur();
+    await expect(mortgage).toHaveValue("$0");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await calculate(page);
+    await expect(page.getByTestId("result-status")).toHaveText("Saved result");
+    await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+    await expect(page.getByTestId("save-scenario")).toBeDisabled();
   });
 
   test("malformed localStorage does not crash or silently erase data", async ({ page }) => {
@@ -329,32 +488,31 @@ test.describe("SELL Scenario Foundation v1", () => {
   });
 
   for (const width of WIDTHS) {
-    test(`no horizontal overflow and usable layout at ${width}px`, async ({ page }) => {
+    test(`no horizontal overflow in either mode at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
       await expectNoHorizontalOverflow(page);
       await page.getByTestId("new-scenario").click();
       await page.getByTestId("scenario-name").fill("A very long scenario name for responsive overflow testing");
       await fill(page, "#sellingPrice", "99999999");
-      await page.getByTestId("optional-toggle").click();
       await page.getByTestId("selling-toggle").click();
       await page.getByTestId("planning-toggle").click();
       await expectNoHorizontalOverflow(page);
-      await openTab(page, "results");
+      await expectNoResultOnInputs(page);
+      await calculate(page);
       await page.getByTestId("details-toggle").click();
       await expectNoHorizontalOverflow(page);
       await expect(page.getByTestId("result-amount")).toBeVisible();
-      await expect(page.getByTestId("save-scenario")).toBeVisible();
+      await expect(page.locator("input")).toHaveCount(1); // scenario name only; no price field
       await save(page);
       await page.getByTestId("back-to-entry").click();
       await expectNoHorizontalOverflow(page);
-      await expect(page.getByTestId("scenario-card")).toBeVisible();
     });
   }
 
   test("visual evidence screenshots", async ({ page }) => {
     const dir = process.env.VISUAL_DIR;
-    test.skip(!dir, "set VISUAL_DIR to capture Figma-comparison screenshots");
+    test.skip(!dir, "set VISUAL_DIR to capture screenshots");
     for (const [width, height] of [
       [390, 844],
       [1366, 900],
@@ -364,18 +522,14 @@ test.describe("SELL Scenario Foundation v1", () => {
       await page.evaluate(() => window.localStorage.clear());
       await page.reload();
       await page.getByTestId("new-scenario").click();
-      await page.getByTestId("scenario-name").fill("Sell — 123 Main Street");
-      await fill(page, "#sellingPrice", "1200000");
-      await fill(page, "#mortgagePayout", "425000");
-      await page.screenshot({ path: `${dir}/build-${width}.png` });
-      await openTab(page, "results");
+      await page.screenshot({ path: `${dir}/inputs-default-${width}.png` });
+      await page.locator("#sellingPrice").focus();
+      await page.keyboard.type("1250000");
+      await page.screenshot({ path: `${dir}/inputs-typing-${width}.png` });
+      await calculate(page);
       await page.screenshot({ path: `${dir}/results-${width}.png` });
-      await save(page);
-      await page.getByTestId("back-to-entry").click();
-      await page.getByTestId("new-scenario").click();
-      await page.getByTestId("save-scenario").click();
-      await page.getByTestId("back-to-entry").click();
-      await page.screenshot({ path: `${dir}/entry-${width}.png` });
+      await editInputs(page);
+      await page.screenshot({ path: `${dir}/edit-after-result-${width}.png` });
     }
   });
 });
