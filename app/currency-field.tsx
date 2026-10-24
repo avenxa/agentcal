@@ -49,9 +49,7 @@ export function CurrencyField({
   const restingValue =
     parsedValue.status === "valid"
       ? formatFieldCad(parsedValue.cents)
-      : parsedValue.status === "empty" && !emptyMeansBlank
-        ? formatFieldCad(0)
-        : value;
+      : value;
 
   if (readOnly) {
     return (

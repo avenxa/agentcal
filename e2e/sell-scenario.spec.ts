@@ -74,7 +74,8 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await expect(page.getByTestId("scenario-name")).toHaveValue(/^Sell Scenario — \d{4}-\d{2}-\d{2}$/);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
     await expect(page.locator("#sellingPrice")).toHaveValue("");
-    await expect(page.locator("#mortgagePayout")).toHaveValue("$0");
+    await expect(page.locator("#mortgagePayout")).toHaveValue("");
+    await expect(page.locator("#mortgagePayout")).toHaveAttribute("placeholder", "0");
     await expect(page.getByTestId("calculate")).toHaveText("Calculate net proceeds");
     await expectNoResultOnInputs(page);
   });
@@ -337,6 +338,134 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await page.getByTestId("edit-inputs").focus();
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("inputs-view")).toBeVisible();
+  });
+
+  for (const width of [320, 390]) {
+    test(`untouched optional amounts are empty with a "0" placeholder at ${width}px`, async ({ page }) => {
+      await startNew(page, width);
+      await expect(page.locator("#sellingPrice")).toHaveValue("");
+      await expect(page.locator("#sellingPrice")).toHaveAttribute("placeholder", "Enter amount");
+      await page.getByTestId("selling-toggle").click();
+      await page.getByRole("radio", { name: "Manual amount" }).check();
+      await page.getByTestId("planning-toggle").click();
+      const plain = [
+        "mortgagePayout",
+        "manualCommission",
+        "legalNotary",
+        "mortgageDischarge",
+        "prepaymentPenalty",
+        "staging",
+        "repairs",
+        "inspectionAppraisal",
+        "cleaning",
+        "movingStorage",
+        "overlapHousing",
+        "otherPlanningCosts",
+      ];
+      for (const id of plain) {
+        const input = page.locator(`#${id}`);
+        await expect(input).toHaveValue("");
+        await expect(input).toHaveAttribute("placeholder", "0");
+        await input.focus();
+        await expect(input).toHaveValue("");
+      }
+      for (const id of ["propertyTaxAdjustment", "otherClosingAdjustments"]) {
+        const input = page.locator(`#${id}`);
+        await expect(input).toHaveValue("");
+        await expect(input).toHaveAttribute("placeholder", "0 or signed amount");
+      }
+      const mortgage = page.locator("#mortgagePayout");
+      await mortgage.focus();
+      await mortgage.pressSequentially("2500");
+      await expect(mortgage).toHaveValue("2500");
+      await mortgage.blur();
+      await expect(mortgage).toHaveValue("$2,500");
+      const signed = page.locator("#propertyTaxAdjustment");
+      await signed.focus();
+      await signed.pressSequentially("-500");
+      await expect(signed).toHaveValue("-500");
+      await signed.blur();
+      // A cleared optional amount is $0 again and still calculates.
+      await mortgage.focus();
+      await mortgage.fill("");
+      await mortgage.blur();
+      await expect(mortgage).toHaveValue("");
+      await fill(page, "#sellingPrice", "850000");
+      await fill(page, "#propertyTaxAdjustment", "");
+      await page.getByRole("radio", { name: "Typical BC preset" }).check();
+      await calculate(page);
+      await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  test("valid price stays Draft on Inputs; Save draft reopens on Inputs, not Results", async ({ page }) => {
+    await startNew(page);
+    await page.locator("#sellingPrice").focus();
+    await page.keyboard.type("1250000");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await expect(page.getByTestId("lifecycle-badge")).not.toHaveText(/Calculated/);
+    await expectNoResultOnInputs(page);
+    await save(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await page.getByTestId("back-to-entry").click();
+    const card = page.getByTestId("scenario-card");
+    await expect(card).toContainText("Draft");
+    await expect(card).toContainText("No result yet");
+
+    await page.reload();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("inputs-view")).toBeVisible();
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    await expect(page.locator("#sellingPrice")).toHaveValue("$1,250,000");
+    await expectNoResultOnInputs(page);
+
+    // Calculating the reopened draft is unsaved work until saved.
+    await calculate(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Calculated");
+    await expect(page.getByTestId("save-scenario")).toBeEnabled();
+    await save(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await page.getByTestId("back-to-entry").click();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("results-view")).toBeVisible();
+    await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+  });
+
+  test("changed numbers on a saved Scenario need Calculate before saving", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await save(page);
+    await editInputs(page);
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await fill(page, "#mortgagePayout", "100000");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Updated");
+    await expect(page.getByTestId("save-scenario")).toHaveCount(0);
+    await expect(page.getByTestId("save-needs-calculate")).toBeVisible();
+    await expectNoResultOnInputs(page);
+  });
+
+  test("explicit saved zero and snapshot survive reopen, focus and blur", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await fill(page, "#mortgagePayout", "0");
+    await calculate(page);
+    await save(page);
+    await page.getByTestId("back-to-entry").click();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await editInputs(page);
+    const mortgage = page.locator("#mortgagePayout");
+    await expect(mortgage).toHaveValue("$0");
+    await mortgage.focus();
+    await expect(mortgage).toHaveValue("0");
+    await mortgage.blur();
+    await expect(mortgage).toHaveValue("$0");
+    await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
+    await calculate(page);
+    await expect(page.getByTestId("result-status")).toHaveText("Saved result");
+    await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
+    await expect(page.getByTestId("save-scenario")).toBeDisabled();
   });
 
   test("malformed localStorage does not crash or silently erase data", async ({ page }) => {

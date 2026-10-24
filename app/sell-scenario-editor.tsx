@@ -6,10 +6,11 @@ import {
   OPTIONAL_FIELD_NAMES,
   type CurrencyFieldName,
 } from "../lib/engine/sell-calculator-form";
-import type { CommissionMode } from "../lib/engine/sell";
+import { SELL_RULE_VERSION, type CommissionMode } from "../lib/engine/sell";
 import {
   deriveCalculation,
   deriveLifecycle,
+  hasSameCalculationInputs,
   hasSameEditableState,
   resolveDisplayedResult,
   saveSellScenario,
@@ -73,9 +74,25 @@ export function SellScenarioEditor({
   const result = resolveDisplayedResult(working, baseline, calc);
   const lifecycle = deriveLifecycle(working, baseline, result);
   const usingSnapshot = result !== null && result === baseline?.savedResult;
-  const hasUnsavedChanges = baseline
+  const editsDiffer = baseline
     ? !hasSameEditableState(working, baseline)
     : startsUnsaved || !hasSameEditableState(working, pristine);
+  const inResults = mode === "results" && result !== null;
+  // A draft saved from Inputs has no saved result; showing Results for it is unsaved work.
+  const needsResultSave =
+    inResults && baseline !== null && baseline.savedResult === null;
+  const hasUnsavedChanges = editsDiffer || needsResultSave;
+  // Stage label: Inputs never reports a calculated stage unless a saved result exists.
+  const stage = inResults
+    ? needsResultSave
+      ? "Calculated"
+      : lifecycle
+    : baseline?.savedResult
+      ? lifecycle
+      : "Draft";
+  // On Inputs, changed numbers on a saved Scenario need an explicit Calculate before saving.
+  const canSaveFromInputs =
+    baseline?.savedResult == null || hasSameCalculationInputs(working, baseline);
 
   useEffect(() => {
     const id = pendingFocus.current;
@@ -162,7 +179,12 @@ export function SellScenarioEditor({
   }
 
   function handleSave() {
-    const saved = saveSellScenario(working, calc, new Date(), baseline);
+    const savedWithResult = saveSellScenario(working, calc, new Date(), baseline);
+    // Save draft before an explicit Calculate must not persist a result the user never saw.
+    const asDraft = !inResults && baseline?.savedResult == null;
+    const saved: SellScenario = asDraft
+      ? { ...savedWithResult, savedResult: null, ruleVersion: SELL_RULE_VERSION }
+      : savedWithResult;
     const outcome = onSave(saved);
     if (outcome.ok) {
       setWorking(saved);
@@ -184,7 +206,6 @@ export function SellScenarioEditor({
   }
 
   const saveDisabled = baseline !== null && !hasUnsavedChanges;
-  const inResults = mode === "results" && result !== null;
 
   return (
     <div className="sc-shell v2-shell" data-testid="scenario-editor" data-mode={inResults ? "results" : "inputs"}>
@@ -216,10 +237,10 @@ export function SellScenarioEditor({
           onChange={(event) => setName(event.target.value)}
         />
         <span
-          className={`sc-badge sc-badge-${lifecycle.toLowerCase()}`}
+          className={`sc-badge sc-badge-${stage.toLowerCase()}`}
           data-testid="lifecycle-badge"
         >
-          {lifecycle}
+          {stage}
         </span>
       </header>
 
@@ -243,7 +264,7 @@ export function SellScenarioEditor({
         <SellResultsView
           working={working}
           result={result}
-          lifecycle={lifecycle}
+          lifecycle={stage}
           usingSnapshot={usingSnapshot}
           calculatedAt={calculatedAt}
           savedAt={baseline?.savedAt ?? null}
@@ -267,15 +288,21 @@ export function SellScenarioEditor({
       )}
 
       <div className="sc-save-block v2-save">
-        <button
-          type="button"
-          className={inResults ? "sc-primary-button" : "secondary-button"}
-          data-testid="save-scenario"
-          disabled={saveDisabled}
-          onClick={handleSave}
-        >
-          {saveDisabled ? "Saved" : inResults ? "Save Scenario" : "Save draft"}
-        </button>
+        {inResults || canSaveFromInputs ? (
+          <button
+            type="button"
+            className={inResults ? "sc-primary-button" : "secondary-button"}
+            data-testid="save-scenario"
+            disabled={saveDisabled}
+            onClick={handleSave}
+          >
+            {saveDisabled ? "Saved" : inResults ? "Save Scenario" : "Save draft"}
+          </button>
+        ) : (
+          <p className="sc-muted-text" data-testid="save-needs-calculate">
+            Calculate to review and save the changed numbers.
+          </p>
+        )}
         {saveMessage ? (
           <p className="sc-status-text" role="status" data-testid="save-status">
             {saveMessage}

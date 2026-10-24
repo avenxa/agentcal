@@ -1458,3 +1458,8 @@ body {
 .v2-ledger-final .v2-ledger-label {
   font-weight: 700;
 }
+
+.amount-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}

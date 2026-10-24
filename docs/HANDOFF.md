@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Code Complete — Issue #13 SELL v2 Inputs → Calculate → Results.** Builder (Claude Code) implemented the fresh v2 workflow and self-verified it locally. Awaiting PR, CI, exact-head Vercel Preview and AI PM independent review. Not merged; merge/release remain separately gated.
+**Code Complete — Issue #13 SELL v2 (PR #14 fix round: placeholder & stage consistency).** Builder (Claude Code) implemented the fresh v2 workflow and self-verified it locally. Awaiting PR, CI, exact-head Vercel Preview and AI PM independent review. Not merged; merge/release remain separately gated.
 
 ## Objective
 
@@ -162,9 +162,20 @@ Historical test evidence remains history only and must be rerun by Builder when 
 4. Old v1 CSS (`sc-tabs`, hero, readiness, etc.) is now unused; left in place to keep the diff bounded.
 5. `deriveReadiness` remains in `lib/scenarios` but is no longer surfaced in the UI (readiness dashboard excluded by v2 spec).
 
+## Fix Handoff — PR #14 review findings (2026-10-24)
+
+Findings addressed: premature `Calculated` badge on Inputs; `Save draft` persisting an unseen result (reopened on Results); real-iPhone defect where optional fields held a typed `"0"` instead of a placeholder. UI-only: `lib/engine/**`, `lib/scenarios/**`, storage schema, rule version and formulas untouched (`git diff -- lib` empty).
+
+- **Placeholders:** new Scenarios are created in `app/sell-scenario-app.tsx` with every amount field `""` (price keeps `Enter amount`; optional fields placeholder `0`, signed `0 or signed amount`, muted style). `CurrencyField` no longer renders empty as `$0`. Empty parses to $0 in the engine, so results are unchanged. Stored/explicit `"0"` and duplicated values are left as-is (shown `$0` at rest, `0` on focus; focus/blur does not dirty the Scenario).
+- **Stage label:** Inputs shows `Draft` unless a saved result exists (then Saved/Updated). Results shows `Calculated` for a not-yet-saved result.
+- **Save draft:** from Inputs without a saved result it persists `savedResult: null` (existing Draft semantics) so reopen lands on Inputs. A draft later calculated shows `Calculated` with Save enabled. On a saved Scenario, changed numbers hide Save on Inputs ("Calculate to review and save the changed numbers"); name/review-only edits keep the snapshot.
+- **E2E:** 26 tests (new: placeholder at 320/390 incl. `pressSequentially("2500")`, signed `-500`, cleared-optional → zero; Draft badge + Save draft/reload/reopen; saved explicit zero + snapshot; changed-numbers gating).
+- **Verified locally:** lint, type-check, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 26/26 (with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`).
+- **Not verified:** exact-head CI and Vercel Preview for the new head (record after push); real iPhone Safari recheck.
+
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Open the PR for this branch (if not yet open), confirm GitHub CI and the Vercel Preview are READY on the exact head, test on a real iPhone Safari at 390×844 with the numeric keyboard, then return Review Work findings. Merge/Production remain Product Owner gated.
+**Owner: AI PM / Independent Reviewer.** Confirm CI and the Vercel Preview are READY on the new PR #14 head, recheck on a real iPhone (numeric keyboard, empty optional fields, Draft badge, Save draft reopen), then return Review Work. Merge/Production remain Product Owner gated.
 
 ## Stop / Escalation Conditions
 
