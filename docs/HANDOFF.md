@@ -173,9 +173,21 @@ Findings addressed: premature `Calculated` badge on Inputs; `Save draft` persist
 - **Verified locally:** lint, type-check, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 26/26 (with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`).
 - **Not verified:** exact-head CI and Vercel Preview for the new head (record after push); real iPhone Safari recheck.
 
+## Fix Handoff — PR #14 Saved-state actions (2026-10-25)
+
+Finding: after Save, Results showed a prominent disabled grey `Saved` button and an equal-weight outlined `Duplicate Scenario`; no clear completion action. UI-only fix; `lib/engine/**`, `lib/scenarios/**`, storage schema, rule version, formulas, placeholders and Draft/Save-draft semantics untouched.
+
+- **Unsaved Results:** full-width primary `Save Scenario` (`Save changes` when a saved result already exists and numbers changed); `Edit inputs` stays the one secondary action (top of Results); `Duplicate scenario` is now a small ≥44px text action below Save (new-ID unsaved copy unchanged).
+- **Clean saved (just saved or reopened):** the disabled button is replaced by a non-interactive `role="status"` receipt `✓ Scenario saved` / `Stored in this browser. Reopen it from Scenarios.` and an enabled primary `Done — Back to Scenarios` (routes through the existing guarded back path; no data change, no recalculation, no auto-redirect). Inputs mode shows the receipt without Done.
+- **Failed save:** no receipt or Done; Save stays enabled with the `save-error` alert. **Dirty again:** receipt/Done disappear, Save returns, leave-unsaved prompt still guards back.
+- No `Clear`, PDF, Share, or storage changes.
+- **E2E:** 32 tests (new: receipt/Done/Duplicate hierarchy and reopen; failed save then retry and dirty guard; 320/390/1280 reachability and no overlap/overflow). Two existing assertions changed from `Save` disabled to receipt shown / button absent.
+- **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 31 passed + 1 skipped (evidence test, needs `VISUAL_DIR`), run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` because this sandbox lacks the pinned Chromium.
+- **Not verified:** exact-head CI and Vercel Preview for the new head; screenshots against Figma node 50:2; real iPhone Safari.
+
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Confirm CI and the Vercel Preview are READY on the new PR #14 head, recheck on a real iPhone (numeric keyboard, empty optional fields, Draft badge, Save draft reopen), then return Review Work. Merge/Production remain Product Owner gated.
+**Owner: AI PM / Independent Reviewer.** Confirm CI and a READY Vercel Preview on the new PR #14 head, review the Saved Results actions against Figma node 50:2, then recheck on a real iPhone (Save → receipt + Done → Scenarios, Duplicate). Merge/Production remain Product Owner gated.
 
 ## Stop / Escalation Conditions
 

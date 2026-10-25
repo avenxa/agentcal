@@ -63,7 +63,6 @@ export function SellScenarioEditor({
   const [attempted, setAttempted] = useState(false);
   const [sections, setSections] = useState<CostSections>({ selling: false, planning: false });
   const [leavePrompt, setLeavePrompt] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [calculatedAt, setCalculatedAt] = useState(() => new Date().toISOString());
   const [focusTick, setFocusTick] = useState(0);
@@ -110,7 +109,6 @@ export function SellScenarioEditor({
 
   function touch(update: (current: SellScenario) => SellScenario) {
     setWorking(update);
-    setSaveMessage(null);
     setSaveError(null);
   }
 
@@ -190,9 +188,7 @@ export function SellScenarioEditor({
       setWorking(saved);
       setBaseline(saved);
       setSaveError(null);
-      setSaveMessage("Scenario saved in this browser.");
     } else {
-      setSaveMessage(null);
       setSaveError(`Could not save: ${outcome.reason}`);
     }
   }
@@ -270,7 +266,6 @@ export function SellScenarioEditor({
           savedAt={baseline?.savedAt ?? null}
           mortgageWarning={calc.mortgageWarning}
           onEdit={editInputs}
-          onDuplicate={() => onDuplicate(working)}
         />
       ) : (
         <SellInputsView
@@ -288,30 +283,59 @@ export function SellScenarioEditor({
       )}
 
       <div className="sc-save-block v2-save">
-        {inResults || canSaveFromInputs ? (
+        {saveDisabled ? (
+          <>
+            <div className="v2-receipt" role="status" data-testid="saved-receipt">
+              <p className="v2-receipt-title">
+                <span aria-hidden="true">✓ </span>Scenario saved
+              </p>
+              <p className="v2-receipt-detail">
+                Stored in this browser. Reopen it from Scenarios.
+              </p>
+            </div>
+            {inResults ? (
+              <button
+                type="button"
+                className="sc-primary-button"
+                data-testid="done-back"
+                onClick={handleBack}
+              >
+                Done — Back to Scenarios
+              </button>
+            ) : null}
+          </>
+        ) : inResults || canSaveFromInputs ? (
           <button
             type="button"
             className={inResults ? "sc-primary-button" : "secondary-button"}
             data-testid="save-scenario"
-            disabled={saveDisabled}
             onClick={handleSave}
           >
-            {saveDisabled ? "Saved" : inResults ? "Save Scenario" : "Save draft"}
+            {!inResults
+              ? "Save draft"
+              : baseline?.savedResult != null
+                ? "Save changes"
+                : "Save Scenario"}
           </button>
         ) : (
           <p className="sc-muted-text" data-testid="save-needs-calculate">
             Calculate to review and save the changed numbers.
           </p>
         )}
-        {saveMessage ? (
-          <p className="sc-status-text" role="status" data-testid="save-status">
-            {saveMessage}
-          </p>
-        ) : null}
         {saveError ? (
           <p className="field-error" role="alert" data-testid="save-error">
             {saveError}
           </p>
+        ) : null}
+        {inResults ? (
+          <button
+            type="button"
+            className="v2-link-button"
+            data-testid="duplicate-scenario"
+            onClick={() => onDuplicate(working)}
+          >
+            Duplicate scenario
+          </button>
         ) : null}
       </div>
     </div>

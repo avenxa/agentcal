@@ -53,7 +53,7 @@ async function expectNoResultOnInputs(page: Page) {
 
 async function save(page: Page) {
   await page.getByTestId("save-scenario").click();
-  await expect(page.getByTestId("save-status")).toBeVisible();
+  await expect(page.getByTestId("saved-receipt")).toBeVisible();
 }
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -191,7 +191,7 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await calculate(page);
     await save(page);
     await expect(page.getByTestId("lifecycle-badge")).toHaveText("Saved");
-    await expect(page.getByTestId("save-scenario")).toBeDisabled();
+    await expect(page.getByTestId("save-scenario")).toHaveCount(0);
 
     await page.getByTestId("back-to-entry").click();
     const card = page.getByTestId("scenario-card");
@@ -465,8 +465,112 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await calculate(page);
     await expect(page.getByTestId("result-status")).toHaveText("Saved result");
     await expect(page.getByTestId("result-amount")).toHaveText("$822,963");
-    await expect(page.getByTestId("save-scenario")).toBeDisabled();
+    await expect(page.getByTestId("save-scenario")).toHaveCount(0);
+    await expect(page.getByTestId("saved-receipt")).toBeVisible();
   });
+
+  test("Saved Results: receipt is status text, Done returns to Scenarios, Duplicate is subordinate", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+
+    // Unsaved Results: prominent Save, no receipt, no Done; Duplicate is a small text action.
+    await expect(page.getByTestId("save-scenario")).toBeVisible();
+    await expect(page.getByTestId("save-scenario")).toHaveText("Save Scenario");
+    await expect(page.getByTestId("saved-receipt")).toHaveCount(0);
+    await expect(page.getByTestId("done-back")).toHaveCount(0);
+    const saveBox = (await page.getByTestId("save-scenario").boundingBox())!;
+    const dupBox = (await page.getByTestId("duplicate-scenario").boundingBox())!;
+    expect(dupBox.width).toBeLessThan(saveBox.width);
+    expect(dupBox.height).toBeGreaterThanOrEqual(44);
+    expect(saveBox.y).toBeLessThan(dupBox.y);
+
+    await save(page);
+    const receipt = page.getByTestId("saved-receipt");
+    await expect(receipt).toContainText("Scenario saved");
+    await expect(receipt).toContainText("Stored in this browser. Reopen it from Scenarios.");
+    await expect(receipt).toHaveAttribute("role", "status");
+    expect(await receipt.evaluate((el) => el.tagName)).not.toBe("BUTTON");
+    await expect(page.getByTestId("save-scenario")).toHaveCount(0);
+    const done = page.getByTestId("done-back");
+    await expect(done).toBeEnabled();
+    await expect(done).toHaveText("Done — Back to Scenarios");
+    const doneBox = (await done.boundingBox())!;
+    expect(doneBox.height).toBeGreaterThanOrEqual(44);
+    // Still on Results: Save must not auto-redirect.
+    await expect(page.getByTestId("results-view")).toBeVisible();
+
+    await done.click();
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+    await expect(page.getByTestId("scenario-card")).toContainText("$822,963");
+
+    // Reopen the clean saved Scenario: still Saved result, receipt and Done, nothing recalculated.
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("result-status")).toHaveText("Saved result");
+    await expect(page.getByTestId("saved-receipt")).toBeVisible();
+    await page.getByTestId("done-back").click();
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+    await expect(page.getByTestId("leave-prompt")).toHaveCount(0);
+  });
+
+  test("failed save shows no receipt or Done; dirty saved Results offers Save changes and guards leaving", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await page.evaluate(() => {
+      const original = Storage.prototype.setItem;
+      (window as unknown as { __restore: () => void }).__restore = () => {
+        Storage.prototype.setItem = original;
+      };
+      Storage.prototype.setItem = () => {
+        throw new Error("quota");
+      };
+    });
+    await page.getByTestId("save-scenario").click();
+    await expect(page.getByTestId("save-error")).toBeVisible();
+    await expect(page.getByTestId("saved-receipt")).toHaveCount(0);
+    await expect(page.getByTestId("done-back")).toHaveCount(0);
+    await expect(page.getByTestId("save-scenario")).toBeEnabled();
+    await page.evaluate(() => (window as unknown as { __restore: () => void }).__restore());
+    await save(page);
+    await expect(page.getByTestId("save-error")).toHaveCount(0);
+    await expect(page.getByTestId("done-back")).toBeVisible();
+
+    // Edit → recalculate: dirty again, Save changes replaces receipt/Done; back is guarded.
+    await editInputs(page);
+    await fill(page, "#mortgagePayout", "100000");
+    await calculate(page);
+    await expect(page.getByTestId("saved-receipt")).toHaveCount(0);
+    await expect(page.getByTestId("done-back")).toHaveCount(0);
+    await expect(page.getByTestId("save-scenario")).toHaveText("Save changes");
+    await page.getByTestId("back-to-entry").click();
+    await expect(page.getByTestId("leave-prompt")).toBeVisible();
+    await page.getByRole("button", { name: "Keep editing" }).click();
+    await save(page);
+    await expect(page.getByTestId("done-back")).toBeVisible();
+  });
+
+  for (const [w, h] of [[320, 640], [390, 844], [1280, 800]] as const) {
+    test(`Saved Results actions are reachable and do not overlap at ${w}px`, async ({ page }) => {
+      await startNew(page);
+      await page.setViewportSize({ width: w, height: h });
+      await fill(page, "#sellingPrice", "850000");
+      await calculate(page);
+      await save(page);
+      const done = page.getByTestId("done-back");
+      const dup = page.getByTestId("duplicate-scenario");
+      await done.scrollIntoViewIfNeeded();
+      const a = (await done.boundingBox())!;
+      const b = (await dup.boundingBox())!;
+      expect(a.y + a.height).toBeLessThanOrEqual(b.y);
+      expect(a.x).toBeGreaterThanOrEqual(0);
+      expect(a.x + a.width).toBeLessThanOrEqual(w);
+      await expectNoHorizontalOverflow(page);
+      await dup.click();
+      await expect(page.getByTestId("inputs-view")).toBeVisible();
+      await expect(page.getByTestId("lifecycle-badge")).toHaveText("Draft");
+    });
+  }
 
   test("malformed localStorage does not crash or silently erase data", async ({ page }) => {
     await page.addInitScript(() => {

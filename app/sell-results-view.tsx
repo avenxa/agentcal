@@ -105,7 +105,6 @@ type ResultsProps = {
   savedAt: string | null;
   mortgageWarning: string | null;
   onEdit: () => void;
-  onDuplicate: () => void;
 };
 
 export function SellResultsView({
@@ -117,7 +116,6 @@ export function SellResultsView({
   savedAt,
   mortgageWarning,
   onEdit,
-  onDuplicate,
 }: ResultsProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const net = result.estimatedNetProceedsCents;
@@ -249,15 +247,6 @@ export function SellResultsView({
       <p className="sc-caption" data-testid="result-disclaimer">
         {TIER1_DISCLAIMER}
       </p>
-
-      <button
-        type="button"
-        className="secondary-button"
-        data-testid="duplicate-scenario"
-        onClick={onDuplicate}
-      >
-        Duplicate Scenario
-      </button>
     </div>
   );
 }
