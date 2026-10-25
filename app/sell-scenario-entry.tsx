@@ -26,6 +26,8 @@ type EntryProps = {
   onNew: () => void;
   onOpen: (scenario: SellScenario) => void;
   onDuplicate: (scenario: SellScenario) => void;
+  completionNotice: boolean;
+  onDismissCompletion: () => void;
 };
 
 export function SellScenarioEntry({
@@ -34,6 +36,8 @@ export function SellScenarioEntry({
   onNew,
   onOpen,
   onDuplicate,
+  completionNotice,
+  onDismissCompletion,
 }: EntryProps) {
   return (
     <div className="sc-shell" data-testid="scenario-entry">
@@ -43,6 +47,27 @@ export function SellScenarioEntry({
           Create a new estimate or continue where you left off.
         </p>
       </header>
+
+      {completionNotice ? (
+        <div className="v2-closure" role="status" data-testid="completion-notice">
+          <p className="v2-closure-title">
+            <span aria-hidden="true">✓ </span>Estimate saved
+          </p>
+          <p className="v2-closure-lead">You’re done for now.</p>
+          <p className="v2-receipt-detail">
+            No further action is required. You can close this page or reopen the
+            estimate later in this browser.
+          </p>
+          <button
+            type="button"
+            className="v2-link-button v2-closure-dismiss"
+            data-testid="dismiss-completion"
+            onClick={onDismissCompletion}
+          >
+            Dismiss completion notice
+          </button>
+        </div>
+      ) : null}
 
       <button
         type="button"

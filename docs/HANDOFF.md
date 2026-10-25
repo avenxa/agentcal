@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Code Complete — Feature 03 SELL Scenario Foundation v1.** Builder (Claude Code) implemented the bounded slice on `feature/03-sell-scenario-foundation-v1` and self-verified it. Awaiting AI PM independent review. Not merged; merge/release remain separately gated.
+**Code Complete — Issue #13 SELL v2 (PR #14 fix round: placeholder & stage consistency).** Builder (Claude Code) implemented the fresh v2 workflow and self-verified it locally. Awaiting PR, CI, exact-head Vercel Preview and AI PM independent review. Not merged; merge/release remain separately gated.
 
 ## Objective
 
@@ -139,9 +139,66 @@ Historical test evidence remains history only and must be rerun by Builder when 
 6. Persistence is browser-local only (single device/browser); no delete/archive by design.
 7. Preview/runtime on Vercel and independent QC are still outstanding.
 
+## Code Complete Report — Issue #13 (SELL v2 workflow, 2026-10-22)
+
+- Branch: `claude/busy-ride-djj1st` (designated session branch; issue suggested `feat/sell-input-results-rebaseline-v2`). Based on main `6d28dea` (PR #9 merge). Not based on PR #12.
+- Implementation commit: `85d5c7d89816817a795f18870527893dafd02abd` (branch head = this plus the docs-only handoff commit).
+- Scope: UI view tree only. **Untouched:** `lib/engine/**`, `lib/scenarios/**`, `lib/sell-copy.ts`, storage schema, `package.json`, rule `sell-bc-2026-08-09-v1`.
+
+### Changed
+- New `app/sell-inputs-view.tsx` (Inputs mode: price, mortgage, Selling costs & commission, Planning costs, one `Calculate net proceeds` CTA; no amount rendered anywhere) and `app/sell-results-view.tsx` (Results mode: `Edit inputs`, ledger Selling price → Commission (negotiable) → GST 5% → Mortgage → other closing costs/adjustments → final Estimated net proceeds last with exact cents + rounding note, Preliminary / Saved-result status, planning costs separate, Calculation details disclosure, Duplicate).
+- Rewrote `app/sell-scenario-editor.tsx` as a two-mode state machine (Build/Results tabs, readiness banner, result preview, side result and hero removed). Calculate validates, blurs keyboard, switches to Results and focuses the `SELL · Results` heading; invalid/empty stays on Inputs, shows the error and focuses the field. `Edit inputs` hides the result; the CTA becomes `Recalculate & show results`. Saved clean Scenario with a saved result reopens on Results (original snapshot/ruleVersion kept via existing `resolveDisplayedResult`); Draft reopens on Inputs. `Save Scenario` on Results, quiet `Save draft` on Inputs. Editing never persists implicitly; leave-unsaved prompt kept.
+- Removed `sell-build-panel.tsx`, `sell-results-panel.tsx`, `view-calculation.tsx`; appended `v2-*` CSS to `globals.css`; replaced `e2e/sell-scenario.spec.ts` (22 tests for v2).
+
+### Verified (local, 2026-10-22)
+- `pnpm lint` pass; `pnpm type-check` pass; `pnpm test` 44/44; `pnpm build` pass.
+- `pnpm test:e2e` 22/22 pass (incl. screenshot test with `VISUAL_DIR`), run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` because this sandbox lacks the pinned Chromium. Covers: zero `result-amount`/`estimated-net` on Inputs while typing `1250000` (and no `1,212,46x` text); $1.25M ledger (−$35,750.00, −$1,787.50, −$0.00, final $1,212,463, exact $1,212,462.50, final row last); $850k → $822,963; $1M manual $29,500 → GST $1,475 → $969,025; $850k mortgage $400k → $422,963; Edit inputs shows prior values and no result, Recalculate updates; empty/invalid blocked; Save/reopen/Updated/rename-keeps-snapshot/Duplicate/Draft; negative result; all selling/planning inputs ($835,450 / $834,750 after planning); keyboard Enter; corrupt storage; no horizontal overflow at 320/390/768/834/1280/1366 in both modes. Console errors fail every test.
+- Screenshots (scratch, not committed) at 390×844 and 1366×900: inputs-default, inputs-typing, results, edit-after-result. Mobile inputs-typing and results inspected by eye.
+
+### Not verified / open
+1. **Real iPhone Safari not tested** (no device here); keyboard occlusion/safe-area on iOS is unverified. Playwright only covers Chromium emulation.
+2. GitHub CI on exact head, Vercel Preview READY/bound to head: not yet run (no PR opened by this session). Figma frames 37:* were not pixel-compared; layout follows the Notion v2 spec.
+3. Quiet same-price `$1,250,000` confirmation while typing was intentionally omitted (optional; caret safety); price formats to grouped CAD on blur.
+4. Old v1 CSS (`sc-tabs`, hero, readiness, etc.) is now unused; left in place to keep the diff bounded.
+5. `deriveReadiness` remains in `lib/scenarios` but is no longer surfaced in the UI (readiness dashboard excluded by v2 spec).
+
+## Fix Handoff — PR #14 review findings (2026-10-24)
+
+Findings addressed: premature `Calculated` badge on Inputs; `Save draft` persisting an unseen result (reopened on Results); real-iPhone defect where optional fields held a typed `"0"` instead of a placeholder. UI-only: `lib/engine/**`, `lib/scenarios/**`, storage schema, rule version and formulas untouched (`git diff -- lib` empty).
+
+- **Placeholders:** new Scenarios are created in `app/sell-scenario-app.tsx` with every amount field `""` (price keeps `Enter amount`; optional fields placeholder `0`, signed `0 or signed amount`, muted style). `CurrencyField` no longer renders empty as `$0`. Empty parses to $0 in the engine, so results are unchanged. Stored/explicit `"0"` and duplicated values are left as-is (shown `$0` at rest, `0` on focus; focus/blur does not dirty the Scenario).
+- **Stage label:** Inputs shows `Draft` unless a saved result exists (then Saved/Updated). Results shows `Calculated` for a not-yet-saved result.
+- **Save draft:** from Inputs without a saved result it persists `savedResult: null` (existing Draft semantics) so reopen lands on Inputs. A draft later calculated shows `Calculated` with Save enabled. On a saved Scenario, changed numbers hide Save on Inputs ("Calculate to review and save the changed numbers"); name/review-only edits keep the snapshot.
+- **E2E:** 26 tests (new: placeholder at 320/390 incl. `pressSequentially("2500")`, signed `-500`, cleared-optional → zero; Draft badge + Save draft/reload/reopen; saved explicit zero + snapshot; changed-numbers gating).
+- **Verified locally:** lint, type-check, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 26/26 (with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH`).
+- **Not verified:** exact-head CI and Vercel Preview for the new head (record after push); real iPhone Safari recheck.
+
+## Fix Handoff — PR #14 Saved-state actions (2026-10-25)
+
+Finding: after Save, Results showed a prominent disabled grey `Saved` button and an equal-weight outlined `Duplicate Scenario`; no clear completion action. UI-only fix; `lib/engine/**`, `lib/scenarios/**`, storage schema, rule version, formulas, placeholders and Draft/Save-draft semantics untouched.
+
+- **Unsaved Results:** full-width primary `Save Scenario` (`Save changes` when a saved result already exists and numbers changed); `Edit inputs` stays the one secondary action (top of Results); `Duplicate scenario` is now a small ≥44px text action below Save (new-ID unsaved copy unchanged).
+- **Clean saved (just saved or reopened):** the disabled button is replaced by a non-interactive `role="status"` receipt `✓ Scenario saved` / `Stored in this browser. Reopen it from Scenarios.` and an enabled primary `Done — Back to Scenarios` (routes through the existing guarded back path; no data change, no recalculation, no auto-redirect). Inputs mode shows the receipt without Done.
+- **Failed save:** no receipt or Done; Save stays enabled with the `save-error` alert. **Dirty again:** receipt/Done disappear, Save returns, leave-unsaved prompt still guards back.
+- No `Clear`, PDF, Share, or storage changes.
+- **E2E:** 32 tests (new: receipt/Done/Duplicate hierarchy and reopen; failed save then retry and dirty guard; 320/390/1280 reachability and no overlap/overflow). Two existing assertions changed from `Save` disabled to receipt shown / button absent.
+- **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 31 passed + 1 skipped (evidence test, needs `VISUAL_DIR`), run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` because this sandbox lacks the pinned Chromium.
+- **Not verified:** exact-head CI and Vercel Preview for the new head; screenshots against Figma node 50:2; real iPhone Safari.
+
+## Fix Handoff — PR #15 session completion closure (2026-10-25)
+
+Finding (PO iPhone): after Done the journey ended in a list of Saved cards with no statement that the estimate is complete. UI-only, ephemeral; no persisted Completed lifecycle, no `lib/**` change, no financial/storage change.
+
+- `SellScenarioApp` holds in-memory `completionNotice`, set only by a new `onDone` callback (`finishEditor`: reload list, clear editor, show notice, scroll to top). Header Back (`closeEditor`), New, Open and Duplicate clear it. It is never written to localStorage and a reload does not revive it.
+- `SellScenarioEditor`: the clean-saved `Done — Back to Scenarios` button now calls `onDone`; header Back still uses the guarded `onBack`. Done is only rendered for a clean saved Results view, so Draft save, Save failure, dirty edits and Duplicate cannot reach it.
+- `SellScenarioEntry`: `role="status"` banner above New SELL Scenario — `✓ Estimate saved` / `You’re done for now.` / `No further action is required. You can close this page or reopen the estimate later in this browser.` and a ≥44px `Dismiss completion notice` button (hides the banner only).
+- **E2E:** 39 tests (new: Done shows notice, Save alone does not, dismiss, reload clears; Back/Draft save/Duplicate-discard/New/Open do not show or carry it; failed save never reaches it; 320/390/768/1280 fit, keyboard dismiss).
+- **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 38 passed + 1 skipped (evidence test needs `VISUAL_DIR`), using `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks the pinned Chromium).
+- **Not verified:** exact-head CI and Vercel Preview for the new head; Figma node 54:2 comparison (no screenshots taken); real iPhone Safari.
+
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Review PR diff and evidence above, run `pnpm test:e2e` and open the Vercel Preview for the PR, then return Review Work findings. Merge/production release remain separately gated.
+**Owner: AI PM / Independent Reviewer.** Confirm CI and READY Preview on the new PR #15 head, compare with Figma node 54:2, then iPhone check: Save → Done → closure notice visible without scrolling, Dismiss, reload. Merge/Production remain Product Owner gated.
 
 ## Stop / Escalation Conditions
 
