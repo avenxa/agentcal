@@ -185,9 +185,20 @@ Finding: after Save, Results showed a prominent disabled grey `Saved` button and
 - **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 31 passed + 1 skipped (evidence test, needs `VISUAL_DIR`), run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` because this sandbox lacks the pinned Chromium.
 - **Not verified:** exact-head CI and Vercel Preview for the new head; screenshots against Figma node 50:2; real iPhone Safari.
 
+## Fix Handoff — PR #15 session completion closure (2026-10-25)
+
+Finding (PO iPhone): after Done the journey ended in a list of Saved cards with no statement that the estimate is complete. UI-only, ephemeral; no persisted Completed lifecycle, no `lib/**` change, no financial/storage change.
+
+- `SellScenarioApp` holds in-memory `completionNotice`, set only by a new `onDone` callback (`finishEditor`: reload list, clear editor, show notice, scroll to top). Header Back (`closeEditor`), New, Open and Duplicate clear it. It is never written to localStorage and a reload does not revive it.
+- `SellScenarioEditor`: the clean-saved `Done — Back to Scenarios` button now calls `onDone`; header Back still uses the guarded `onBack`. Done is only rendered for a clean saved Results view, so Draft save, Save failure, dirty edits and Duplicate cannot reach it.
+- `SellScenarioEntry`: `role="status"` banner above New SELL Scenario — `✓ Estimate saved` / `You’re done for now.` / `No further action is required. You can close this page or reopen the estimate later in this browser.` and a ≥44px `Dismiss completion notice` button (hides the banner only).
+- **E2E:** 39 tests (new: Done shows notice, Save alone does not, dismiss, reload clears; Back/Draft save/Duplicate-discard/New/Open do not show or carry it; failed save never reaches it; 320/390/768/1280 fit, keyboard dismiss).
+- **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 38 passed + 1 skipped (evidence test needs `VISUAL_DIR`), using `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks the pinned Chromium).
+- **Not verified:** exact-head CI and Vercel Preview for the new head; Figma node 54:2 comparison (no screenshots taken); real iPhone Safari.
+
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Confirm CI and a READY Vercel Preview on the new PR #14 head, review the Saved Results actions against Figma node 50:2, then recheck on a real iPhone (Save → receipt + Done → Scenarios, Duplicate). Merge/Production remain Product Owner gated.
+**Owner: AI PM / Independent Reviewer.** Confirm CI and READY Preview on the new PR #15 head, compare with Figma node 54:2, then iPhone check: Save → Done → closure notice visible without scrolling, Dismiss, reload. Merge/Production remain Product Owner gated.
 
 ## Stop / Escalation Conditions
 

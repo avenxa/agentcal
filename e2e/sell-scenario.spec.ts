@@ -513,6 +513,118 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await expect(page.getByTestId("leave-prompt")).toHaveCount(0);
   });
 
+  test("Done shows a one-time closure notice; nothing else does", async ({ page }) => {
+    const notice = page.getByTestId("completion-notice");
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await save(page);
+    // Save alone does not close the loop.
+    await expect(notice).toHaveCount(0);
+
+    await page.getByTestId("done-back").click();
+    await expect(page.getByTestId("scenario-entry")).toBeVisible();
+    await expect(notice).toBeVisible();
+    await expect(notice).toHaveAttribute("role", "status");
+    await expect(notice).toContainText("Estimate saved");
+    await expect(notice).toContainText("You’re done for now.");
+    await expect(notice).toContainText(
+      "No further action is required. You can close this page or reopen the estimate later in this browser.",
+    );
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+    // Within the initial viewport, above New SELL Scenario.
+    const box = (await notice.boundingBox())!;
+    const newBox = (await page.getByTestId("new-scenario").boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(844);
+    expect(box.y + box.height).toBeLessThanOrEqual(newBox.y);
+    const dismiss = page.getByRole("button", { name: "Dismiss completion notice" });
+    expect((await dismiss.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+
+    // Dismiss hides only the notice.
+    await dismiss.click();
+    await expect(notice).toHaveCount(0);
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+
+    // Reload does not revive it; saved data intact.
+    await page.reload();
+    await expect(notice).toHaveCount(0);
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+  });
+
+  test("closure notice is not shown for Back, Draft save, Duplicate, discard, or New/Open", async ({ page }) => {
+    const notice = page.getByTestId("completion-notice");
+    // Saved, then header Back (not Done).
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await save(page);
+    await page.getByTestId("back-to-entry").click();
+    await expect(page.getByTestId("scenario-entry")).toBeVisible();
+    await expect(notice).toHaveCount(0);
+
+    // Draft save then Back.
+    await page.getByTestId("new-scenario").click();
+    await fill(page, "#sellingPrice", "500000");
+    await page.getByTestId("save-scenario").click();
+    await page.getByTestId("back-to-entry").click();
+    await expect(notice).toHaveCount(0);
+
+    // Duplicate then discard.
+    await page.getByRole("button", { name: /^Duplicate / }).first().click();
+    await page.getByTestId("back-to-entry").click();
+    await page.getByTestId("discard-changes").click();
+    await expect(notice).toHaveCount(0);
+
+    // Done, then New and Open clear the notice (the notice never carries into another scenario).
+    await page.getByTestId("scenario-card").filter({ hasText: "$822,963" }).getByRole("button", { name: /^Open/ }).click();
+    await page.getByTestId("done-back").click();
+    await expect(notice).toBeVisible();
+    await page.getByTestId("new-scenario").click();
+    await page.getByTestId("back-to-entry").click();
+    await expect(notice).toHaveCount(0);
+    await page.getByTestId("scenario-card").filter({ hasText: "$822,963" }).getByRole("button", { name: /^Open/ }).click();
+    await page.getByTestId("done-back").click();
+    await expect(notice).toBeVisible();
+    await page.getByTestId("scenario-card").filter({ hasText: "$822,963" }).getByRole("button", { name: /^Open/ }).click();
+    await page.getByTestId("back-to-entry").click();
+    await expect(notice).toHaveCount(0);
+  });
+
+  test("failed save never reaches the closure notice", async ({ page }) => {
+    await startNew(page);
+    await fill(page, "#sellingPrice", "850000");
+    await calculate(page);
+    await page.evaluate(() => {
+      Storage.prototype.setItem = () => {
+        throw new Error("quota");
+      };
+    });
+    await page.getByTestId("save-scenario").click();
+    await expect(page.getByTestId("done-back")).toHaveCount(0);
+    await expect(page.getByTestId("completion-notice")).toHaveCount(0);
+  });
+
+  for (const w of [320, 390, 768, 1280]) {
+    test(`closure notice fits without overflow at ${w}px`, async ({ page }) => {
+      await startNew(page);
+      await page.setViewportSize({ width: w, height: 844 });
+      await fill(page, "#sellingPrice", "850000");
+      await calculate(page);
+      await save(page);
+      await page.getByTestId("done-back").click();
+      const notice = page.getByTestId("completion-notice");
+      await expect(notice).toBeVisible();
+      const box = (await notice.boundingBox())!;
+      expect(box.x).toBeGreaterThanOrEqual(0);
+      expect(box.x + box.width).toBeLessThanOrEqual(w);
+      await expectNoHorizontalOverflow(page);
+      await page.keyboard.press("Tab");
+      await page.getByRole("button", { name: "Dismiss completion notice" }).focus();
+      await page.keyboard.press("Enter");
+      await expect(notice).toHaveCount(0);
+    });
+  }
+
   test("failed save shows no receipt or Done; dirty saved Results offers Save changes and guards leaving", async ({ page }) => {
     await startNew(page);
     await fill(page, "#sellingPrice", "850000");

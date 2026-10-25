@@ -29,6 +29,7 @@ type EditorProps = {
   startsUnsaved: boolean;
   onSave: (scenario: SellScenario) => SaveResult;
   onBack: () => void;
+  onDone: () => void;
   onDuplicate: (source: SellScenario) => void;
 };
 
@@ -52,6 +53,7 @@ export function SellScenarioEditor({
   startsUnsaved,
   onSave,
   onBack,
+  onDone,
   onDuplicate,
 }: EditorProps) {
   const [working, setWorking] = useState(initialWorking);
@@ -298,7 +300,7 @@ export function SellScenarioEditor({
                 type="button"
                 className="sc-primary-button"
                 data-testid="done-back"
-                onClick={handleBack}
+                onClick={onDone}
               >
                 Done — Back to Scenarios
               </button>

@@ -31,6 +31,8 @@ export function SellScenarioApp() {
   const [loaded, setLoaded] = useState(false);
   const [stored, setStored] = useState<LoadResult>(EMPTY_LOAD);
   const [session, setSession] = useState<Session | null>(null);
+  // One-time, in-memory acknowledgment after an explicit Done; never persisted or revived.
+  const [completionNotice, setCompletionNotice] = useState(false);
 
   // localStorage is only readable in the browser, so the list loads after mount.
   useEffect(() => {
@@ -40,6 +42,7 @@ export function SellScenarioApp() {
   }, [repository]);
 
   function openNew() {
+    setCompletionNotice(false);
     // Untouched amounts start genuinely empty (muted "0" placeholder), not a typed "0".
     // Empty parses to $0 in the engine, so calculation is unchanged.
     const base = createSellScenario();
@@ -50,6 +53,7 @@ export function SellScenarioApp() {
   }
 
   function openSaved(scenario: SellScenario) {
+    setCompletionNotice(false);
     setSession({
       key: `${scenario.id}-${Date.now()}`,
       working: scenario,
@@ -59,6 +63,7 @@ export function SellScenarioApp() {
   }
 
   function openDuplicate(source: SellScenario) {
+    setCompletionNotice(false);
     const copy = duplicateSellScenario(source);
     setSession({ key: copy.id, working: copy, baseline: null, startsUnsaved: true });
   }
@@ -72,8 +77,16 @@ export function SellScenarioApp() {
   }
 
   function closeEditor() {
+    setCompletionNotice(false);
     setStored(repository.load());
     setSession(null);
+  }
+
+  function finishEditor() {
+    setStored(repository.load());
+    setSession(null);
+    setCompletionNotice(true);
+    window.scrollTo({ top: 0 });
   }
 
   if (session) {
@@ -85,6 +98,7 @@ export function SellScenarioApp() {
         startsUnsaved={session.startsUnsaved}
         onSave={save}
         onBack={closeEditor}
+        onDone={finishEditor}
         onDuplicate={openDuplicate}
       />
     );
@@ -94,6 +108,8 @@ export function SellScenarioApp() {
     <SellScenarioEntry
       loaded={loaded}
       stored={stored}
+      completionNotice={completionNotice}
+      onDismissCompletion={() => setCompletionNotice(false)}
       onNew={openNew}
       onOpen={openSaved}
       onDuplicate={openDuplicate}
