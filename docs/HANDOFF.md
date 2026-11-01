@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Code Complete — Issue #13 SELL v2 (PR #14 fix round: placeholder & stage consistency).** Builder (Claude Code) implemented the fresh v2 workflow and self-verified it locally. Awaiting PR, CI, exact-head Vercel Preview and AI PM independent review. Not merged; merge/release remain separately gated.
+**Code Complete — Issue #17 (SELL 320px Results net-row fix).** Builder (Claude Code) verified main `f6a22bb` and fixed one demonstrated 320px defect. Awaiting PR review, CI and exact-head Vercel Preview. Not merged; merge/release remain separately gated. Earlier Issue #13/#15 reports below are history.
 
 ## Objective
 
@@ -196,9 +196,32 @@ Finding (PO iPhone): after Done the journey ended in a list of Saved cards with 
 - **Verified locally:** `pnpm lint`, `pnpm type-check`, `pnpm test` 44/44, `pnpm build`, `pnpm test:e2e` 38 passed + 1 skipped (evidence test needs `VISUAL_DIR`), using `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks the pinned Chromium).
 - **Not verified:** exact-head CI and Vercel Preview for the new head; Figma node 54:2 comparison (no screenshots taken); real iPhone Safari.
 
+## Code Complete Report — Issue #17 (2026-11-01)
+
+- Branch: `claude/sharp-pascal-yhgwrj`, based on main `f6a22bb249050ad809240af3d9af45e0cbaa16ba` (PR #15 merge). Head SHA: see PR / `git log -1` (docs-only handoff commit follows the fix commit).
+- Scope: UI only. **Untouched:** `lib/**`, formulas, commission amounts, GST, storage/snapshot logic, rule `sell-bc-2026-08-09-v1`, BUY/MOVE. No BUY/MOVE screens.
+
+### Independent inspection of main (320/390, mobile emulation, Chromium)
+- Probed Entry, Inputs, Inputs with both expanders + manual commission + oversize mortgage value, Results, and Tab order, at 320 and 390. Automated box-overlap, off-screen, clipping, <44px target, <16px input font (iOS zoom), unlabeled-control, horizontal-overflow and focus-outline checks: **no findings** except the one below. No console errors.
+- Matches approved direction: compact labels, one primary Calculate, Inputs show no result, editable Typical BC preset / Manual amount, Results ledger with net last, Edit inputs secondary, Save → receipt + Done.
+- Vector 1,250,000: commission 35,750.00, GST 1,787.50, net 1,212,462.50 (shown $1,212,463 rounded, exact line shown) — verified at both widths.
+- **Defect (320px only):** Results final row — the 32px net amount took the grid `auto` column and squeezed the label/exact line; "Estimated" glyphs collided with "$1,212,463" and the Exact line wrapped into a ~4-word column. Not present at 390. (The overlapping-fields screenshot in Issue #17 came from the archived MOVE board; this is a separate, reproduced SELL defect.)
+
+### Fix
+- `app/globals.css`: `@media (max-width: 359px)` stacks `.v2-ledger-final` (label + exact line above, amount left-aligned below). No markup/engine change; ≥360px layout unchanged.
+- `e2e/sell-scenario.spec.ts`: new test at 320 and 390 comparing text-range boxes of label/exact line vs amount (fails on main at 320, passes with fix) plus no horizontal overflow and `$1,212,463`.
+
+### Verified locally (2026-11-01)
+- `pnpm lint` pass; `pnpm type-check` pass; `pnpm test` 44/44; `pnpm build` pass.
+- `pnpm test:e2e`: 40 passed, 1 skipped (evidence test needs `VISUAL_DIR`), with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks pinned Chromium). Baseline on main before change: 38 passed + 1 skipped.
+- Before/after 320px screenshots taken (scratch, not committed).
+
+### Not verified / gaps
+1. Exact-head CI and Vercel Preview not yet observed. 2. Real iPhone Safari not tested. 3. Figma 91:2/91:3 not pixel-compared (Figma MCP not used; compared to the Notion v0.3 spec text). 4. "How to use" guidance below the calculator (Notion spec) is not implemented in SELL v2 and was not added: it is new copy/content, not a demonstrated defect — raise to AI PM if wanted. 5. `docs/HANDOFF.md` earlier sections remain historical (Issue #16 stale-doc cleanup still open).
+
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Confirm CI and READY Preview on the new PR #15 head, compare with Figma node 54:2, then iPhone check: Save → Done → closure notice visible without scrolling, Dismiss, reload. Merge/Production remain Product Owner gated.
+**Owner: AI PM / Independent Reviewer.** Review the PR diff (CSS + one e2e test), confirm CI and READY Preview on the exact head, check Results at 320px on the Preview, then decide on the "How to use" gap (item 4). Merge/Production remain Product Owner-gated.
 
 ## Stop / Escalation Conditions
 
