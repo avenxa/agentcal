@@ -684,6 +684,35 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     });
   }
 
+  for (const width of [320, 390]) {
+    test(`final net row label, exact line and amount do not collide at ${width}px`, async ({ page }) => {
+      await startNew(page, width);
+      await fill(page, "#sellingPrice", "1250000");
+      await calculate(page);
+      const rects = await page.evaluate(() => {
+        const box = (el: Element | null) => {
+          if (!el) return null;
+          const r = document.createRange();
+          r.selectNodeContents(el);
+          const b = r.getBoundingClientRect();
+          return { l: b.left, r: b.right, t: b.top, b: b.bottom };
+        };
+        const root = document.querySelector('[data-testid="estimated-net"]')!;
+        return {
+          label: box(root.querySelector(".v2-ledger-label")),
+          exact: box(root.querySelector('[data-testid="net-exact"]')),
+          amount: box(root.querySelector('[data-testid="result-amount"]')),
+        };
+      });
+      const hit = (a: NonNullable<typeof rects.label>, b: NonNullable<typeof rects.label>) =>
+        Math.min(a.r, b.r) - Math.max(a.l, b.l) > 1 && Math.min(a.b, b.b) - Math.max(a.t, b.t) > 1;
+      expect(hit(rects.label!, rects.amount!)).toBe(false);
+      expect(hit(rects.exact!, rects.amount!)).toBe(false);
+      await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
   test("malformed localStorage does not crash or silently erase data", async ({ page }) => {
     await page.addInitScript(() => {
       if (!window.localStorage.getItem("agentcal.sell-scenarios.v1")) {

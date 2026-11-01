@@ -1536,6 +1536,19 @@ body {
   font-weight: 700;
 }
 
+/* 320px: the 32px net amount leaves the label column too narrow and the
+   label glyphs collide with it, so stack the final row instead. */
+@media (max-width: 359px) {
+  .v2-ledger-final {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 4px;
+  }
+
+  .v2-ledger-final .v2-ledger-net {
+    text-align: left;
+  }
+}
+
 .amount-input::placeholder {
   color: var(--color-text-secondary);
   opacity: 0.7;
