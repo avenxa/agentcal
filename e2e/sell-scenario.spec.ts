@@ -328,6 +328,154 @@ test.describe("SELL v2 Inputs → Calculate → Results", () => {
     await expect(page.getByTestId("ledger")).not.toContainText("Optional planning");
   });
 
+  async function enterGolden(page: Page, width: number) {
+    await startNew(page, width);
+    await fill(page, "#sellingPrice", "1250000");
+    await fill(page, "#mortgagePayout", "450000");
+    await page.getByTestId("selling-toggle").click();
+    await fill(page, "#legalNotary", "2000");
+    await fill(page, "#mortgageDischarge", "300");
+    await fill(page, "#prepaymentPenalty", "3000");
+    await page.getByTestId("planning-toggle").click();
+    await fill(page, "#staging", "5000");
+    await fill(page, "#repairs", "3000");
+    await fill(page, "#cleaning", "2500");
+    await calculate(page);
+  }
+
+  async function textBoxes(page: Page, testIds: Record<string, string>) {
+    return page.evaluate((ids) => {
+      const out: Record<string, { l: number; r: number; t: number; b: number }> = {};
+      for (const [name, selector] of Object.entries(ids)) {
+        const el = document.querySelector(selector);
+        if (!el) continue;
+        const r = document.createRange();
+        r.selectNodeContents(el);
+        const b = r.getBoundingClientRect();
+        out[name] = { l: b.left, r: b.right, t: b.top, b: b.bottom };
+      }
+      return out;
+    }, testIds);
+  }
+
+  for (const width of [320, 390, 1280]) {
+    test(`golden case shows net, planning costs and funds after planning together at ${width}px`, async ({
+      page,
+    }) => {
+      await enterGolden(page, width);
+      // Net is the accepted engine amount and is NOT reduced by planning costs.
+      await expect(page.getByTestId("result-amount")).toHaveText("$757,163");
+      await expect(page.getByTestId("net-exact")).toContainText("Exact $757,162.50");
+      await expect(page.getByTestId("planning-row")).toContainText("Less: optional planning costs");
+      await expect(page.getByTestId("planning-row")).toContainText("−$10,500.00");
+      await expect(page.getByTestId("after-planning-amount")).toHaveText("$746,663");
+      await expect(page.getByTestId("after-planning-exact")).toContainText("Exact $746,662.50");
+      await expect(page.getByTestId("after-planning-row")).toContainText(
+        "Estimated funds after planning costs",
+      );
+      await expect(page.getByTestId("planning-hint")).toHaveText(
+        "Planning costs are estimates and are not included in net proceeds.",
+      );
+      // No misleading "available" wording; ledger itself holds only actual deductions.
+      await expect(page.getByTestId("results-view")).not.toContainText(/available/i);
+      await expect(page.getByTestId("ledger")).not.toContainText("planning");
+      await expect(page.getByTestId("ledger-row")).toHaveCount(7);
+      // Same card and DOM order: net row, then planning, then after-planning, then hint.
+      const order = await page.evaluate(() => {
+        const q = (id: string) => document.querySelector(`[data-testid="${id}"]`)!;
+        const net = q("estimated-net");
+        const planning = q("planning-row");
+        const after = q("after-planning-row");
+        const hint = q("planning-hint");
+        const follows = (a: Element, b: Element) =>
+          Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+        return {
+          ordered: follows(net, planning) && follows(planning, after) && follows(after, hint),
+          sameCard: net.closest("section") === after.closest("section"),
+        };
+      });
+      expect(order).toEqual({ ordered: true, sameCard: true });
+      // No collisions between any of the related label/detail/amount texts.
+      const boxes = await textBoxes(page, {
+        netLabel: '[data-testid="estimated-net"] .v2-ledger-label',
+        netExact: '[data-testid="net-exact"]',
+        netAmount: '[data-testid="result-amount"]',
+        planLabel: '[data-testid="planning-row"] dt',
+        planAmount: '[data-testid="planning-row"] dd',
+        afterLabel: '[data-testid="after-planning-row"] dt',
+        afterExact: '[data-testid="after-planning-exact"]',
+        afterAmount: '[data-testid="after-planning-amount"]',
+        hint: '[data-testid="planning-hint"]',
+      });
+      const names = Object.keys(boxes);
+      expect(names).toHaveLength(9);
+      for (let a = 0; a < names.length; a++) {
+        for (let b = a + 1; b < names.length; b++) {
+          const x = boxes[names[a]];
+          const y = boxes[names[b]];
+          const hit =
+            Math.min(x.r, y.r) - Math.max(x.l, y.l) > 1 &&
+            Math.min(x.b, y.b) - Math.max(x.t, y.t) > 1;
+          expect(hit, `${names[a]} overlaps ${names[b]}`).toBe(false);
+        }
+      }
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  test("golden case: Save → Done and reopen keep both amounts from the snapshot", async ({ page }) => {
+    await enterGolden(page, 390);
+    await save(page);
+    await expect(page.getByTestId("result-amount")).toHaveText("$757,163");
+    await expect(page.getByTestId("after-planning-amount")).toHaveText("$746,663");
+    await page.getByRole("button", { name: /^Done/ }).click();
+    await expect(page.getByTestId("scenario-card")).toHaveCount(1);
+    await page.reload();
+    await page.getByTestId("scenario-card").getByRole("button", { name: /^Open/ }).click();
+    await expect(page.getByTestId("result-amount")).toHaveText("$757,163");
+    await expect(page.getByTestId("after-planning-amount")).toHaveText("$746,663");
+    await expect(page.getByTestId("planning-row")).toContainText("−$10,500.00");
+  });
+
+  test("zero planning costs keep the single uncomplicated net result", async ({ page }) => {
+    await startNew(page, 390);
+    await fill(page, "#sellingPrice", "1250000");
+    await calculate(page);
+    await expect(page.getByTestId("result-amount")).toHaveText("$1,212,463");
+    await expect(page.getByTestId("planning-section")).toHaveCount(0);
+    await expect(page.getByTestId("after-planning-row")).toHaveCount(0);
+    await expect(page.getByTestId("planning-hint")).toHaveCount(0);
+    await expect(page.getByTestId("results-view")).not.toContainText(/planning/i);
+  });
+
+  test("planning costs larger than net proceeds show a negative after-planning amount", async ({
+    page,
+  }) => {
+    await startNew(page, 320);
+    await fill(page, "#sellingPrice", "500000");
+    await page.getByTestId("planning-toggle").click();
+    await fill(page, "#staging", "600000");
+    await calculate(page);
+    await expect(page.getByTestId("negative-note")).toHaveCount(0);
+    await expect(page.getByTestId("after-planning-amount")).toHaveClass(/result-negative/);
+    await expect(page.getByTestId("after-planning-amount")).toContainText("-");
+    await expect(page.getByTestId("result-amount")).not.toContainText("-");
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test("negative net with planning costs keeps the existing negative note", async ({ page }) => {
+    await startNew(page, 320);
+    await fill(page, "#sellingPrice", "300000");
+    await fill(page, "#mortgagePayout", "400000");
+    await page.getByTestId("planning-toggle").click();
+    await fill(page, "#staging", "1000");
+    await calculate(page);
+    await expect(page.getByTestId("negative-note")).toBeVisible();
+    await expect(page.getByTestId("result-amount")).toHaveClass(/result-negative/);
+    await expect(page.getByTestId("after-planning-amount")).toHaveClass(/result-negative/);
+    await expectNoHorizontalOverflow(page);
+  });
+
   test("keyboard: Enter in a field calculates; Edit inputs is reachable", async ({ page }) => {
     await startNew(page);
     const input = page.locator("#sellingPrice");

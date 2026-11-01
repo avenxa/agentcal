@@ -1553,3 +1553,65 @@ body {
   color: var(--color-text-secondary);
   opacity: 0.7;
 }
+
+/* Issue #19: optional planning costs and funds after planning costs, shown
+   directly below the net-proceeds row inside the same results card. Appended
+   at the end of the file so it stays independent of other result-row edits. */
+.v2-after {
+  margin-top: 12px;
+  padding: 4px 12px 12px;
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  background: var(--color-muted);
+}
+
+.v2-after-list {
+  margin: 0;
+}
+
+.v2-after-row,
+.v2-after-final {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.v2-after-row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.v2-after-row dt,
+.v2-after-row dd,
+.v2-after-final dt,
+.v2-after-final dd {
+  margin: 0;
+}
+
+.v2-after-final .v2-ledger-label {
+  font-weight: 700;
+}
+
+.v2-after-amount {
+  font-size: 26px;
+  line-height: 32px;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.v2-after .sc-caption {
+  margin: 0;
+}
+
+@media (max-width: 359px) {
+  .v2-after-final {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 4px;
+  }
+
+  .v2-after-amount {
+    text-align: left;
+  }
+}

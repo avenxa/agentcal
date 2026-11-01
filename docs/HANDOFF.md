@@ -139,6 +139,29 @@ Historical test evidence remains history only and must be rerun by Builder when 
 6. Persistence is browser-local only (single device/browser); no delete/archive by design.
 7. Preview/runtime on Vercel and independent QC are still outstanding.
 
+## Code Complete Report — Issue #19 (SELL Results: net vs planning costs, 2026-11-01)
+
+- Branch: `claude/sell-results-planning-clarity-19`, based on main `f6a22bb249050ad809240af3d9af45e0cbaa16ba`. **Independent of PR #18** (`claude/sharp-pascal-yhgwrj`, 320px net-row collision fix, still open). Head SHA: see PR.
+- **Merge dependency:** none required. A trial `git merge` of #18 into this branch applies cleanly (this change edits the Results planning block, appends CSS at the end of `globals.css`, adds e2e tests in a different spot, and inserts this section away from #18's handoff edits). Recommended order: merge #18 first, then this PR; either order works. On main-without-#18 the 320px net row is the known cramped layout; the golden case still passes the no-collision test, the larger 1,212,463 case is what #18 fixes.
+- Scope: UI only. **Untouched:** `lib/**` (engine already supplies `estimatedNetProceedsCents`, `optionalPlanningTotalCents`, `estimatedAfterPlanningCents`), commission/GST, snapshots, storage, rule `sell-bc-2026-08-09-v1`, BUY/MOVE.
+
+### Change
+- `app/sell-results-view.tsx`: removed the separate "Planning costs (not included above)" card. When planning total > 0, a grouped block sits directly under the Estimated net proceeds row inside the same "How we got there" card: `Less: optional planning costs` (−exact), `Estimated funds after planning costs` (exact line + rounded-dollar amount, negative styling when < 0) and the hint "Planning costs are estimates and are not included in net proceeds." Net row, `result-amount`, ledger rows and their order are unchanged; planning rows are not part of the `ledger` list. Planning = $0 renders exactly as before (no planning block, no second figure).
+- `app/globals.css`: appended `.v2-after*` styles (dashed muted block, 26px after-planning amount, stack below 360px).
+- `e2e/sell-scenario.spec.ts`: golden case at 320/390/1280 (net $757,163 / exact 757,162.50, planning −10,500.00, after $746,663 / exact 746,662.50, no "available" wording, DOM order, same card, pairwise text-box no-overlap, no overflow); Save → Done → reload → reopen keeps both amounts; zero-planning state has no planning block; after-planning negative with positive net; negative net keeps existing note.
+
+### Verified locally (2026-11-01)
+- `pnpm lint` pass; `pnpm type-check` pass; `pnpm test` 44/44; `pnpm build` pass.
+- `pnpm test:e2e`: 45 passed, 1 skipped (evidence test needs `VISUAL_DIR`), with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks pinned Chromium). Main baseline: 38 passed + 1 skipped; existing planning test (`planning-row` $700, `after-planning-row` $834,750, ledger without "Optional planning") still passes unmodified.
+- Screenshots (scratch, not committed) at 320, 390, 1280 golden case and 390 zero-planning inspected by eye.
+
+### Not verified / gaps
+1. Exact-head CI and Vercel Preview for the new head (record after push); real iPhone Safari.
+2. No Figma frame exists for this block; layout follows Issue #19 text.
+3. The after-planning figure is a scenario amount, not confirmed available cash; MOVE funding untouched.
+
+**Next action (Issue #19): AI PM / Independent Reviewer** — review diff, exact-head CI and Preview at 320/390; merge order #18 then this PR is Product Owner-gated.
+
 ## Code Complete Report — Issue #13 (SELL v2 workflow, 2026-10-22)
 
 - Branch: `claude/busy-ride-djj1st` (designated session branch; issue suggested `feat/sell-input-results-rebaseline-v2`). Based on main `6d28dea` (PR #9 merge). Not based on PR #12.
