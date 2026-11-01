@@ -123,6 +123,12 @@ export function SellResultsView({
   const exact = formatExactCad(net);
   const rounded = formatWholeCad(net);
   const roundingDiffers = net % 100 !== 0;
+  const hasPlanning = result.optionalPlanningTotalCents > 0;
+  const after = result.estimatedAfterPlanningCents;
+  const afterNegative = after < 0;
+  const afterExact = formatExactCad(after);
+  const afterRounded = formatWholeCad(after);
+  const afterRoundingDiffers = after % 100 !== 0;
   const ledger = buildLedger(result);
   const status = usingSnapshot ? "Saved result" : "Preliminary";
 
@@ -178,6 +184,41 @@ export function SellResultsView({
             </p>
           </li>
         </ol>
+        {hasPlanning ? (
+          <div
+            className="v2-after"
+            role="group"
+            aria-label="Optional planning costs and funds after planning costs"
+            data-testid="planning-section"
+          >
+            <dl className="v2-after-list">
+              <div className="v2-after-row" data-testid="planning-row">
+                <dt className="v2-ledger-label">Less: optional planning costs</dt>
+                <dd className="v2-ledger-amount tabular">
+                  {deduction(result.optionalPlanningTotalCents)}
+                </dd>
+              </div>
+              <div className="v2-after-final" data-testid="after-planning-row">
+                <div>
+                  <dt className="v2-ledger-label">Estimated funds after planning costs</dt>
+                  <dd className="v2-ledger-detail" data-testid="after-planning-exact">
+                    Exact {afterExact}
+                    {afterRoundingDiffers ? " · rounded to the nearest dollar" : ""}
+                  </dd>
+                </div>
+                <dd
+                  className={`v2-after-amount tabular ${afterNegative ? "result-negative" : ""}`}
+                  data-testid="after-planning-amount"
+                >
+                  {afterRounded}
+                </dd>
+              </div>
+            </dl>
+            <p className="sc-caption" data-testid="planning-hint">
+              Planning costs are estimates and are not included in net proceeds.
+            </p>
+          </div>
+        ) : null}
         {negative ? (
           <p className="field-error" data-testid="negative-note">
             {NEGATIVE_RESULT_NOTE}
@@ -190,22 +231,6 @@ export function SellResultsView({
         ) : null}
         <p className="sc-caption">{COMMISSION_NEGOTIABLE_NOTICE}</p>
       </section>
-
-      {result.optionalPlanningTotalCents > 0 ? (
-        <section className="sc-card" data-testid="planning-section">
-          <h3 className="sc-card-title">Planning costs (not included above)</h3>
-          <dl className="sc-breakdown">
-            <div className="sc-breakdown-row" data-testid="planning-row">
-              <dt>Optional planning costs</dt>
-              <dd className="tabular">{deduction(result.optionalPlanningTotalCents)}</dd>
-            </div>
-            <div className="sc-breakdown-row" data-testid="after-planning-row">
-              <dt>After planning costs</dt>
-              <dd className="tabular">{formatWholeCad(result.estimatedAfterPlanningCents)}</dd>
-            </div>
-          </dl>
-        </section>
-      ) : null}
 
       <section className="sc-card">
         <button
