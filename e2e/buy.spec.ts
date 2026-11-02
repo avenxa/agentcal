@@ -50,12 +50,13 @@ test("SELL still loads at / and links to BUY", async ({ page }) => {
   await expect(page.getByTestId("scenario-entry")).toBeVisible();
 });
 
-test("reviewed example $1m / $200k with and without deposit; no result on Inputs", async ({ page }) => {
+test("reviewed example $1m / $200k / C=$0 supplied (non-partial), with and without deposit; no result on Inputs", async ({ page }) => {
   await open(page);
   await fill(page, "buyPrice", "1000000");
   await expect(page.locator("#buyFmv")).toHaveValue("$1,000,000");
   await fill(page, "buyDownAmount", "200000");
   await expect(page.locator("#buyDownPercent")).toHaveValue("20");
+  await fill(page, "buyClosing", "0");
   await confirmAll(page);
   await expect(page.getByTestId("buy-results")).toHaveCount(0);
   await expect(page.getByTestId("buy-contribution")).toHaveCount(0);
@@ -65,7 +66,6 @@ test("reviewed example $1m / $200k with and without deposit; no result on Inputs
   await expect(page.getByTestId("buy-mortgage")).toHaveText("$800,000.00");
   await expect(page.getByTestId("buy-remaining")).toHaveText("$218,000.00");
   await expect(page.getByTestId("buy-partial")).toHaveCount(0);
-  await expect(page.getByTestId("buy-closing-unsupplied")).toBeVisible();
   await noOverflow(page);
   await page.getByTestId("buy-edit-inputs").click();
   await expect(page.getByTestId("buy-contribution")).toHaveCount(0);
@@ -83,6 +83,30 @@ test("percent entry syncs dollars; price change keeps the source", async ({ page
   await fill(page, "buyPrice", "800000");
   await expect(page.locator("#buyDownAmount")).toHaveValue("$200,000");
   await expect(page.locator("#buyDownPercent")).toHaveValue("25");
+});
+
+test("blank closing costs at >=20% down: partial disclosure, amounts unchanged, no duplicate notice", async ({ page }) => {
+  await open(page);
+  await fill(page, "buyPrice", "1000000");
+  await fill(page, "buyDownAmount", "200000");
+  await confirmAll(page);
+  await page.getByTestId("buy-calculate").click();
+  const banner = page.getByTestId("buy-partial");
+  await expect(banner).toBeVisible();
+  await expect(banner).toContainText("Closing costs were not supplied");
+  await expect(banner).not.toContainText("insurance premium not yet calculated");
+  await expect(page.getByTestId("buy-partial-reasons").locator("li")).toHaveCount(1);
+  await expect(page.getByTestId("buy-contribution")).toHaveText("$218,000.00");
+  await expect(page.getByTestId("buy-remaining")).toHaveText("$218,000.00");
+  await expect(page.getByTestId("buy-results")).toContainText("Total estimated buyer contribution (partial)");
+  await expect(page.getByTestId("buy-results")).toContainText("Remaining cash due at closing (partial)");
+  await expect(page.getByText(/Closing costs: not supplied/)).toHaveCount(0);
+  // supplying closing costs ($0 or more) clears the partial state
+  await page.getByTestId("buy-edit-inputs").click();
+  await fill(page, "buyClosing", "5000");
+  await page.getByTestId("buy-calculate").click();
+  await expect(page.getByTestId("buy-partial")).toHaveCount(0);
+  await expect(page.getByTestId("buy-contribution")).toHaveText("$223,000.00");
 });
 
 test("$3.5m PTT breakdown", async ({ page }) => {
@@ -121,9 +145,11 @@ test("below 20% shows a partial estimate state", async ({ page }) => {
   await open(page);
   await fill(page, "buyPrice", "1000000");
   await fill(page, "buyDownAmount", "100000");
+  await fill(page, "buyClosing", "0");
   await confirmAll(page);
   await page.getByTestId("buy-calculate").click();
   await expect(page.getByTestId("buy-partial")).toContainText("insurance premium not yet calculated");
+  await expect(page.getByTestId("buy-partial-reasons").locator("li")).toHaveCount(1);
   await expect(page.getByTestId("buy-contribution")).toHaveText("$118,000.00");
   await expect(page.getByTestId("buy-results")).toContainText("(partial)");
 });

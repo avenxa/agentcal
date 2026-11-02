@@ -441,9 +441,17 @@ function BuyResults({
       {partial ? (
         <div className="sc-notice sc-notice-warning" role="status" data-testid="buy-partial">
           <p className="sc-notice-text">
-            <strong>Partial estimate — insurance premium not yet calculated.</strong>{" "}
-            {result.partialReasons.join(" ")}
+            <strong>
+              Partial estimate
+              {result.insuranceRequired ? " — insurance premium not yet calculated" : ""}.
+            </strong>{" "}
+            The cash and mortgage figures below leave out known costs:
           </p>
+          <ul className="buy-list" data-testid="buy-partial-reasons">
+            {result.partialReasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
         </div>
       ) : null}
 
@@ -485,12 +493,6 @@ function BuyResults({
             refund is shown; check the figures with your professional.
           </p>
         ) : null}
-        {!result.closingCostsSupplied ? (
-          <p className="sc-muted-text" data-testid="buy-closing-unsupplied">
-            Closing costs: not supplied. They are not counted above and are not an
-            authoritative zero.
-          </p>
-        ) : null}
       </section>
 
       <section className="sc-card" aria-labelledby="buy-ptt">
@@ -528,7 +530,7 @@ function BuyResults({
         <dl className="buy-rows">
           <div className="buy-row buy-row-final">
             <dt>
-              Purchase price less down payment{partial ? " (before insurance)" : ""}
+              Purchase price less down payment{result.insuranceRequired ? " (before insurance)" : ""}
               <span className="buy-sub">Not affected by PTT, deposit or credits</span>
             </dt>
             <dd className="tabular" data-testid="buy-mortgage">

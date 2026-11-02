@@ -129,3 +129,19 @@ test("closing costs not supplied is distinguishable from a supplied $0", () => {
   assert.equal(calculateBuy({ ...base, closingCostsCents: 0 }).closingCostsSupplied, true);
   assert.equal(calculateBuy({ ...base, closingCostsCents: d(5_000) }).totalContributionCents, d(223_000));
 });
+
+test("blank closing costs make the estimate partial even at >=20% down; supplied costs do not", () => {
+  const blank = calculateBuy({ ...base, closingCostsCents: null });
+  assert.equal(blank.insuranceRequired, false);
+  assert.equal(blank.partial, true);
+  assert.equal(blank.partialReasons.length, 1);
+  assert.match(blank.partialReasons[0], /Closing costs were not supplied/);
+  // dollar amounts unchanged by the disclosure
+  assert.equal(blank.totalContributionCents, d(218_000));
+  assert.equal(blank.remainingDueCents, d(218_000));
+  const supplied = calculateBuy({ ...base, closingCostsCents: 0 });
+  assert.equal(supplied.partial, false);
+  assert.deepEqual(supplied.partialReasons, []);
+  const both = calculateBuy({ ...base, downPaymentCents: d(100_000), closingCostsCents: null });
+  assert.equal(both.partialReasons.length, 2);
+});

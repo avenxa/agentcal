@@ -123,7 +123,7 @@ export type BuyResult = {
   closingCostsSupplied: boolean;
   /** True when down payment < 20% (insurance required, premium not calculated). */
   insuranceRequired: boolean;
-  /** Always true in Phase 1 unless D >= 20% and nothing else is excluded; see `partialReasons`. */
+  /** True when the cash/mortgage figures omit a known material cost; see `partialReasons`. */
   partial: boolean;
   partialReasons: string[];
 };
@@ -143,6 +143,11 @@ export function calculateBuy(inputs: BuyInputs): BuyResult {
       "Down payment is below 20%: mortgage default insurance is required and its premium is not yet calculated. The base mortgage and cash totals are partial.",
     );
   }
+  if (inputs.closingCostsCents === null) {
+    partialReasons.push(
+      "Closing costs were not supplied, so they are not included in the buyer contribution or cash due. A blank is not a zero estimate.",
+    );
+  }
   return {
     ruleVersion: BUY_RULE_VERSION,
     ptt,
@@ -154,7 +159,7 @@ export function calculateBuy(inputs: BuyInputs): BuyResult {
     creditsExceedContribution: exceeds,
     closingCostsSupplied: inputs.closingCostsCents !== null,
     insuranceRequired,
-    partial: insuranceRequired,
+    partial: partialReasons.length > 0,
     partialReasons,
   };
 }
