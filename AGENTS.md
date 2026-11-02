@@ -55,21 +55,26 @@ APXS governs reusable cross-product product-experience principles. The AgentCal 
 
 The AI PM / Planner / Reviewer does **not** implement the same bounded task. Claude Code remains the implementation owner. Independent review inspects the actual diff and evidence before release readiness.
 
-## Current Execution — Feature 03 Build
+## Current Execution State
 
-- **AgentCal was reactivated on 2026-10-04 under the current ADS.**
-- Reactivation baseline before this documentation sync: `main` = `d566e24621fa63000589676dfe429960cc4d5acd` (PR #8 merge commit).
-- SELL Feature 01 is implemented and accepted. Accepted implementation merge commit: `eaf0cb7503980e217f8078e6228cd57139be69e4`.
-- Pure SELL calculation logic and tests live under `lib/engine/`.
-- Current ADS stage: **Builder Dispatch / Build**.
-- Current bounded objective: **SELL Scenario Foundation v1**.
-- Product Owner has authorized proactive ADS progression until the next true Human Gate.
-- The approved product sequence remains: **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**.
-- Preserved Feature 02 remains on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`; it is unfinished and not authorized for merge or continuation during the current objective.
-- BUY and MOVE remain unimplemented and outside the current bounded objective.
+*Release facts verified 2026-10-25; current `main` and Production re-checked 2026-11-02 per AI PM review. Details and evidence: `docs/HANDOFF.md`.*
+
+- **SELL v2 is accepted and released.** PR #15 merged to `main` (merge commit `f6a22bb249050ad809240af3d9af45e0cbaa16ba`); Product Owner accepted mobile SELL v2. (Historical: Vercel deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` was READY on that SHA; it is superseded by the current Production deployment below.)
+- Current SELL flow: **Inputs → explicit Calculate → separate Results ledger → Save → Done →** ephemeral one-time "Estimate saved / You're done for now" notice on Scenarios Entry.
+- Later UI-only follow-ups are merged on `main`: PR #18 (320px Results net-row fix), then PR #20 (Results groups net proceeds with optional planning costs). Final current `main` SHA: `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7`.
+- **Current Production:** Vercel deployment `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7` is **READY** on that exact SHA; aliases `agentcal-five.vercel.app` and `agentcal-avenxa.vercel.app` confirmed by Vercel deployment lookup (AI PM review, 2026-11-02).
+- **Product Owner iPhone evidence (Issue #10, comment 6567311352):** actual Production screenshots reviewed — **PASS only for** observed SELL results arithmetic, grouped planning costs, saved scenario list/reopen and visible Saved/Done. This is **not** a full test-checklist or real-device compatibility PASS; Issue #10 remains open.
+- Feature 03 (SELL Scenario Foundation v1) is **complete and superseded in UX by SELL v2**; it is not still building. PR #12 and #14 were superseded/closed unmerged; Issue #13 is closed.
+- **No new work is authorized:** no BUY, MOVE or Feature 02 continuation. Next scope needs a new bounded Product Owner / AI PM task.
+- Pure SELL calculation logic and tests live under `lib/engine/` (SELL Feature 01 merge `eaf0cb7503980e217f8078e6228cd57139be69e4`).
+- Preserved Feature 02 remains on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`; unfinished and not authorized for merge or continuation.
 - AgentCal ↔ AgentConsult integration remains deferred.
+- Known gap: full combined-`main` GitHub Actions CI at `c1147a9` has not been independently observed (a Vercel commit status of success does not substitute).
 
-**Definition Ready and corrected Design Approved are approved. Builder Dispatch is approved.** Active implementation branch: `feature/03-sell-scenario-foundation-v1`. Claude Code must execute `plans/features/03-sell-scenario-foundation-v1.md`, self-verify, and return Code Complete evidence for independent review.
+### History (not current)
+
+- 2026-10-04: AgentCal reactivated under ADS; baseline `main` = `d566e24621fa63000589676dfe429960cc4d5acd` (PR #8).
+- Feature 03 originally planned the sequence "Scenario-first → Progressive Input → Hero Result → Build / Results → …". The **Hero Result → Build / Results experience was rejected** and replaced by SELL v2; do not rebuild it from older plans (`plans/features/03-sell-scenario-foundation-v1.md` is historical).
 
 ## Product Boundary
 
@@ -136,7 +141,7 @@ Universal calculation architecture:
 - Where practical, make rule packs traceable by **jurisdiction + rule version/effective date + validation/source metadata** so saved scenarios remain reproducible and explainable.
 - A saved scenario should not silently change historical amounts merely because current rules later change; any future recalculation/version-migration behavior requires explicit Product Truth and acceptance criteria.
 - Jurisdiction-agnostic does not mean jurisdiction-unaware. Do not invent, infer, or silently substitute local legal/tax/fee authority.
-- Do **not** implement additional jurisdictions during the current Feature 03 objective. This architecture decision establishes boundaries only.
+- Do **not** implement additional jurisdictions without a bounded Product Owner-authorized task. This architecture decision establishes boundaries only.
 
 ## Product Experience — APXS + AgentCal Extensions
 
@@ -151,7 +156,7 @@ The AgentCal UX Rebaseline translates APXS into a calculation-specific implement
 - **AI explanation:** ground interpretation in Scenario + jurisdiction + verified deterministic result + rule metadata.
 - **Client-ready financial output:** preserve assumptions, caveats, calculation provenance, and advisor-safe presentation.
 
-The approved future sequence remains **Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share**. Treat it as AgentCal product-specific planning, not ten universal Avenxa UI mandates.
+The original UX Rebaseline phase list (Scenario-first → Progressive Input → Hero Result → Build / Results → Contextual Next Actions → Readiness → + Add Menu → Inline Recalculation → AI Gap Detection → Client-ready Share) is **historical planning**. Its Hero Result → Build / Results step was rejected and replaced by the released SELL v2 flow. Any further phase needs a new bounded Product Owner-authorized task; it is not an automatic backlog. Treat it as AgentCal product-specific planning, not universal Avenxa UI mandates.
 
 The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-question orchestration, transaction management, property-search marketplace, social/follower features, complex collaboration, or AI-generated authoritative financial amounts.
 
@@ -175,7 +180,7 @@ The UX Rebaseline must not introduce CRM, full consultation workflow, discovery-
 - `lib/engine/` — pure authoritative calculation logic. Nothing here may import React, DOM, browser storage, Supabase, or AgentConsult workflow modules.
 - `lib/` — non-engine presentation or interaction helpers.
 - `e2e/` — Playwright browser checks.
-- `plans/features/01-sell-net-proceeds.md` — completed SELL technical-plan reference.
+- `plans/features/01-sell-net-proceeds.md` — completed SELL technical-plan reference; `03-sell-scenario-foundation-v1.md` — historical, superseded by SELL v2.
 - `docs/HANDOFF.md` — current technical continuity checkpoint.
 - `PROJECT_BRIEFING.md` — thin routing note.
 - `package.json` — dependencies/scripts.
@@ -211,7 +216,7 @@ Do not claim an unavailable or unexecuted check passed.
 3. Work on one bounded objective at a time; keep unrelated edits out.
 4. Inspect actual repository state before assuming dependencies, components, tests, schema, features, or runtime behavior exist.
 5. Confirm Product Truth, sequencing, acceptance, expected evidence, and any actual Human Gate before meaningful implementation. AI PM readiness is READY / NEEDS WORK / HUMAN GATE; READY continues automatically.
-6. Do not start Feature 02 continuation, BUY, MOVE, unrelated jurisdiction refactoring, or new jurisdiction work during Feature 03.
+6. Do not start Feature 02 continuation, BUY, MOVE, unrelated jurisdiction refactoring, or new jurisdiction work unless a bounded task explicitly authorizes it.
 7. Do not refactor existing BC logic simply for architectural purity. Preserve accepted behavior and follow the active bounded plan.
 8. Builder uses **Build → Test → Diagnose → Fix / self-correct → Re-Test / Re-Verify** before `Code Complete`; do not return after the first code-writing attempt.
 9. A failing/unavailable required check remains unresolved until fixed or explicitly escalated.
@@ -281,7 +286,7 @@ GitHub is the execution/handoff layer. No GitHub Action or verified GitHub → C
 
 ## Current Next Action
 
-**Claude Code Builder execution is authorized for Feature 03.** On `feature/03-sell-scenario-foundation-v1`, execute `plans/features/03-sell-scenario-foundation-v1.md`, run the required verification, update `docs/HANDOFF.md`, push the branch, and report **Code Complete — Feature 03 SELL Scenario Foundation v1**. Do not merge; AI PM independent review follows.
+No Builder implementation task is currently authorized. Current step is closeout review and QA (this docs PR, then Issue #10 QA); merge remains Product Owner / AI PM-gated. Next product scope (BUY, MOVE, Feature 02, or further SELL work) requires a new bounded task. See `docs/HANDOFF.md` → ONE NEXT ACTION.
 
 ## Tool-Specific Instructions
 
