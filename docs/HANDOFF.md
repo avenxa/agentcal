@@ -27,6 +27,8 @@ Current state: none active for Builder. Docs closeout only (Issue #16). No BUY, 
 - **Gaps:** (1) full combined-`main` GitHub Actions CI at `c1147a9` not independently observed; Vercel commit status success does not substitute. (2) Issue #10 full test checklist and real-device compatibility not complete (PO iPhone evidence is limited-scope). (3) This Builder session ran no HTTP/browser smoke of Production.
 - This docs task: diff verified docs-only (`AGENTS.md`, `docs/HANDOFF.md`); application checks not re-run because no code changed (see PR for lint/format outcome if run).
 
+- **Re-verification of `main` `0f96dc6` (includes `c1147a9` code; Builder sandbox, 2026-11-02, no code changed):** `pnpm lint` pass; `pnpm type-check` pass; `pnpm test` 44/44; `pnpm build` pass; `pnpm test:e2e` 47 passed + 1 skipped (evidence test needs `VISUAL_DIR`), run with `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium`. This is local evidence, not GitHub Actions CI on `main` and not a Production browser/iPhone PASS.
+
 ## Human Gate / Access Status
 
 Human Gate: none for this docs task. Merge and any release remain Product Owner / AI PM-gated. Builder automation (GitHub → Claude Code): **NOT IMPLEMENTED**; manual dispatch only.
