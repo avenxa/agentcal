@@ -2,7 +2,7 @@
 
 ## Protocol State / Command
 
-**Code Complete — Issue #16 (docs-only closeout).** SELL v2 is accepted and released; this task reconciles stale current-state statements in `AGENTS.md` and this file. No code, config, tests, package or product-behaviour change. Awaiting AI PM review; merge is separately gated. Sections under **Historical Archive** below are history, not current state.
+**Code Complete — Issue #16 (docs-only closeout).** SELL v2 is accepted and released; this task reconciles stale current-state statements in `AGENTS.md` and this file; amended after AI PM review (2026-11-02) to record final `main` `c1147a9` and current Production `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7`. No code, config, tests, package or product-behaviour change. Awaiting AI PM Recheck Work; merge is separately gated. Sections under **Historical Archive** below are history, not current state.
 
 ## Objective
 
@@ -12,8 +12,10 @@ Current state: none active for Builder. Docs closeout only (Issue #16). No BUY, 
 
 - **Release:** AgentCal PR #15 merged; Product Owner accepted mobile SELL v2. Merge commit on `main`: `f6a22bb249050ad809240af3d9af45e0cbaa16ba`.
 - **CI source:** [PR #15 run 40162946639](https://github.com/avenxa/agentcal/actions/runs/40162946639) success on exact reviewed head `c68922556c75069dae780ef8e7e838602553cfbf` (per Issue #16). GitHub push CI on the merge commit itself was not verified here.
-- **Production:** Vercel deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` READY, `target=production`, exact merge SHA. Domains: https://agentcal-five.vercel.app/ and https://agentcal-avenxa.vercel.app/. Vercel 1h grouped runtime errors and error/fatal logs on that deployment: none found (per Issue #16).
-- **Later merged UI-only follow-ups on `main`:** PR #18 (Issue #17, 320px Results net-row fix) and PR #20 (Issue #19, planning costs grouped under net proceeds). `main` head at last check: `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7`. CI/Preview/Production state of these commits was **not verified** in this task; confirm in Vercel/GitHub before claiming.
+- **Final current `main`:** `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7` (PR #18, Issue #17 320px Results net-row fix, then PR #20, Issue #19 planning costs grouped under net proceeds; both UI-only).
+- **Current Production:** Vercel deployment `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7` **READY** on that exact final SHA; aliases https://agentcal-five.vercel.app/ and https://agentcal-avenxa.vercel.app/ confirmed by Vercel deployment lookup (AI PM independent review of this PR, 2026-11-02).
+- **Product Owner iPhone Production evidence:** actual iPhone Production screenshots reviewed and recorded in Issue #10 comment 6567311352. **PASS only for** observed SELL results arithmetic, grouped planning costs, saved scenario list/reopen and visible Saved/Done. This is **not** a full test-checklist or real-device compatibility PASS; Issue #10 remains open.
+- **Historical release evidence (PR #15, superseded as current Production):** deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` READY on merge SHA `f6a22bb`, no Vercel runtime errors in the 1h window checked (per Issue #16). Retained as history only.
 - **Superseded:** PR #12 and #14 closed unmerged; Issue #13 closed completed; Feature 03 foundation UX superseded by SELL v2 (Hero Result → Build / Results was rejected).
 - **SELL v2 flow:** Inputs → explicit Calculate → separate Results ledger → Save → Done → ephemeral one-time "Estimate saved / You're done for now" on Scenarios Entry. Rule `sell-bc-2026-08-09-v1`, CA-BC / en-CA unchanged.
 - **Product Truth:** Hub https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e ; latest checkpoint https://app.notion.com/p/3f0eca0675e381c5992bf73ff76e5a15 ; Design Truth https://app.notion.com/p/401eca0675e3811483ead46d8b25520b . ADS https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08 .
@@ -21,8 +23,8 @@ Current state: none active for Builder. Docs closeout only (Issue #16). No BUY, 
 
 ## Verification State
 
-- Verified (from Issue #16 execution facts, 2026-10-25): PR #15 CI success on reviewed head; production deployment READY on merge SHA; no Vercel runtime errors found.
-- **Gap:** direct independent external HTTP/browser smoke of Production **not executed, not claimed PASS**. Product Owner may spot-check in an authorized browser.
+- Verified: current Production deployment `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7` READY on final `main` SHA `c1147a9` with both aliases (AI PM review, 2026-11-02); PR #15 CI success on its reviewed head (historical); PO iPhone Production screenshots PASS for the limited scope listed in Current Truth.
+- **Gaps:** (1) full combined-`main` GitHub Actions CI at `c1147a9` not independently observed; Vercel commit status success does not substitute. (2) Issue #10 full test checklist and real-device compatibility not complete (PO iPhone evidence is limited-scope). (3) This Builder session ran no HTTP/browser smoke of Production.
 - This docs task: diff verified docs-only (`AGENTS.md`, `docs/HANDOFF.md`); application checks not re-run because no code changed (see PR for lint/format outcome if run).
 
 ## Human Gate / Access Status
@@ -31,7 +33,7 @@ Human Gate: none for this docs task. Merge and any release remain Product Owner 
 
 ## ONE NEXT ACTION
 
-**Owner: AI PM / Independent Reviewer.** Review the narrow Issue #16 docs PR and propose a safe merge (docs-only; it does not hold the completed SELL v2 release). In parallel the Product Owner can spot-check Production in their browser to close the external-smoke gap.
+**Owner: AI PM / Independent Reviewer.** Run Recheck Work on this amended docs-only PR (exact diff: `AGENTS.md`, `docs/HANDOFF.md`), then proceed with current closeout review and QA: close out Issue #16 on merge, and complete the remaining Issue #10 QA checklist and observe combined-`main` CI. Merge remains Product Owner / AI PM-gated.
 
 ---
 

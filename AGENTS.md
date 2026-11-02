@@ -57,17 +57,19 @@ The AI PM / Planner / Reviewer does **not** implement the same bounded task. Cla
 
 ## Current Execution State
 
-*Verified 2026-10-25 (release facts) and re-checked against `main` 2026-11-02. Details and evidence: `docs/HANDOFF.md`.*
+*Release facts verified 2026-10-25; current `main` and Production re-checked 2026-11-02 per AI PM review. Details and evidence: `docs/HANDOFF.md`.*
 
-- **SELL v2 is accepted and released.** PR #15 merged to `main` (merge commit `f6a22bb249050ad809240af3d9af45e0cbaa16ba`); Product Owner accepted mobile SELL v2. Vercel production deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` was READY on that exact SHA.
+- **SELL v2 is accepted and released.** PR #15 merged to `main` (merge commit `f6a22bb249050ad809240af3d9af45e0cbaa16ba`); Product Owner accepted mobile SELL v2. (Historical: Vercel deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` was READY on that SHA; it is superseded by the current Production deployment below.)
 - Current SELL flow: **Inputs → explicit Calculate → separate Results ledger → Save → Done →** ephemeral one-time "Estimate saved / You're done for now" notice on Scenarios Entry.
-- Later UI-only follow-ups are merged on `main`: PR #18 (320px Results net-row fix) and PR #20 (Results groups net proceeds with optional planning costs). `main` head at last check: `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7`. Production deployment of these later commits was not verified in this docs task.
+- Later UI-only follow-ups are merged on `main`: PR #18 (320px Results net-row fix), then PR #20 (Results groups net proceeds with optional planning costs). Final current `main` SHA: `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7`.
+- **Current Production:** Vercel deployment `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7` is **READY** on that exact SHA; aliases `agentcal-five.vercel.app` and `agentcal-avenxa.vercel.app` confirmed by Vercel deployment lookup (AI PM review, 2026-11-02).
+- **Product Owner iPhone evidence (Issue #10, comment 6567311352):** actual Production screenshots reviewed — **PASS only for** observed SELL results arithmetic, grouped planning costs, saved scenario list/reopen and visible Saved/Done. This is **not** a full test-checklist or real-device compatibility PASS; Issue #10 remains open.
 - Feature 03 (SELL Scenario Foundation v1) is **complete and superseded in UX by SELL v2**; it is not still building. PR #12 and #14 were superseded/closed unmerged; Issue #13 is closed.
 - **No new work is authorized:** no BUY, MOVE or Feature 02 continuation. Next scope needs a new bounded Product Owner / AI PM task.
 - Pure SELL calculation logic and tests live under `lib/engine/` (SELL Feature 01 merge `eaf0cb7503980e217f8078e6228cd57139be69e4`).
 - Preserved Feature 02 remains on `feature/02-tier2-export-share` at `25ffeea2e52b652b1345dc6c5978a328349c9d32`; unfinished and not authorized for merge or continuation.
 - AgentCal ↔ AgentConsult integration remains deferred.
-- Known gap: no independent external HTTP/browser smoke of Production has been executed or claimed.
+- Known gap: full combined-`main` GitHub Actions CI at `c1147a9` has not been independently observed (a Vercel commit status of success does not substitute).
 
 ### History (not current)
 
@@ -284,7 +286,7 @@ GitHub is the execution/handoff layer. No GitHub Action or verified GitHub → C
 
 ## Current Next Action
 
-No Builder implementation task is currently authorized. The open docs closeout (Issue #16) is reviewed by AI PM; merge remains Product Owner / AI PM-gated. Next product scope (BUY, MOVE, Feature 02, or further SELL work) requires a new bounded task. See `docs/HANDOFF.md` → ONE NEXT ACTION.
+No Builder implementation task is currently authorized. Current step is closeout review and QA (this docs PR, then Issue #10 QA); merge remains Product Owner / AI PM-gated. Next product scope (BUY, MOVE, Feature 02, or further SELL work) requires a new bounded task. See `docs/HANDOFF.md` → ONE NEXT ACTION.
 
 ## Tool-Specific Instructions
 
