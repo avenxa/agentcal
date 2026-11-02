@@ -1615,3 +1615,16 @@ body {
     text-align: left;
   }
 }
+
+/* BUY Phase 1 */
+.buy-check { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; font-size: 15px; line-height: 22px; min-height: 44px; }
+.buy-check input { width: 22px; height: 22px; flex: none; margin-top: 1px; accent-color: var(--color-brand); }
+.buy-rows { margin: 0; display: grid; gap: 0; }
+.buy-row { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.buy-row dt { flex: 1; min-width: 0; font-size: 15px; line-height: 22px; overflow-wrap: anywhere; }
+.buy-row dd { margin: 0; text-align: right; font-weight: 600; overflow-wrap: anywhere; max-width: 55%; }
+.buy-row-final { border-bottom: 0; }
+.buy-row-final dd { font-size: 20px; }
+.buy-sub { display: block; color: var(--color-text-secondary); font-size: 13px; line-height: 18px; font-weight: 400; }
+.buy-list { margin: 0 0 12px; padding-left: 20px; font-size: 14px; line-height: 21px; display: grid; gap: 6px; }
+@media (max-width: 360px) { .buy-row { flex-direction: column; gap: 4px; } .buy-row dd { text-align: left; max-width: 100%; } }

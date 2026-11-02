@@ -1,5 +1,18 @@
 # AgentCal Technical Handoff — Current
 
+## Code Complete — Issue #22 (BUY Phase 1, 2026-11-02)
+
+- Branch `claude/clever-euler-bkm1jm`, based on `main` `0f96dc6`. Head SHA: see PR. Not merged, not released.
+- **Added:** `lib/buy/buy.ts` (integer-cents standard BC PTT, minimum-down reference, deposit/credit reconciliation, partial-estimate flags), `lib/buy/buy.test.ts` (10 tests), `app/buy/page.tsx`, `app/buy/buy-app.tsx` (Inputs -> Calculate -> Results at `/buy`), `e2e/buy.spec.ts` (12 tests), BUY CSS appended to `app/globals.css`, `package.json` test script includes BUY tests, link to `/buy` in `app/page.tsx`.
+- **Untouched:** `lib/engine/*`, SELL components, storage schema, Scenario functionality. No persistence. No MOVE.
+- **Verified locally:** lint pass; type-check pass; `pnpm test` 54/54; build pass (`/`, `/buy` static); `pnpm test:e2e` 59 passed, 1 skipped (SELL evidence test, needs `VISUAL_DIR`) using `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/opt/pw-browsers/chromium` (sandbox lacks pinned Chromium). 320 screenshot of BUY Results inspected by eye (scratch, not committed). No overflow/overlap at 320/390/1280.
+- **Financial methodology questions (recorded, not blocking; implemented with the stated default, needs Product Owner confirmation):** (1) PTT on sub-dollar FMV: exact tier sum rounded half-up to the cent once (whole-dollar FMV always exact; per-tier display amounts rounded individually and may differ from the total by a cent). (2) Minimum down payment: rounded UP to the cent. (3) Percent<->dollar down payment sync: percent to dollars rounds half-up to the cent; dollars to percent shows up to 2 decimals. (4) Down payment below 20% is partial (insurance not computed); CMHC premium, first-time/new-build exemptions, GST not implemented per task.
+- **Gaps:** Figma frames 91:4/91:5, Notion v0.2 baseline and BUY page/flow could not be read from this session (Notion/Figma connectors unavailable); UI follows existing SELL idioms and the issue text, so a design comparison is still owed. Exact-head CI and Vercel Preview not yet observed. Real-device check not done.
+
+**ONE NEXT ACTION — Owner: AI PM / Independent Reviewer:** review the PR against Figma 91:4/91:5, confirm the four methodology defaults above, and observe CI/Preview. Merge/release remain gated.
+
+---
+
 ## Protocol State / Command
 
 **Code Complete — Issue #16 (docs-only closeout).** SELL v2 is accepted and released; this task reconciles stale current-state statements in `AGENTS.md` and this file; amended after AI PM review (2026-11-02) to record final `main` `c1147a9` and current Production `dpl_29VHjFUXh9M6RtUWAxNmfkJUWGH7`. No code, config, tests, package or product-behaviour change. Awaiting AI PM Recheck Work; merge is separately gated. Sections under **Historical Archive** below are history, not current state.
