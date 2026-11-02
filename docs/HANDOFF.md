@@ -2,11 +2,50 @@
 
 ## Protocol State / Command
 
-**Code Complete — Issue #17 (SELL 320px Results net-row fix).** Builder (Claude Code) verified main `f6a22bb` and fixed one demonstrated 320px defect. Awaiting PR review, CI and exact-head Vercel Preview. Not merged; merge/release remain separately gated. Earlier Issue #13/#15 reports below are history.
+**Code Complete — Issue #16 (docs-only closeout).** SELL v2 is accepted and released; this task reconciles stale current-state statements in `AGENTS.md` and this file. No code, config, tests, package or product-behaviour change. Awaiting AI PM review; merge is separately gated. Sections under **Historical Archive** below are history, not current state.
 
 ## Objective
 
-Implement and self-verify the already-defined **SELL Scenario Foundation v1** without changing accepted SELL financial authority or expanding scope.
+Current state: none active for Builder. Docs closeout only (Issue #16). No BUY, MOVE or Feature 02 authorization; next product scope needs a new bounded task.
+
+## Current Truth (verified)
+
+- **Release:** AgentCal PR #15 merged; Product Owner accepted mobile SELL v2. Merge commit on `main`: `f6a22bb249050ad809240af3d9af45e0cbaa16ba`.
+- **CI source:** [PR #15 run 40162946639](https://github.com/avenxa/agentcal/actions/runs/40162946639) success on exact reviewed head `c68922556c75069dae780ef8e7e838602553cfbf` (per Issue #16). GitHub push CI on the merge commit itself was not verified here.
+- **Production:** Vercel deployment `dpl_Bi6KDh7832ojNLznAMHTa512AwRK` READY, `target=production`, exact merge SHA. Domains: https://agentcal-five.vercel.app/ and https://agentcal-avenxa.vercel.app/. Vercel 1h grouped runtime errors and error/fatal logs on that deployment: none found (per Issue #16).
+- **Later merged UI-only follow-ups on `main`:** PR #18 (Issue #17, 320px Results net-row fix) and PR #20 (Issue #19, planning costs grouped under net proceeds). `main` head at last check: `c1147a9eb2f3b4c8c9aac4789d48a5acbaf321f7`. CI/Preview/Production state of these commits was **not verified** in this task; confirm in Vercel/GitHub before claiming.
+- **Superseded:** PR #12 and #14 closed unmerged; Issue #13 closed completed; Feature 03 foundation UX superseded by SELL v2 (Hero Result → Build / Results was rejected).
+- **SELL v2 flow:** Inputs → explicit Calculate → separate Results ledger → Save → Done → ephemeral one-time "Estimate saved / You're done for now" on Scenarios Entry. Rule `sell-bc-2026-08-09-v1`, CA-BC / en-CA unchanged.
+- **Product Truth:** Hub https://app.notion.com/p/3d8eca0675e3811fa497d5455cdd341e ; latest checkpoint https://app.notion.com/p/3f0eca0675e381c5992bf73ff76e5a15 ; Design Truth https://app.notion.com/p/401eca0675e3811483ead46d8b25520b . ADS https://app.notion.com/p/3beeca0675e38138a6e1de3f51d15f08 .
+- **Preserved, not authorized:** Feature 02 on `feature/02-tier2-export-share` (`25ffeea2e52b652b1345dc6c5978a328349c9d32`); BUY; MOVE.
+
+## Verification State
+
+- Verified (from Issue #16 execution facts, 2026-10-25): PR #15 CI success on reviewed head; production deployment READY on merge SHA; no Vercel runtime errors found.
+- **Gap:** direct independent external HTTP/browser smoke of Production **not executed, not claimed PASS**. Product Owner may spot-check in an authorized browser.
+- This docs task: diff verified docs-only (`AGENTS.md`, `docs/HANDOFF.md`); application checks not re-run because no code changed (see PR for lint/format outcome if run).
+
+## Human Gate / Access Status
+
+Human Gate: none for this docs task. Merge and any release remain Product Owner / AI PM-gated. Builder automation (GitHub → Claude Code): **NOT IMPLEMENTED**; manual dispatch only.
+
+## ONE NEXT ACTION
+
+**Owner: AI PM / Independent Reviewer.** Review the narrow Issue #16 docs PR and propose a safe merge (docs-only; it does not hold the completed SELL v2 release). In parallel the Product Owner can spot-check Production in their browser to close the external-smoke gap.
+
+---
+
+# Historical Archive — superseded, retained as evidence
+
+> Everything below is **history**. Statements such as "Awaiting PR review", "Implement … SELL Scenario Foundation v1", "planned Builder branch", "Human Gate: None for Builder work", and any "ONE NEXT ACTION" in these sections described an earlier moment and are **not** current. Use **Current Truth** above.
+
+### Earlier Protocol State (Issue #17, 2026-11-01 — historical)
+
+Code Complete — Issue #17 (SELL 320px Results net-row fix); since merged as PR #18.
+
+### Earlier Objective (Feature 03, October 2026 — historical)
+
+Implement and self-verify the **SELL Scenario Foundation v1** without changing accepted SELL financial authority. Completed and superseded in UX by SELL v2.
 
 ## Product Truth
 
@@ -59,7 +98,7 @@ Out of scope:
 - formula or rounding changes.
 - premature persistence/auth implementation.
 
-## Verification State
+### Earlier Verification State (reactivation, historical)
 
 Verified during reactivation:
 - actual repository branch state;
@@ -75,7 +114,7 @@ Not re-run in this documentation/definition cycle:
 
 Historical test evidence remains history only and must be rerun by Builder when implementation begins.
 
-## Human Gate / Access Status
+### Earlier Human Gate / Access Status (historical)
 
 **Human Gate: None for Builder work.** Access is no longer blocked: Claude Code executed the Builder task. Review, merge and release remain separately gated.
 
@@ -242,7 +281,7 @@ Finding (PO iPhone): after Done the journey ended in a list of Saved cards with 
 ### Not verified / gaps
 1. Exact-head CI and Vercel Preview not yet observed. 2. Real iPhone Safari not tested. 3. Figma 91:2/91:3 not pixel-compared (Figma MCP not used; compared to the Notion v0.3 spec text). 4. "How to use" guidance below the calculator (Notion spec) is not implemented in SELL v2 and was not added: it is new copy/content, not a demonstrated defect — raise to AI PM if wanted. 5. `docs/HANDOFF.md` earlier sections remain historical (Issue #16 stale-doc cleanup still open).
 
-## ONE NEXT ACTION
+### Issue #17 next action (historical, superseded)
 
 **Owner: AI PM / Independent Reviewer.** Review the PR diff (CSS + one e2e test), confirm CI and READY Preview on the exact head, check Results at 320px on the Preview, then decide on the "How to use" gap (item 4). Merge/Production remain Product Owner-gated.
 
