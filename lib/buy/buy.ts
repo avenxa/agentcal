@@ -29,6 +29,11 @@ export type PttTier = {
   rateBp: number;
   /** Exact tax for this tier in 1/10000 cent units' numerator (portion*rateBp), before rounding. */
   numerator: number;
+  /**
+   * Display-only whole-cent amount. The tier amounts always sum exactly to the
+   * once-rounded `PttResult.totalCents` (see `allocateTierDisplayCents`).
+   */
+  displayCents: number;
 };
 
 export type PttResult = {
@@ -68,18 +73,47 @@ export function calculateStandardPtt(v: number): PttResult {
     if (portion === 0) continue;
     const numerator = portion * spec.rateBp;
     numeratorTotal += numerator;
-    tiers.push({ key: spec.key, label: spec.label, portionCents: portion, rateBp: spec.rateBp, numerator });
+    tiers.push({ key: spec.key, label: spec.label, portionCents: portion, rateBp: spec.rateBp, numerator, displayCents: 0 });
   }
-  return {
-    taxableFmvCents: v,
-    totalCents: divRoundHalfUp(numeratorTotal, 10_000),
-    tiers,
-  };
+  const totalCents = divRoundHalfUp(numeratorTotal, 10_000);
+  const display = allocateTierDisplayCents(
+    tiers.map((tier) => tier.numerator),
+    totalCents,
+  );
+  tiers.forEach((tier, index) => {
+    tier.displayCents = display[index];
+  });
+  return { taxableFmvCents: v, totalCents, tiers };
 }
 
-/** Per-tier display amount (rounded half-up); the headline total is rounded once from the exact sum. */
+/**
+ * Display reconciliation only. The authoritative total is the exact tier sum
+ * rounded half-up once (`totalCents`); it is never recomputed from these
+ * amounts. Each tier shows its exact amount floored to the cent (never
+ * negative), and any remaining cents (total minus the floored sum, always
+ * >= 0) go to the highest applicable (last, non-zero) tier, so the visible tier
+ * amounts always add up to the visible total.
+ */
+export function allocateTierDisplayCents(
+  numerators: readonly number[],
+  totalCents: number,
+): number[] {
+  const floors = numerators.map((n) => Math.floor(n / 10_000));
+  const remainder = totalCents - floors.reduce((a, b) => a + b, 0);
+  if (remainder < 0) {
+    throw new RangeError("Tier amounts exceed the rounded total.");
+  }
+  let top = -1;
+  numerators.forEach((n, index) => {
+    if (n > 0) top = index;
+  });
+  if (top >= 0) floors[top] += remainder;
+  return floors;
+}
+
+/** Display amount for a tier; reconciles to the total. */
 export function tierAmountCents(tier: PttTier): number {
-  return divRoundHalfUp(tier.numerator, 10_000);
+  return tier.displayCents;
 }
 
 /** Ordinary minimum down payment reference (rounded up to the cent). Not lender approval. */
@@ -94,7 +128,11 @@ export function downPaymentFromBp(p: number, bp: number): number {
   return divRoundHalfUp(p * bp, 10_000);
 }
 
-/** Percent in basis points (hundredths of a percent) for display, rounded half-up. */
+/**
+ * Percent in basis points (hundredths of a percent), rounded half-up. DISPLAY
+ * ONLY when the dollar amount is the source: the exact cent amount is always
+ * what calculations use, never a value re-derived from this rounded percent.
+ */
 export function bpFromDownPayment(p: number, d: number): number {
   if (p <= 0) return 0;
   return divRoundHalfUp(d * 10_000, p);
@@ -178,4 +216,10 @@ export function parsePercentToBp(
   const bp = Number(whole || "0") * 100 + Number(frac.padEnd(2, "0") || "0");
   if (!Number.isSafeInteger(bp)) return { status: "invalid" };
   return { status: "valid", bp };
+}
+
+/** Percent text (up to 2 decimals, no trailing zeros) for a down payment amount. */
+export function percentDisplayFromAmount(p: number, d: number): string {
+  if (p <= 0 || d < 0) return "";
+  return (bpFromDownPayment(p, d) / 100).toString();
 }

@@ -75,15 +75,55 @@ test("reviewed example $1m / $200k / C=$0 supplied (non-partial), with and witho
   await expect(page.getByTestId("buy-mortgage")).toHaveText("$800,000.00");
 });
 
-test("percent entry syncs dollars; price change keeps the source", async ({ page }) => {
+test("percent edit sets a half-up cent amount, then the exact amount is preserved across price changes", async ({ page }) => {
   await open(page);
   await fill(page, "buyPrice", "1000000");
   await fill(page, "buyDownPercent", "25");
   await expect(page.locator("#buyDownAmount")).toHaveValue("$250,000");
   await fill(page, "buyPrice", "800000");
-  await expect(page.locator("#buyDownAmount")).toHaveValue("$200,000");
-  await expect(page.locator("#buyDownPercent")).toHaveValue("25");
+  // exact amount preserved; percent is only the display
+  await expect(page.locator("#buyDownAmount")).toHaveValue("$250,000");
+  await expect(page.locator("#buyDownPercent")).toHaveValue("31.25");
+  // half-up to the cent: 12.5% of $333,333.33 = $41,666.66625 -> $41,666.67
+  await fill(page, "buyPrice", "333333.33");
+  await fill(page, "buyDownPercent", "12.5");
+  await expect(page.locator("#buyDownAmount")).toHaveValue("$41,666.67");
 });
+
+test("exact cent amount does not drift via the rounded percent (blur, mode switch, price change) and drives results", async ({ page }) => {
+  await open(page);
+  await fill(page, "buyPrice", "333333.33");
+  await fill(page, "buyDownAmount", "66666.66");
+  await expect(page.locator("#buyDownPercent")).toHaveValue("20");
+  // focusing/blurring the percent field must not rewrite the amount
+  await page.locator("#buyDownPercent").focus();
+  await page.locator("#buyDownPercent").blur();
+  await expect(page.locator("#buyDownAmount")).toHaveValue("$66,666.66");
+  await fill(page, "buyClosing", "0");
+  await confirmAll(page);
+  await page.getByTestId("buy-calculate").click();
+  await expect(page.getByTestId("buy-mortgage")).toHaveText("$266,666.67");
+  await page.getByTestId("buy-edit-inputs").click();
+  await expect(page.locator("#buyDownAmount")).toHaveValue("$66,666.66");
+  await expect(page.locator("#buyDownPercent")).toHaveValue("20");
+  // a price change keeps the exact amount
+  await fill(page, "buyPrice", "333333.34");
+  await expect(page.locator("#buyDownAmount")).toHaveValue("$66,666.66");
+});
+
+test("PTT breakdown rows add up to the total for fractional taxable values", async ({ page }) => {
+  await open(page);
+  await fill(page, "buyPrice", "3000000.10");
+  await fill(page, "buyDownAmount", "600000.02");
+  await fill(page, "buyClosing", "0");
+  await confirmAll(page);
+  await page.getByTestId("buy-calculate").click();
+  await expect(page.getByTestId("buy-ptt-total")).toHaveText("$68,000.01");
+  const rows = await page.getByTestId("buy-ptt").locator(".buy-row:not(.buy-row-final) dd").allInnerTexts();
+  const toCents = (t: string) => Math.round(Number(t.replace(/[$,]/g, "")) * 100);
+  expect(rows.map(toCents).reduce((a, b) => a + b, 0)).toBe(6_800_001);
+});
+
 
 test("blank closing costs at >=20% down: partial disclosure, amounts unchanged, no duplicate notice", async ({ page }) => {
   await open(page);

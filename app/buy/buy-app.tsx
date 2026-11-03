@@ -6,11 +6,11 @@ import { useState } from "react";
 import {
   BUY_RULE_VERSION,
   MAX_AMOUNT_CENTS,
-  bpFromDownPayment,
   calculateBuy,
   downPaymentFromBp,
   minimumDownPaymentCents,
   parsePercentToBp,
+  percentDisplayFromAmount,
   tierAmountCents,
   type BuyResult,
 } from "../../lib/buy/buy";
@@ -142,45 +142,60 @@ export function BuyApp() {
     setForm((current) => ({ ...current, ...next }));
   }
 
-  /** Recompute the non-source down payment representation from the source. */
-  function syncDown(f: Form, source: "amount" | "percent", priceStr = f.price): Form {
+  // The exact cent amount is the single source of truth for calculation. The
+  // percent field is a display/editing representation of it. Only an explicit
+  // percent edit sets a new amount (half-up to the cent); after that the exact
+  // amount is preserved until the user edits the amount or the percent again.
+  function priceCents(priceStr: string): number | null {
     const price = cents(priceStr);
-    const p = typeof price === "number" && price > 0 ? price : null;
-    if (source === "amount") {
-      const a = cents(f.dpAmount);
-      return {
-        ...f,
-        dpPercent:
-          p && typeof a === "number" && a >= 0
-            ? (bpFromDownPayment(p, a) / 100).toString()
-            : "",
-      };
-    }
-    const bp = parsePercentToBp(f.dpPercent);
-    return {
-      ...f,
-      dpAmount:
-        p && bp.status === "valid"
-          ? (downPaymentFromBp(p, bp.bp) / 100).toFixed(2)
-          : "",
-    };
+    return typeof price === "number" && price > 0 ? price : null;
   }
 
-  const [source, setSource] = useState<"amount" | "percent">("amount");
-
   function onPrice(value: string) {
-    setForm((f) => syncDown({ ...f, price: value }, source, value));
+    setForm((f) => {
+      const p = priceCents(value);
+      const amount = cents(f.dpAmount);
+      if (p && typeof amount === "number" && amount >= 0) {
+        return { ...f, price: value, dpPercent: percentDisplayFromAmount(p, amount) };
+      }
+      // No amount yet: a pending valid percent becomes the amount once a price exists.
+      const bp = parsePercentToBp(f.dpPercent);
+      if (p && f.dpAmount === "" && bp.status === "valid") {
+        return { ...f, price: value, dpAmount: (downPaymentFromBp(p, bp.bp) / 100).toFixed(2) };
+      }
+      return { ...f, price: value };
+    });
   }
   function onFmv(value: string) {
     patch({ fmv: value, fmvEdited: true, fmvConfirmed: false });
   }
   function onAmount(value: string) {
-    setSource("amount");
-    setForm((f) => syncDown({ ...f, dpAmount: value }, "amount"));
+    setForm((f) => {
+      const p = priceCents(f.price);
+      const amount = cents(value);
+      return {
+        ...f,
+        dpAmount: value,
+        dpPercent:
+          p && typeof amount === "number" && amount >= 0
+            ? percentDisplayFromAmount(p, amount)
+            : "",
+      };
+    });
   }
   function onPercent(value: string) {
-    setSource("percent");
-    setForm((f) => syncDown({ ...f, dpPercent: value }, "percent"));
+    setForm((f) => {
+      const p = priceCents(f.price);
+      const bp = parsePercentToBp(value);
+      return {
+        ...f,
+        dpPercent: value,
+        dpAmount:
+          p && bp.status === "valid"
+            ? (downPaymentFromBp(p, bp.bp) / 100).toFixed(2)
+            : "",
+      };
+    });
   }
 
   function calculate() {
